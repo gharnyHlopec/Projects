@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать профиль</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/edit_profile_style.css' %}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="edit-profile-container">
+        <h2>Редактировать профиль</h2>
+
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">Имя:</label><br>
+                {{ form.first_name }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">Фамилия:</label><br>
+                {{ form.last_name }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email:</label><br>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.phone_number.id_for_label }}">Телефон (опционально):</label><br>
+                {{ form.phone_number }}
+            </div>
+
+            <input type="submit" value="Сохранить" class="save-button">
+        </form>
+    </div>
+
+</body>
+</html>

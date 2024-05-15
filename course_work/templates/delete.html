@@ -1,0 +1,20 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/delete_style.css' %}">
+<form method="POST" action="" class="delete-form">
+  {% csrf_token %}
+  <div class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Подтверждение удаления</h2>
+      </div>
+      <div class="modal-body">
+        <p>Вы уверены, что хотите удалить этот элемент? Внесённые изменения нельзя будет отменить.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary" style="text-decoration: none;">Назад</a>
+        <input type="submit" value="Удалить" class="btn btn-danger">
+      </div>
+    </div>
+  </div>
+</form>

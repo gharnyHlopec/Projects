@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cart-style.css' %}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="cart">
+        <div class="cart_products_wrapper">
+            {% if cart_item_count != 0 %}
+                {% for elem in items_with_details %}
+                    <div class="cart-item">
+                        <img src="{{ elem.image }}" alt="{{ elem.name }}">
+                        <div>
+                            <h2>{{ elem.name }}</h2>
+                            <h2>{{ elem.result }}р</h2> 
+                        </div>
+                        <div class="quantity-controls">
+                            <form method="POST" action="{% url 'minus' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cart_item_id" value="{{ elem.cart_item_id }}">
+                                <button type="submit">-</button>
+                            </form>
+                            <span id="quantity-{{ elem.cart_item_id }}">{{ elem.quantity }}</span>
+                            <form method="POST" action="{% url 'plus' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cart_item_id" value="{{ elem.cart_item_id }}">
+                                <button type="submit">+</button>
+                            </form>
+                        </div>
+                        <div class="delete-button">
+                            <form method="POST" action="{% url 'delete-from-cart' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cart_item_id" value="{{ elem.cart_item_id }}">
+                                <button type="submit">Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+                <h1 class="total-sum">Итоговая стоимость: {{ total_sum }}</h1> 
+            {% else %}
+                <h2>Ваша корзина пуста</h2>
+            {% endif %}
+        </div>
+        <div class="contact-information">
+            <h2>Контактная информация</h2>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div>
+                    <label for="id_first_name">Имя:</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label for="id_last_name">Фамилия:</label>
+                    {{ form.last_name }}
+                </div>
+                <div>
+                    <label for="id_email">Email:</label>
+                    {{ form.email }}
+                </div>
+                <div>
+                    <label for="id_phone_number">Номер телефона:</label>
+                    {{ form.phone_number }}
+                </div>
+                {% if cart_item_count != 0 %}
+                    <button type="submit">Оплатить</button>
+                {% else %}
+                    <button type="submit" id="submit-button" disabled>Оплатить</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+   .forms-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 150px;
+        width: 80%;
+        margin: 50px auto; 
+    }
+    .image-drop-area {
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        flex: 1;
+        min-height: 150px; 
+        max-height: 50%;
+    }
+   
+    .image-drop-area {
+        max-width: 85%; 
+    }
+    .image-drop-area.highlight {
+        border-color: #4CAF50;
+    }
+    #image-preview {
+        display: flex;
+        flex-wrap: wrap; 
+        margin-top: 10px;
+    }
+    #image-preview .image-container {
+        position: relative;
+        margin: 5px;
+    }
+    #image-preview img {
+        max-width: 150px;
+        max-height: 150px;
+    }
+    .delete-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .image-container:hover .delete-button {
+        opacity: 1;
+    }
+   
+    #product_form label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    #product_form input, #product_form select, #product_form textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+    #product_form input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    #product_form input[type="submit"]:hover {
+        background-color: #45a049;
+    }

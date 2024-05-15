@@ -1,0 +1,55 @@
+{% include 'navbar.html' %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/login_register_style.css' %}">
+
+<div class="container mt-5"> </div>
+<div class="container mt-5">
+  {% if page == 'login' %}
+    <div class="login-register-container">
+      <div class="form-container">
+        <h2>Вход</h2>
+        <form method="POST" action="">
+          {% csrf_token %}
+          <label>Email:</label>
+          <input type="text" name="email" placeholder="Enter email" />
+          <label>Пароль:</label>
+          <input type="password" name="password" placeholder="Enter password" />
+          <input type="submit" value="Войти" />
+        </form>
+
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        Ещё не зарегистрировались?
+        <a href="{% url 'register' %}">Зарегистрироваться</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="login-register-container">
+      <div class="form-container">
+        <h2>Регистрация</h2>
+        <form method="POST" action="">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" value="Зарегистрироваться" />
+        </form>
+
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+      </div>
+    </div>
+  {% endif %}
+</div>

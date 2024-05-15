@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/navbar_style.css' %}">
+</head>
+<body>
+  <header>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container-fluid">
+              <a class="navbar-brand" href="/">
+                <h1 class="display-5">Интернет-магазин</h1>
+              </a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 justify-content-center">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'catalog' page='mouse' %}">Мышки</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'catalog' page='headphone' %}">Наушники</a>
+                  </li>
+                </ul>
+                  <form class="d-flex" method = "GET" action ="{% url 'catalog' page='all' %}">
+                      <input class="form-control me-2" type="text" id="search-input" placeholder="Введите запрос..." name="q" aria-label="Search">
+                  </form>
+                  <ul class="navbar-nav ml-auto">
+                      {% if request.user.is_staff %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'person-panel' %}">
+                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
+                          </a>
+                      </li>
+                      {% elif request.user.is_staff == False and request.user.is_authenticated == True %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'profile' %}">
+                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
+                          </a>
+                      </li>
+                      {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'login' %}">
+                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
+                          </a>
+                      </li>
+                      {% endif %}
+                      {% if not request.user.is_staff %}
+                      <li class="nav-item position-relative">
+                          <a class="nav-link" href="{% url 'cart' %}">
+                              <img src="{% static 'images/bin-50.png' %}" alt="Cart" width="35" length="35">
+                              <span class="cart-count">{{ cart_item_count }}</span>
+                          </a>
+                      </li>
+                      {% endif %}
+                      {% if request.user.is_staff %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'add_product' %}">
+                              <img src="{% static 'images/plus-50.png' %}" alt="Add" width = 35 length = 35>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'admin-panel' %}">
+                              <img src="{% static 'images/list-100.png' %}" alt="List" width = 35, length = 35>
+                          </a>
+                      </li>
+                      {% elif request.user.is_staff == False and request.user.is_authenticated %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'user-orders' %}">
+                              <img src="{% static 'images/list-100.png' %}" alt="List" width = 35 length = 35>
+                          </a>
+                      </li>
+                      {% endif %}
+                      {% if request.user.is_authenticated %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                      </li>
+                      {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                      </li>
+                      {% endif %}
+                  </ul>
+              </div>
+          </div>
+      </nav>
+  </header>
+</body>
+</html>

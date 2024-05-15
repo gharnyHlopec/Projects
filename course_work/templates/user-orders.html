@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    {% load static %}
+    {% load custom_filters %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/user-orders-style.css' %}">
+    {% include 'navbar.html' %}
+    <div class="admin-panel-wrapper">
+        <div class="order-list">
+            <h2>Заказы в работе</h2>
+            <hr>
+            {% for cart in carts %}
+                {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
+                    <div class="order-item">
+                        <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
+                        <p class="order-status" data-status="{{ cart.status }}">Статус заказа: {{ cart.status }}</p>
+                        <ul>
+                            {% for item in cart_items|get_item:cart %}
+                                <li>
+                                    {% if item.product.type == 'Headphones' %}
+                                        {{ item.product.headphones.name }} - {{ item.quantity }} шт. -
+                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                    {% elif item.product.type == 'Mouse' %}
+                                        {{ item.product.mouse.name }} - {{ item.quantity }} шт. -
+                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                    {% elif item.product.type == 'Keyboard' %}
+                                        {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
+                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="order-list">
+            <h2>Выполненные/отмененные заказы</h2>
+            <hr>
+            {% for cart in carts %}
+                {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
+                    <div class="order-item">
+                        <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
+                        <p class="order-status" data-status="{{ cart.status }}">Статус заказа: {{ cart.status }}</p>
+                        <ul>
+                            {% for item in cart_items|get_item:cart %}
+                                <li>
+                                    {% if item.product.type == 'Headphones' %}
+                                        {{ item.product.headphones.name }} - {{ item.quantity }} шт. -
+                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                    {% elif item.product.type == 'Mouse' %}
+                                        {{ item.product.mouse.name }} - {{ item.quantity }} шт. -
+                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                    {% elif item.product.type == 'Keyboard' %}
+                                        {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
+                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

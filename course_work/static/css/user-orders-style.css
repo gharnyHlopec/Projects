@@ -1,0 +1,60 @@
+
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .admin-panel-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .order-list {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .order-list h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .order-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-status {
+            font-weight: bold;
+            color: #28a745; 
+        }
+
+        .order-status[data-status="Отменен"], 
+        .order-status[data-status="Отменен системой (на складе недостаточно товара)"] {
+            color: #dc3545; 
+        }
+
+        .order-status[data-status="Завершен"] {
+            color: #007bff; 
+        }
+
+        .order-total {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .order-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }

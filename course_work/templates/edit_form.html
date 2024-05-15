@@ -1,0 +1,45 @@
+{% load static %}
+{% include 'navbar.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/edit_form_style.css' %}">
+{% for pic in images %}
+<a href="{% url 'delete-image' pk=pk pk2=pic.id %}">
+  <img src="{{ pic.image.url }}" width="150" height="150"> 
+</a>
+{% endfor %}
+<div class="forms-container"> 
+<div class="image-drop-area" id="image-drop-area"> 
+  Перетащите новые изображения сюда 
+  <div id="image-preview"></div> 
+</div> 
+<form method="POST" action="" id="product_form" enctype="multipart/form-data"> 
+  <div> 
+    {% csrf_token %} 
+    <label for="product_type">Выберите тип продукта:</label> 
+    <select id="product_type" name="product_type"> 
+      <option value="mouse">Мышь</option> 
+      <option value="keyboard">Клавиатура</option> 
+      <option value="headphones">Наушники</option> 
+    </select> 
+  </div> 
+  <div id="form_container"> 
+    {% for field in form %} 
+      <div> 
+        {{ field.label_tag }} 
+        {{ field }} 
+        {% if field.errors %} 
+          <ul class="errorlist"> 
+            {% for error in field.errors %} 
+              <li>{{ error }}</li> 
+            {% endfor %} 
+          </ul> 
+        {% endif %} 
+      </div> 
+    {% endfor %} 
+    <input type="file" name="images" id="images" multiple style="display:none;">  
+  </div> 
+  <input type="submit" value="Применить изменения"/> 
+</form>
+</div>
+
+
+<script src="{% static 'js/edit_form.js' %}"></script>

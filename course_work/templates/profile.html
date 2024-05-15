@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/profile_style.css' %}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="profile-container">
+        <h2>Профиль пользователя</h2>
+        <p><strong>Имя</strong>: {{ user.first_name }}</p>
+        <p><strong>Фамилия</strong>: {{ user.last_name }}</p>
+        <p><strong>Email</strong>: {{ user.email }}</p>
+        <p><strong>Телефон</strong>: 
+            {% if user.phone_number == None %}
+                -
+            {% else %}
+                {{ user.phone_number }}
+            {% endif %}
+        </p>
+        <a href="{% url 'update-profile' %}" class="edit-button">Редактировать</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+{% include 'navbar.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/review_form_style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+
+        {% if request.user.is_authenticated %}
+            <div class="comment-form">
+                <form method="POST" action ="">
+                    {% csrf_token %}
+                    <label for="rating">Поставьте оценку:</label>
+                    <div class="rating">
+                        <span data-value="1">★</span>
+                        <span data-value="2">★</span>
+                        <span data-value="3">★</span>
+                        <span data-value="4">★</span>
+                        <span data-value="5">★</span>
+                        <input type="hidden" name="rating" id="rating-value" value="0"> 
+                    </div>
+
+                    <label for="body">Расскажите подробно о ваших впечатлениях:</label>
+                    <textarea name="body" id="body" rows="5" required></textarea>
+
+                    <label for="title">Подытожьте ваш отзыв (заголовок):</label>
+                    <input type="text" name="title" id="title" required>
+
+                    <input type="submit" value="Оставить отзыв">
+                </form>
+            </div>
+        {% else %}
+            <p>Только залогиненные пользователи могут оставлять комментарии.</p>
+        {% endif %}
+
+        
+        {% for review in reviews %}
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="review-user">
+                        {{ review.user.first_name }} - {{ review.created|date:"H:i:s d/m/Y" }}
+                        {% if request.user == review.user or request.user.is_staff == True %}
+                            - <a href="{% url 'delete-review' pk review.id %}" class="delete-review">Удалить</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="rating">
+                    Оценка: 
+                    {% for i in '12345'|make_list %}
+                        {% if forloop.counter <= review.rating %}
+                            <span class="active">★</span>
+                        {% else %}
+                            <span>☆</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <h4 class="review-title">{{ review.title }}</h4>
+                <p>{{ review.body }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+
+<script src="{% static 'js/review_form.js' %}"></script>

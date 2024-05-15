@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/person-panel-style.css' %}">
+</head>
+<body>
+    {% load custom_filters %}
+    {% include 'navbar.html' %}
+    <div class="admin-panel-wrapper">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="customers">Клиенты</li>
+            <li class="tab-link" data-tab="staff">Работники</li>
+        </ul>
+        <div id="customers" class="tab-content active">
+            <h2>Клиенты</h2>
+            <hr>
+            {% for user in users %}
+                {% if not user.is_staff %}
+                    <div class="order-item">
+                        <div>
+                            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
+                           
+                        </div>
+                        <div>
+                           
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id="staff" class="tab-content">
+            <h2>Работники</h2>
+            <hr>
+            {% for user in users %}
+                {% if user.is_staff %}
+                    <div class="order-item">
+                        <div>
+                            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="{% static 'js/person-panel.js' %}"></script>
