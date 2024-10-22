@@ -208,7 +208,7 @@ def info(request,pk):
     
     elem = SharedID.objects.get(id = pk)
     average_rating = Review.objects.filter(product=elem).aggregate(Avg('rating'))['rating__avg'] or 0
-    
+    average_rating = round(average_rating,1)
     review_count = Review.objects.filter(product=elem).count()
 
     if elem.type == 'Headphones':
@@ -240,22 +240,7 @@ def cart(request):
     cart_count = 0
     total_sum = 0
 
-    if request.method == 'POST':    
-        if request.user.is_authenticated:
-            cart = Cart.objects.get(user=request.user, status = '-')
-            form = UserForm(request.POST, instance = request.user)
-        else:
-            cart = Cart.objects.get(session_key=request.session.session_key, status = '-')
-            form = GuestOrderForm(request.POST)
-        if form.is_valid():
-            cart.first_name = form.cleaned_data['first_name']
-            cart.last_name = form.cleaned_data['last_name']
-            cart.phone_number = form.cleaned_data['phone_number']
-            cart.email = form.cleaned_data['email']
-            cart.status = "В обработке"
-            cart.save()
-            return redirect('main')
-
+ 
     if request.user.is_authenticated:
         cart,_ = Cart.objects.get_or_create(user=request.user, status = '-')
         form = UserForm(instance=request.user)
@@ -263,6 +248,7 @@ def cart(request):
         if request.session.session_key:
             cart = Cart.objects.filter(session_key=request.session.session_key, status = '-').last()
         form = GuestOrderForm()
+
     if cart:
         cart_products = CartItem.objects.filter(cart=cart)
         if cart_products.exists():
@@ -302,11 +288,40 @@ def cart(request):
     for elem in items_with_details:
         total_sum +=elem['result']
 
+    total_sum = round(total_sum,2)
 
     context = {'form':form,'cart_products':cart_products, 'cart_item_count': cart_count, 
                 'items_with_details':items_with_details, 'total_sum':total_sum}
 
     return render(request, 'cart.html', context)
+
+def contactInformation(request):
+    if request.user.is_authenticated:
+        cart,_ = Cart.objects.get_or_create(user=request.user, status = '-')
+        form = UserForm(instance=request.user)
+    else:
+        if request.session.session_key:
+            cart = Cart.objects.filter(session_key=request.session.session_key, status = '-').last()
+        form = GuestOrderForm()
+
+    if request.method == 'POST':    
+        if request.user.is_authenticated:
+            cart = Cart.objects.get(user=request.user, status = '-')
+            form = UserForm(request.POST, instance = request.user)
+        else:
+            cart = Cart.objects.get(session_key=request.session.session_key, status = '-')
+            form = GuestOrderForm(request.POST)
+        if form.is_valid():
+            cart.first_name = form.cleaned_data['first_name']
+            cart.last_name = form.cleaned_data['last_name']
+            cart.phone_number = form.cleaned_data['phone_number']
+            cart.email = form.cleaned_data['email']
+            cart.status = "В обработке"
+            cart.save()
+            return redirect('main')
+
+    context = {"form":form,"cart":cart}
+    return render(request, 'contact-information.html', context)
 
 
 def reviews(request, pk):

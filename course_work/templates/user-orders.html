@@ -3,69 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-</head>
-<body>
     {% load static %}
     {% load custom_filters %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/user-orders-style.css' %}">
+    <title>Мои заказы</title>
+
+    <style>
+        body{
+            background-color: #f4f4f4;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-y: scroll;
+        }
+        .user-orders-wrapper{
+            padding: 0px 20px;
+            background-color: white;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 80%;
+            margin: 10px auto;
+            grid-gap: 5%;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-status[data-status*="В обработке"] {
+            color: blue; 
+        }
+
+        .order-status[data-status*="Отменен"] {
+            color: red; 
+        }
+
+        .order-status[data-status*="Принят"] {
+            color: orange; 
+        }
+        .order-status[data-status*="Завершен"] {
+            color: green; 
+        }
+        .order-date{color: gray}
+
+    </style>
+</head>
+<body>
     {% include 'navbar.html' %}
-    <div class="admin-panel-wrapper">
-        <div class="order-list">
+    <div class="user-orders-wrapper">
+        <div class="order-list in-progress">
             <h2>Заказы в работе</h2>
             <hr>
             {% for cart in carts %}
                 {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
                     <div class="order-item">
                         <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                        <p class="order-status" data-status="{{ cart.status }}">Статус заказа: {{ cart.status }}</p>
+                        <p class="order-status" data-status="{{ cart.status }}"><b>Статус заказа: {{ cart.status }}</b></p>
                         <ul>
                             {% for item in cart_items|get_item:cart %}
                                 <li>
                                     {% if item.product.type == 'Headphones' %}
                                         {{ item.product.headphones.name }} - {{ item.quantity }} шт. -
-                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Mouse' %}
                                         {{ item.product.mouse.name }} - {{ item.quantity }} шт. -
-                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Keyboard' %}
                                         {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
-                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                        <p class="order-total"><b>Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</b></p>
+                    <hr>
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
-        <div class="order-list">
-            <h2>Выполненные/отмененные заказы</h2>
+        <div class="order-list finished">
+            <h2>Завершенные заказы</h2>
             <hr>
             {% for cart in carts %}
                 {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
                     <div class="order-item">
                         <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                        <p class="order-status" data-status="{{ cart.status }}">Статус заказа: {{ cart.status }}</p>
+                        <p class="order-status" data-status="{{ cart.status }}"><b>Статус заказа: {{ cart.status }}</b></p>
                         <ul>
                             {% for item in cart_items|get_item:cart %}
                                 <li>
                                     {% if item.product.type == 'Headphones' %}
                                         {{ item.product.headphones.name }} - {{ item.quantity }} шт. -
-                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Mouse' %}
                                         {{ item.product.mouse.name }} - {{ item.quantity }} шт. -
-                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Keyboard' %}
                                         {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
-                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                        <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
                     </div>
+                    <hr>
                 {% endif %}
             {% endfor %}
         </div>

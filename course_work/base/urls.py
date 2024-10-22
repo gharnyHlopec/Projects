@@ -28,5 +28,6 @@ urlpatterns = [
     path('user-orders/',views.userOrders, name = 'user-orders'),
     path('accept-order/<str:pk>', views.acceptOrder, name = 'accept-order'),
     path('decline-order/<str:pk>', views.declineOrder, name = 'decline-order'),
-    path('finish-order/<str:pk>', views.finishOrder, name = 'finish-order')
+    path('finish-order/<str:pk>', views.finishOrder, name = 'finish-order'),
+    path('contact-information/', views.contactInformation, name='contact-information')      
 ]

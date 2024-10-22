@@ -4,9 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/admin_panel_style.css' %}">
+    <title>Список заказов</title>
+<style>
+    body{
+        background-color: #f4f4f4;
+        font-family: Arial, Helvetica, sans-serif;
+        overflow-y: scroll;
+    }
+    .admin-panel-wrapper{
+        padding: 0px 20px;
+        background-color: white;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 80%;
+        margin: 10px auto;
+        grid-gap: 5%;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-status[data-status*="В обработке"] {
+        color: blue; 
+    }
+
+    .order-status[data-status*="Отменен"] {
+        color: red; 
+    }
+
+    .order-status[data-status*="Принят"] {
+        color: orange; 
+    }
+    .order-status[data-status*="Завершен"] {
+        color: green; 
+    }
+    .order-date{color: gray}
+    .button{
+        border: none;
+        color: white;
+        height: 40px;
+        width: 140px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 6px;
+        margin-bottom: 5px;
+    }
+    .button-group form{
+        display: inline-block;
+    }
+    .accept-button{
+        background-color: #14b814; 
+    }
+    .accept-button:hover{
+        background-color: #4CAF50;
+    }
+    .decline-button{
+        background-color: red;
+    }
+    .decline-button:hover{
+        background-color: darkred;
+    }
+    .finish-button{
+        background-color: #4CAF50;
+    }
+    .finish-button:hover{
+        background-color: #14b814; 
+    }
+    .button{
+        cursor: pointer;
+    }
+
+</style>
 </head>
+
 <body>
     {% load custom_filters %}
     {% include 'navbar.html' %}
@@ -19,10 +89,8 @@
                 {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
                     <div class="order-item">
                         <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                        <p class="order-status 
-                            {% if cart.status == 'В обработке' %}processing
-                            {% elif cart.status == 'Принят' %}accepted{% endif %}">
-                            Статус заказа: {{ cart.status }}
+                        <p class="order-status" data-status="{{ cart.status }}">
+                            <b>Статус заказа: {{ cart.status }}</b>
                         </p>
                         <div class="order-details">
                             <p>Имя: {{ cart.first_name }}</p>
@@ -37,41 +105,42 @@
                                 <li>
                                     {% if item.product.type == 'Headphones' %}
                                         {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Mouse' %}
                                         {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Keyboard' %}
                                         {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
-                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                        <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
                         <div class="button-group">
                             {% if cart.status == 'В обработке' %}
                                 <form method="POST" action="{% url 'accept-order' cart.id %}">
                                     {% csrf_token %}
-                                    <button type="submit">Принять заказ</button>
+                                    <button type="submit" class="button accept-button">Принять заказ</button>
                                 </form>
                             {% elif cart.status == 'Принят' %}
                                 <form method="POST" action="{% url 'finish-order' cart.id %}">
                                     {% csrf_token %}
-                                    <button type="submit">Завершить заказ</button>
+                                    <button type="submit" class="button finish-button">Завершить заказ</button>
                                 </form>
                             {% endif %}
                             <form method="POST" action="{% url 'decline-order' cart.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="cancel-button">Отменить заказ</button> 
+                                <button type="submit" class="button decline-button">Отменить заказ</button> 
                             </form>
                         </div>
+                    <hr>
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
         <div class="order-list">
-            <h2>Выполненные/отмененные заказы</h2>
+            <h2>Завершенные заказы</h2>
             <hr>
             {% for cart in carts %}
                 {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
@@ -85,29 +154,27 @@
                                 <p>Email: {{ cart.email }}</p>
                             {% endif %}
                         </div>
-                        <p class="order-status 
-                            {% if cart.status == 'Завершен' %}completed
-                            {% elif cart.status == 'Отменен' %}cancelled
-                            {% elif cart.status == 'Отменен системой (на складе недостаточно товара)' %}system-cancelled{% endif %}">
-                            Статус заказа: {{ cart.status }}
+                        <p class="order-status" data-status="{{ cart.status }}">
+                            <b>Статус заказа: {{ cart.status }}</b>
                         </p>
                         <ul>
                             {% for item in cart_items|get_item:cart %}
                                 <li>
                                     {% if item.product.type == 'Headphones' %}
                                         {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Mouse' %}
                                         {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% elif item.product.type == 'Keyboard' %}
                                         {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}
+                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
                                     {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
-                        <p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p>
+                        <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
+                    <hr>
                     </div>
                 {% endif %}
             {% endfor %}

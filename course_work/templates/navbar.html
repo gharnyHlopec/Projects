@@ -2,93 +2,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/navbar_style.css' %}">
+  <style type="text/css">
+  .navbar-wrapper{
+    list-style-type: none;
+    display: flex;
+    align-items: center  ;
+    padding: 0;
+  }
+  
+  .nav-link{
+    text-decoration: none;
+    color: black;
+    padding: 6px 15px;
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+  }
+
+  #main-nav-link{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 32px;
+    margin-left: 0px;
+  }
+
+  .nav-item a:hover{
+    background-color: #f1f1f1;
+  }
+
+  .catalog-page {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .catalog-page:first-child{
+    margin-left: auto;
+    margin-right: none;
+  }
+
+  .catalog-page:last-child{
+    margin-left: none;
+    margin-right: 5px;
+  }
+
+  .icons{
+    display: flex;
+    margin-left: 5px;
+    margin-right:25px;
+  }
+
+  .cart-icon{position: relative;}
+
+  .cart-count {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+  }
+
+  .search-form {
+    width: 100%; 
+  }
+
+  #search-input {
+    width: 100%; 
+    margin-right: 6px;
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  </style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
 </head>
 <body>
   <header>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid">
-              <a class="navbar-brand" href="/">
-                <h1 class="display-5">Интернет-магазин</h1>
-              </a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 justify-content-center">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'catalog' page='mouse' %}">Мышки</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'catalog' page='headphone' %}">Наушники</a>
-                  </li>
-                </ul>
-                  <form class="d-flex" method = "GET" action ="{% url 'catalog' page='all' %}">
-                      <input class="form-control me-2" type="text" id="search-input" placeholder="Введите запрос..." name="q" aria-label="Search">
-                  </form>
-                  <ul class="navbar-nav ml-auto">
-                      {% if request.user.is_staff %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'person-panel' %}">
-                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
-                          </a>
-                      </li>
-                      {% elif request.user.is_staff == False and request.user.is_authenticated == True %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'profile' %}">
-                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
-                          </a>
-                      </li>
-                      {% else %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'login' %}">
-                              <img src="{% static 'images/person-60.png' %}" alt="Profile" width = 35 length = 35>
-                          </a>
-                      </li>
-                      {% endif %}
-                      {% if not request.user.is_staff %}
-                      <li class="nav-item position-relative">
-                          <a class="nav-link" href="{% url 'cart' %}">
-                              <img src="{% static 'images/bin-50.png' %}" alt="Cart" width="35" length="35">
-                              <span class="cart-count">{{ cart_item_count }}</span>
-                          </a>
-                      </li>
-                      {% endif %}
-                      {% if request.user.is_staff %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'add_product' %}">
-                              <img src="{% static 'images/plus-50.png' %}" alt="Add" width = 35 length = 35>
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'admin-panel' %}">
-                              <img src="{% static 'images/list-100.png' %}" alt="List" width = 35, length = 35>
-                          </a>
-                      </li>
-                      {% elif request.user.is_staff == False and request.user.is_authenticated %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'user-orders' %}">
-                              <img src="{% static 'images/list-100.png' %}" alt="List" width = 35 length = 35>
-                          </a>
-                      </li>
-                      {% endif %}
-                      {% if request.user.is_authenticated %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-                      </li>
-                      {% else %}
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'login' %}">Войти</a>
-                      </li>
-                      {% endif %}
-                  </ul>
-              </div>
-          </div>
-      </nav>
+    <ul class="navbar-wrapper">
+      <li class="main-nav-item">
+        <a class="nav-link" id="main-nav-link" href="{% url 'main' %}">Shop</a>
+      </li>    
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' page='mouse' %}">Мышки</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' page='headphone' %}">Наушники</a>
+      </li>
+
+      <form class="search-form" method="GET" action="{% url 'catalog' page='all' %}">
+        <input type="text" id="search-input" placeholder="Введите запрос..." name="q" aria-label="Search">
+      </form>
+
+      <div class="icons">
+        <li class="nav-item icon">
+        {% if request.user.is_staff %}
+          <a class="nav-link" href="{% url 'person-panel' %}">
+        {% elif request.user.is_staff == False and request.user.is_authenticated == True %}
+          <a class="nav-link" href="{% url 'profile' %}">
+        {% else %}
+          <a class="nav-link" href="{% url 'login' %}">
+        {% endif %}
+          <span class="material-symbols-outlined" id="user">person</span>
+          </a>
+        </li>
+
+        {% if not request.user.is_staff %}
+        <li class="nav-item icon cart-icon">
+          <a class="nav-link" href="{% url 'cart' %}">
+          <span class="material-symbols-outlined">shopping_cart</span>
+          {% if cart_item_count != 0 %}
+            <span class="cart-count">{{ cart_item_count }}</span>
+          {% endif %}
+          </a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_staff %}
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'add_product' %}">
+            <span class="material-symbols-outlined" id="add">Add</span>
+          </a>
+        </li>
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'admin-panel' %}">
+            <span class="material-symbols-outlined" id="list">format_list_bulleted</span>
+          </a>
+        </li>
+        {% elif request.user.is_staff == False and request.user.is_authenticated %}
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'user-orders' %}">
+            <span class="material-symbols-outlined" id="list">format_list_bulleted</span>
+          </a>
+        </li>
+        {% endif %}
+      </div>
+    </ul>
   </header>
 </body>
 </html>

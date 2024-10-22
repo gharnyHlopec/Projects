@@ -5,67 +5,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отзывы</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/review_form_style.css' %}">
+    <title>Оставить отзыв</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;   
+            overflow-y: scroll;
+        }
+        .comment-form{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-color: white;
+            width: 85%;
+            padding: 18px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+        #title{
+            font-family: Arial, Helvetica, sans-serif;
+            margin-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 0.5px solid #ccc;
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        #body{
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 0.5px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing:border-box;
+            resize: none;
+        }
+        .rating{
+            color: #ccc;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+ 
+        .rating span.active {
+        color: #ffc107; 
+        }
+
+        #submit-button{
+            margin-top: 10px;
+            border-radius: 6px;
+            color:white;
+            border: none;
+            padding: 14px;
+            background-color: #4CAF50;
+            font-size: 16px;
+        }
+        #submit-button:hover{
+            background-color: green;
+        }
+    </style>
 </head>
 <body>
-
-    <div class="container">
-
-        {% if request.user.is_authenticated %}
-            <div class="comment-form">
-                <form method="POST" action ="">
-                    {% csrf_token %}
-                    <label for="rating">Поставьте оценку:</label>
-                    <div class="rating">
-                        <span data-value="1">★</span>
-                        <span data-value="2">★</span>
-                        <span data-value="3">★</span>
-                        <span data-value="4">★</span>
-                        <span data-value="5">★</span>
-                        <input type="hidden" name="rating" id="rating-value" value="0"> 
-                    </div>
-
-                    <label for="body">Расскажите подробно о ваших впечатлениях:</label>
-                    <textarea name="body" id="body" rows="5" required></textarea>
-
-                    <label for="title">Подытожьте ваш отзыв (заголовок):</label>
-                    <input type="text" name="title" id="title" required>
-
-                    <input type="submit" value="Оставить отзыв">
-                </form>
+    <div class="comment-form">
+        <form method="POST" action ="">
+            {% csrf_token %}
+            <label for="rating">Поставьте оценку:</label>
+            <div class="rating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+                <input type="hidden" name="rating" id="rating-value" value="0"> 
             </div>
-        {% else %}
-            <p>Только залогиненные пользователи могут оставлять комментарии.</p>
-        {% endif %}
 
-        
-        {% for review in reviews %}
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="review-user">
-                        {{ review.user.first_name }} - {{ review.created|date:"H:i:s d/m/Y" }}
-                        {% if request.user == review.user or request.user.is_staff == True %}
-                            - <a href="{% url 'delete-review' pk review.id %}" class="delete-review">Удалить</a>
-                        {% endif %}
-                    </div>
-                </div>
+            <label for="body">Расскажите подробно о ваших впечатлениях:</label>
+            <textarea name="body" id="body" rows="5" required></textarea>
 
-                <div class="rating">
-                    Оценка: 
-                    {% for i in '12345'|make_list %}
-                        {% if forloop.counter <= review.rating %}
-                            <span class="active">★</span>
-                        {% else %}
-                            <span>☆</span>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+            <label for="title">Подытожьте ваш отзыв (заголовок):</label>
+            <input type="text" name="title" id="title" required>
 
-                <h4 class="review-title">{{ review.title }}</h4>
-                <p>{{ review.body }}</p>
-            </div>
-        {% endfor %}
+            <input type="submit" id="submit-button" value="Оставить отзыв">
+        </form>
     </div>
 </body>
 </html>

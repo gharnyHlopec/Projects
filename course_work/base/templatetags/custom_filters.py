@@ -26,6 +26,3 @@ def get_item(dictionary, key):
 def multiply(value, arg):
     return value * arg
 
-@register.filter
-def create_range(value):
-  return range(value)

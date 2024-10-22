@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контактная информация</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            overflow-y: scroll;
+        }
+
+        .contact-information{
+            background-color: white;
+            width: 450px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        .contact-information h2{
+            text-align: center;
+        }
+        .contact-information input{
+            width: 100%;
+            margin-top: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            padding: 12px 8px;
+        }
+
+        .contact-information button[type="submit"]{
+            background-color: #14b814;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            color: white;
+        }
+
+        .contact-information button[type="submit"]:hover{
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+   
+   <div class="contact-information">
+        <h2>Контактная информация</h2>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div>
+                <label for="id_first_name">Имя:</label>
+                {{ form.first_name }}
+            </div>
+            <div>
+                <label for="id_last_name">Фамилия:</label>
+                {{ form.last_name }}
+            </div>
+            <div>
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="id_phone_number">Номер телефона:</label>
+                {{ form.phone_number }}
+            </div>
+            {% if cart_item_count != 0 %}
+                <button type="submit">Отправить заказ</button>
+            {% else %}
+                <button type="submit" id="submit-button" disabled>Отправить заказ</button>
+            {% endif %}
+        </form>
+    </div>
+
+</body>
+</html>

@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактировать профиль</title>
+    <title>Редактирование профиля</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/edit_profile_style.css' %}">
 </head>
 <body>
     {% include 'navbar.html' %}
 
     <div class="edit-profile-container">
-        <h2>Редактировать профиль</h2>
+        <h2>Редактирование профиля</h2>
 
         <form method="POST" action="">
             {% csrf_token %}

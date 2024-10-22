@@ -1,20 +1,89 @@
-{% include 'navbar.html' %}
+<!DOCTYPE html>
 {% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход/Регистрация</title>
+    <style>
+      body{
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f4f4f4;
+        overflow-y: scroll;
+      }
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/login_register_style.css' %}">
+      .login-register-container {
+        width: 80%;
+        max-width: 500px;
+        border-radius: 5px;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-<div class="container mt-5"> </div>
-<div class="container mt-5">
+      .login-container{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+      }
+
+      .register-container{
+        margin: 10px auto 0px auto;
+      }
+
+      .login-container input{
+        margin-bottom: 10px;
+      }
+
+      .login-register-container input{
+        width: 100%;
+        padding: 12px 10px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .login-register-container input[type=submit]{
+        width: 100%;
+        background-color: #14b814;  
+        color: white;
+        padding: 14px 20px;
+        margin: 0;
+        border: none;
+        border-radius: 8px;
+        cursor: poiner;
+      }
+
+      .login-register-container input[type=submit]:hover {
+        background-color: #4CAF50;
+        
+      }
+
+      .form-ref{
+        text-decoration: none
+      }
+      .form-ref:hover{
+        text-decoration: underline;
+      }
+        
+    </style>
+</head>
+<body>
+{% include 'navbar.html' %}
   {% if page == 'login' %}
-    <div class="login-register-container">
+    <div class="login-register-container login-container">
       <div class="form-container">
         <h2>Вход</h2>
-        <form method="POST" action="">
+        <form method="POST">
           {% csrf_token %}
+
           <label>Email:</label>
           <input type="text" name="email" placeholder="Enter email" />
+          
           <label>Пароль:</label>
           <input type="password" name="password" placeholder="Enter password" />
+          
           <input type="submit" value="Войти" />
         </form>
 
@@ -27,11 +96,11 @@
         {% endif %}
 
         Ещё не зарегистрировались?
-        <a href="{% url 'register' %}">Зарегистрироваться</a>
+        <a class = "form-ref" href="{% url 'register' %}">Зарегистрироваться</a>
       </div>
     </div>
   {% else %}
-    <div class="login-register-container">
+    <div class="login-register-container register-container">
       <div class="form-container">
         <h2>Регистрация</h2>
         <form method="POST" action="">
@@ -48,8 +117,9 @@
           </ul>
         {% endif %}
 
-        <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+        <p>Уже есть аккаунт? <a class="form-ref" href="{% url 'login' %}">Войти</a></p>
       </div>
     </div>
   {% endif %}
-</div>
+</body>
+</html>

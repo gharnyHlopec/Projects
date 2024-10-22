@@ -5,7 +5,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Каталог</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/catalog_style.css' %}">
+
+    <style>
+        body{
+            overflow-y: scroll;
+            font-family: Arial, Helvetica, sans-serif
+        }
+        .home-container{
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+        }
+        .product-grid{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .filter-form{
+            padding: 0px 20px;
+        }
+        .filter-form input{
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+        }
+        .filter-form label{
+            display: block;
+            margin-top: 8px;
+            margin-bottom: 0px;
+               
+        }
+        .filter-form h2{
+            margin-top: 4px;
+            margin-bottom: 8px;
+
+        }
+        .filter-form input[type="number"]::-webkit-inner-spin-button, 
+        .filter-form input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .sorting-container{
+            text-align: right;
+            font-size: 16px;
+            padding: 14px 8px;
+        }
+        .sorting-container select{
+            padding: 6px;
+        }
+        #availability{
+            padding: 8px;
+        }
+        .product-item{
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .product-item form{
+            margin-top: 10px;
+        }
+    
+        .product-item small{
+            color: #808080;
+            margin-top: auto;
+            margin-bottom: 4px;
+        }
+
+        :root {
+          --star-size: 18px;
+          --star-color: #ccc;
+          --star-background: #fc0;
+        }
+
+        .Stars {
+          --percent: calc(var(--rating) / 5 * 100% - 1.1%);
+          
+          display: inline-block;
+          font-size: var(--star-size);
+          
+          line-height: 1;
+          
+          &::before {
+            content: '★★★★★';
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+        }
+
+        .rating{
+            display: flex;
+            justify-content: left;
+            align-items: center; 
+            margin-bottom: 4px;
+            margin-top: auto;
+        }
+        .average-rating{
+            color:#fc0; 
+            margin-top: auto;
+            margin-bottom:auto;
+          }
+
+        .image-container{
+            position: relative;
+            width: 150px;
+            height: 150px;
+            text-align: center;
+        }
+        .image-container img{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+            max-height: 95%;
+            max-width: 95%;
+        }
+
+    </style>
 </head>
 <body>
     {% load static %}
@@ -23,7 +141,6 @@
                     <label for="max_price">Максимальная цена:</label>
                     <input type="number" name="max_price" id="max_price" value="{% if max_price %}{{ max_price }}{% endif %}"> 
                 </div>
-
                 <br>
                 <h2>Год выпуска</h2>
                 <hr>
@@ -41,7 +158,6 @@
                 <h2>Наличие</h2>
                 <hr>
                 <div>
-                    <label for="availability">Только товары в наличии:</label>
                     <select name="availability" id="availability">
                       <option value="0">Все товары</option>
                       <option value="1">Только товары в наличии</option>
@@ -63,184 +179,162 @@
                     </select>
                 </form>
             </div>
-            <div>
-                <div class="product-grid">
-                    {% if page != 'all' %}
-                        {% for elem in obj %}
-                        <div class="product-item">
-                            <a href="{% url 'info' elem.shared_id %}">
-                                <div class="image-container">
-                                    {% if elem.first_image.image.url %}
-                                        <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                    {% else %}
-                                        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                    {% endif %}
-                                </div>
-                            </a>
-                            <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a>
-                                <p>
-                                    {% if elem.get_review_count != 0 %}
-                                        <div class="rating">
-                                            {% for i in '12345'|make_list %}
-                                                {% if forloop.counter <= elem.get_average_rating %}
-                                                    <span>★</span>
-                                                {% else %}
-                                                    <span>☆</span>
-                                                {% endif %}
-                                            {% endfor %}
-                                            ({{elem.get_review_count}})
-                                        </div>
-                                    {% else %}
-                                        <small>Пока нет отзывов</small>
-                                    {% endif %}
-                                </p>
-                                <strong>{{ elem.price }} р</strong>
-      
-                                <form method="POST" action="{% url 'add-to-cart' %}">
-                                  {% csrf_token %}
-                                  <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                                  {% if elem.amount > 0 and request.user.is_staff == False %}
-                                      <button type="submit" class="btn btn-primary">Добавить в корзину</button>
-                                  {% else %}
-                                      <button type="submit" class="btn btn-primary" disabled>Добавить в корзину</button>
-                                  {% endif %}
-                              </form>
-      
+            <div class="product-grid">
+                {% if page != 'all' %}
+                    {% for elem in obj %}
+                    <div class="product-item">
+                        <a href="{% url 'info' elem.shared_id %}">
+                            <div class="image-container">
+                                {% if elem.first_image.image.url %}
+                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+                                {% endif %}
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        {% for elem in headphones %}
-                        <div class="product-item">
-                            <a href="{% url 'info' elem.shared_id %}">
-                                <div class="image-container">
-                                    {% if elem.first_image.image.url %}
-                                        <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                    {% else %}
-                                        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                    {% endif %}
-                                </div>
-                            </a>
-                          <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-                          <p>
-                              {% if elem.get_review_count != 0 %}
-                                  <div class="rating">
-                                      {% for i in '12345'|make_list %}
-                                          {% if forloop.counter <= elem.get_average_rating %}
-                                              <span>★</span>
-                                          {% else %}
-                                              <span>☆</span>
-                                          {% endif %}
-                                      {% endfor %}
-                                      ({{elem.get_review_count}})
-                                  </div>
-                              {% else %}
-                                  <small>Пока нет отзывов</small>
-                              {% endif %}
-                          </p>
-                          <strong>{{ elem.price }} р</strong>
-      
-                          <form method="POST" action="{% url 'add-to-cart' %}">
-                              {% csrf_token %}
-                              <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                              {% if elem.amount > 0 and request.user.is_staff == False %}
-                                  <button type="submit" class="btn btn-primary">Добавить в корзину</button>
-                              {% else %}
-                                  <button type="submit" class="btn btn-primary" disabled>Добавить в корзину</button>
-                              {% endif %}
-                          </form>
-                      </div>
-                        {% endfor %}
-                        {% for elem in mouses %}
-                        <div class="product-item">
-                            <a href="{% url 'info' elem.shared_id %}">
-                                <div class="image-container">
-                                    {% if elem.first_image.image.url %}
-                                        <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                    {% else %}
-                                        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                    {% endif %}
-                                </div>
-                            </a>
-                          <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-                          <p>
-                              {% if elem.get_review_count != 0 %}
-                                  <div class="rating">
-                                      {% for i in '12345'|make_list %}
-                                          {% if forloop.counter <= elem.get_average_rating %}
-                                              <span>★</span>
-                                          {% else %}
-                                              <span>☆</span>
-                                          {% endif %}
-                                      {% endfor %}
-                                      ({{elem.get_review_count}})
-                                  </div>
-                              {% else %}
-                                  <small>Пока нет отзывов</small>
-                              {% endif %}
-                          </p>
-                          <strong>{{ elem.price }} р</strong>
-      
-                          <form method="POST" action="{% url 'add-to-cart' %}">
-                              {% csrf_token %}
-                              <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                              {% if elem.amount > 0 and request.user.is_staff == False %}
-                                  <button type="submit" class="btn btn-primary">Добавить в корзину</button>
-                              {% else %}
-                                  <button type="submit" class="btn btn-primary" disabled>Добавить в корзину</button>
-                              {% endif %}
-                          </form>
-      
-                      </div>
-                        {% endfor %}
-                        {% for elem in keyboards %}
-                        <div class="product-item">
-                            <a href="{% url 'info' elem.shared_id %}">
-                                <div class="image-container">
-                                    {% if elem.first_image.image.url %}
-                                        <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                    {% else %}
-                                        <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                    {% endif %}
-                                </div>
-                            </a>
-                          <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-                          <p>
-                              {% if elem.get_review_count != 0 %}
-                                  <div class="rating">
-                                      {% for i in '12345'|make_list %}
-                                          {% if forloop.counter <= elem.get_average_rating %}
-                                              <span>★</span>
-                                          {% else %}
-                                              <span>☆</span>
-                                          {% endif %}
-                                      {% endfor %}
-                                      ({{elem.get_review_count}})
-                                  </div>
-                              {% else %}
-                                  <small>Пока нет отзывов</small>
-                              {% endif %}
-                          </p>
-                          <strong>{{ elem.price }} р</strong>
-      
-                          <form method="POST" action="{% url 'add-to-cart' %}">
-                              {% csrf_token %}
-                              <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                              {% if elem.amount > 0 and request.user.is_staff == False %}
-                                  <button type="submit" class="btn btn-primary">Добавить в корзину</button>
-                              {% else %}
-                                  <button type="submit" class="btn btn-primary" disabled>Добавить в корзину</button>
-                              {% endif %}
-                          </form>
-      
-                      </div>
-                        {% endfor %}
-                    {% endif %}
+                        </a>
+                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a>
+                        
+                        {% if elem.get_review_count != 0 %}
+                            <div class="rating">
+                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
+                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
+                                ({{ elem.get_review_count }})
+                            </div>
+                        {% else %}
+                            <small>Пока нет отзывов</small>
+                        {% endif %}
 
-                    {% if sum == 0 %}
-                    <h2>По запросу "{{q}}" ничего не найдено</h2>
-                    {% endif %}
-                </div>
-    
+                        <strong class="price">{{ elem.price }} р</strong>    
+
+                        <form method="POST" action="{% url 'add-to-cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
+                            {% if elem.amount > 0 and request.user.is_staff == False %}
+                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
+                            {% else %}
+                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                            {% endif %}
+                        </form>
+  
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    {% for elem in headphones %}
+                    <div class="product-item">
+                        <a href="{% url 'info' elem.shared_id %}">
+                            <div class="image-container">
+                                {% if elem.first_image.image.url %}
+                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+                                {% endif %}
+                            </div>
+                        </a>
+                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
+
+                        {% if elem.get_review_count != 0 %}
+                            <div class="rating">
+                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
+                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
+                                ({{ elem.get_review_count }})
+                            </div>
+                        {% else %}
+                            <small>Пока нет отзывов</small>
+                        {% endif %}
+                        
+
+                        <strong class="price">{{ elem.price }} р</strong>
+  
+                        <form method="POST" action="{% url 'add-to-cart' %}">
+                           {% csrf_token %}
+                           <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
+                           {% if elem.amount > 0 and request.user.is_staff == False %}
+                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
+                           {% else %}
+                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                           {% endif %}
+                        </form>
+                    </div>
+                    {% endfor %}
+                    {% for elem in mouses %}
+                    <div class="product-item">
+                        <a href="{% url 'info' elem.shared_id %}">
+                            <div class="image-container">
+                                {% if elem.first_image.image.url %}
+                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+                                {% endif %}
+                            </div>
+                        </a>
+                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
+
+                        {% if elem.get_review_count != 0 %}
+                            <div class="rating">
+                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
+                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
+                                ({{ elem.get_review_count }})
+                            </div>
+                        {% else %}
+                            <small>Пока нет отзывов</small>
+                        {% endif %}
+                        
+
+                        <strong class="price">{{ elem.price }} р</strong>
+  
+                        <form method="POST" action="{% url 'add-to-cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
+                            {% if elem.amount > 0 and request.user.is_staff == False %}
+                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
+                            {% else %}
+                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                            {% endif %}
+                        </form>
+  
+                    </div>
+                    {% endfor %}
+                    {% for elem in keyboards %}
+                    <div class="product-item">
+                        <a href="{% url 'info' elem.shared_id %}">
+                            <div class="image-container">
+                                {% if elem.first_image.image.url %}
+                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+                                {% endif %}
+                            </div>
+                        </a>
+                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
+
+                        {% if elem.get_review_count != 0 %}
+                            <div class="rating">
+                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
+                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
+                                ({{ elem.get_review_count }})
+                            </div>
+                        {% else %}
+                            <small>Пока нет отзывов</small>
+                        {% endif %}
+
+                        <strong>{{ elem.price }} р</strong>
+  
+                        <form method="POST" action="{% url 'add-to-cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
+                            {% if elem.amount > 0 and request.user.is_staff == False %}
+                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
+                            {% else %}
+                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if sum == 0 %}
+                <h2>По запросу "{{q}}" ничего не найдено</h2>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -2,10 +2,109 @@
 {% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/person-panel-style.css' %}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Клиенты/Работники</title>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const tabId = tab.getAttribute('data-tab');
+                tabContents.forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    overflow-y: scroll;
+}
+
+.admin-panel-wrapper{
+    margin: auto;
+    max-width: 850px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabs{
+    padding: 20px 0px 0px 10px;
+    margin: 0;
+    font-size: 20px;
+    list-style-type: none;
+    border-bottom: 1px solid gray;
+}
+
+.tab-link{
+    padding: 10px 15px;
+    margin-right: 10px;
+    display: inline-block;
+    cursor: pointer;
+}
+.tab-link.active{   
+    color: blue;
+    border-bottom: 3px solid blue;
+ 
+}
+.tab-link:hover{
+    color: blue;
+}
+.person{
+    padding: 10px;
+    border-bottom: 1px solid gray;
+}
+
+.person:last-child{
+border: none;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.exit-link{
+    margin-right: 10px;
+    float: right;
+    padding: 10px;
+    border-bottom: 3px solid red;
+    cursor: pointer;
+    color: black;
+    text-decoration: none;
+}
+
+.exit-link:hover{
+    color: red;
+
+}
+@media screen and (max-width: 515px) {
+    .tabs > * {
+        font-size: 18px;
+    }
+}
+
+</style>
 </head>
 <body>
     {% load custom_filters %}
@@ -14,41 +113,31 @@
         <ul class="tabs">
             <li class="tab-link active" data-tab="customers">Клиенты</li>
             <li class="tab-link" data-tab="staff">Работники</li>
+            <a class="exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
         </ul>
         <div id="customers" class="tab-content active">
-            <h2>Клиенты</h2>
-            <hr>
             {% for user in users %}
                 {% if not user.is_staff %}
-                    <div class="order-item">
+                    <div class="person">
                         <div>
                             <p><strong>Имя:</strong> {{ user.first_name }}</p>
                             <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
                             <p><strong>Email:</strong> {{ user.email }}</p>
-                            <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
-                           
-                        </div>
-                        <div>
-                           
+                            <p><strong>Телефон:</strong> {% if user.phone_number %} {{ user.phone_number }} {% endif %}</p>
                         </div>
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
         <div id="staff" class="tab-content">
-            <h2>Работники</h2>
-            <hr>
             {% for user in users %}
                 {% if user.is_staff %}
-                    <div class="order-item">
+                    <div class="person">
                         <div>
                             <p><strong>Имя:</strong> {{ user.first_name }}</p>
                             <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
                             <p><strong>Email:</strong> {{ user.email }}</p>
                             <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
-                        </div>
-                        <div>
-                            
                         </div>
                     </div>
                 {% endif %}
@@ -57,5 +146,3 @@
     </div>
 </body>
 </html>
-
-<script src="{% static 'js/person-panel.js' %}"></script>

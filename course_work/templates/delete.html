@@ -1,20 +1,70 @@
 {% load static %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/delete_style.css' %}">
-<form method="POST" action="" class="delete-form">
-  {% csrf_token %}
-  <div class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Подтверждение удаления</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Удаление</title>
+<style type="text/css">
+  body{
+    overflow-y: scroll;
+    background-color: #f4f4f4;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .wrapper{
+    position: fixed;
+    background-color: white;
+    border-radius: 6px;
+    top: 50%;
+    left: 50%;
+    width: 65%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+
+  .back-button{
+    font-size: 16px;
+    background-color: dimgray;
+    color: white;
+    padding:12px 18px;
+    border-radius: 6px;
+  }
+  .back-button:hover{
+    background-color: gray;
+  }
+
+  .delete-button{
+    font-size: 16px;
+    background-color: red;
+    color: white;
+    padding:12px 18px;
+    border: none;
+    border-radius: 6px;
+  }
+
+  .delete-button:hover{
+    background-color: darkred;
+  }
+</style>
+</head>
+<body>
+  <form method="POST" action="" class="delete-form">
+    {% csrf_token %}
+    <div class="wrapper">
+      <div class="header-wrapper">
+        <h2 class="title">Подтверждение удаления</h2>
       </div>
-      <div class="modal-body">
+      <div class="body-wrapper">
         <p>Вы уверены, что хотите удалить этот элемент? Внесённые изменения нельзя будет отменить.</p>
       </div>
-      <div class="modal-footer">
-        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary" style="text-decoration: none;">Назад</a>
-        <input type="submit" value="Удалить" class="btn btn-danger">
+      <div class="button-wrapper">
+        <a href="{{ request.META.HTTP_REFERER }}" class="back-button" style="text-decoration: none;">Назад</a>
+        <input type="submit" value="Удалить" class="delete-button">
       </div>
     </div>
-  </div>
-</form>
+  </form>
+</body>
+</html>
