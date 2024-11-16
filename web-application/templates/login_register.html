@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход/Регистрация</title>
+    {% if page == 'login' %}
+    <title>Вход</title>
+    {% else %}
+    <title>Регистрация</title>
+    {% endif %}
     <style>
       body{
         font-family: Arial, Helvetica, sans-serif;
@@ -61,12 +65,25 @@
       }
 
       .form-ref{
-        text-decoration: none
+        text-decoration: none;
+        color: blue;
       }
       .form-ref:hover{
         text-decoration: underline;
+        color: blue;
       }
-        
+
+      @media screen and (max-height: 465px)
+      {
+        .login-container{
+          position: static;
+          margin: 10px auto 0px auto;
+          top: auto;
+          left: auto;
+          transform: translate(0%,0%);
+        }
+      }
+
     </style>
 </head>
 <body>
@@ -79,10 +96,10 @@
           {% csrf_token %}
 
           <label>Email:</label>
-          <input type="text" name="email" placeholder="Enter email" />
+          <input type="text" name="email" />
           
           <label>Пароль:</label>
-          <input type="password" name="password" placeholder="Enter password" />
+          <input type="password" name="password" />
           
           <input type="submit" value="Войти" />
         </form>
