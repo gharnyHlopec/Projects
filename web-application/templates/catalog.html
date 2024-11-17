@@ -15,6 +15,9 @@
             display: grid;
             grid-template-columns: 1fr 3fr;
         }
+        .home-container.modified{
+            grid-template-columns: 1fr;
+        }
         .product-grid{
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -22,6 +25,9 @@
         }
         .filter-form{
             padding: 0px 20px;
+        }
+        .filter-form.modified{
+            display: none;
         }
         .filter-form input{
             width: 100%;
@@ -48,6 +54,14 @@
             text-align: right;
             font-size: 16px;
             padding: 14px 8px;
+
+            display: flex; 
+            justify-content: space-between; 
+
+        }
+        .sorting-container .div-mod{
+            text-align: left;
+            cursor: pointer;
         }
         .sorting-container select{
             padding: 6px;
@@ -111,7 +125,8 @@
             position: relative;
             width: 150px;
             height: 150px;
-            text-align: center;
+            left: 50%;
+            transform: translate(-50%,0%);
         }
         .image-container img{
             position: absolute;
@@ -122,7 +137,34 @@
             max-height: 95%;
             max-width: 95%;
         }
-
+        .product-title{
+            color: black;
+            text-decoration: none;
+        }
+        .product-title:hover{
+            color: blue;
+        }
+        .add-to-cart-button{
+            width: 90%;
+            box-sizing: border-box;
+            color: white;
+            background-color: #14b814;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .add-to-cart-button:hover{
+            background-color: green;
+        }
+        .myDiv.hidden{
+            display: none;
+        }
+        @media screen and (max-width: 750px){
+            .product-grid{
+            grid-template-columns: repeat(2, 1fr);
+        }
+        }
     </style>
 </head>
 <body>
@@ -168,6 +210,11 @@
         </div>
         <div>
             <div class="sorting-container">
+                <div class="div-mod">
+                <a onclick="modifyAndHideLayout()">
+                    <span class="material-symbols-outlined" id="filter-hide">arrow_left_alt</span>
+                </a>
+                </div>
                 <form method="get">
                     <label for="sort">Сортировать по:</label>
                     <select name="sort" id="sort">
@@ -183,7 +230,7 @@
                 {% if page != 'all' %}
                     {% for elem in obj %}
                     <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}">
+                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
                             <div class="image-container">
                                 {% if elem.first_image.image.url %}
                                     <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
@@ -221,7 +268,7 @@
                 {% else %}
                     {% for elem in headphones %}
                     <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}">
+                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
                             <div class="image-container">
                                 {% if elem.first_image.image.url %}
                                     <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
@@ -258,7 +305,7 @@
                     {% endfor %}
                     {% for elem in mouses %}
                     <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}">
+                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
                             <div class="image-container">
                                 {% if elem.first_image.image.url %}
                                     <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
@@ -296,7 +343,7 @@
                     {% endfor %}
                     {% for elem in keyboards %}
                     <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}">
+                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
                             <div class="image-container">
                                 {% if elem.first_image.image.url %}
                                     <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
@@ -340,5 +387,32 @@
     </div>
 </body>
 </html>
+
+<script>
+    function modifyAndHideLayout() {
+        // Изменение макета
+        document.querySelector('.home-container').classList.toggle('modified');
+        document.querySelector('.filter-form').classList.toggle('modified');
+    }
+</script>
+
+<script>
+    function modifyAndHideLayout() {
+        // Изменение макета
+        const homeContainer = document.querySelector('.home-container');
+        const filterContainer = document.querySelector('.filter-form');
+        const filterHideIcon = document.querySelector('#filter-hide');
+
+        homeContainer.classList.toggle('modified');
+        filterContainer.classList.toggle('modified');
+
+        // Проверка наличия класса 'modified' и изменение содержимого span
+        if (homeContainer.classList.contains('modified')) {
+            filterHideIcon.textContent = 'arrow_right_alt'; // Изменить на arrow_right_alt
+        } else {
+            filterHideIcon.textContent = 'arrow_left_alt'; // Изменить на arrow_left_alt
+        }
+    }
+</script>
 
 <script src="{% static 'js/catalog.js' %}"></script>
