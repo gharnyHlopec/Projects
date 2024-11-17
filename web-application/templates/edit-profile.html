@@ -5,7 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактирование профиля</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/edit_profile_style.css' %}">
+    
+    <style>
+    
+    body{
+        overflow-y: scroll;
+        background-color: #f4f4f4;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .edit-profile-container{
+        max-width: 500px;
+        min-width: 350px;
+        padding: 15px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin: 2% auto;
+    }
+    .edit-profile-container h2{
+        text-align: center;
+    }
+    .form-group input{
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .save-button{
+        width: 100%;
+        color: white;
+        background-color: #14b814;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .save-button:hover{
+        background-color: green;
+    }
+    </style>
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -17,22 +57,22 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="{{ form.first_name.id_for_label }}">Имя:</label><br>
+                <label for="{{ form.first_name.id_for_label }}">Имя:</label>
                 {{ form.first_name }}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.last_name.id_for_label }}">Фамилия:</label><br>
+                <label for="{{ form.last_name.id_for_label }}">Фамилия:</label>
                 {{ form.last_name }}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.email.id_for_label }}">Email:</label><br>
+                <label for="{{ form.email.id_for_label }}">Email:</label>
                 {{ form.email }}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.phone_number.id_for_label }}">Телефон (опционально):</label><br>
+                <label for="{{ form.phone_number.id_for_label }}">Телефон (опционально):</label>
                 {{ form.phone_number }}
             </div>
 
