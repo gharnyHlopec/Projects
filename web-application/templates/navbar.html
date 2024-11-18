@@ -6,7 +6,7 @@
   .navbar-wrapper{
     list-style-type: none;
     display: flex;
-    align-items: center  ;
+    align-items: center;
     padding: 0;
   }
   
@@ -74,6 +74,32 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+  }
+
+  @media screen and (max-width: 770px){
+    .navbar-wrapper{
+      display: block;
+      text-align: center;
+    }
+    .catalog-page{
+      box-sizing: border-box;
+      width: 100%;
+      margin: auto;
+    }
+    .search-form{
+      box-sizing: border-box;
+    }
+    #main-nav-link{
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .icons{
+      display: flex;
+      justify-content: space-between;
+      margin-left: 15%;
+      margin-right:15%;
+    }
+
   }
   </style>
 

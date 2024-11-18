@@ -43,16 +43,19 @@
             background-color: #f4f4f4;
             overflow-y: scroll;
         }
-        @media screen and (max-height: 420px) {
 
-        .profile-container{
-            position: static;
-            top: 0%;
-            left: 0%;
-            transform: translate(0%,0%);
-            margin: 10px auto;
+        @media screen and (max-height: 420px), 
+               screen and (max-width: 775px)
+        {
+
+            .profile-container{
+                position: static;
+                top: 0%;
+                left: 0%;
+                transform: translate(0%,0%);
+                margin: 10px auto;
+            }
         }
-  }
 
     </style>
 </head>
