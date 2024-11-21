@@ -201,8 +201,8 @@
                 <hr>
                 <div>
                     <select name="availability" id="availability">
-                      <option value="0">Все товары</option>
-                      <option value="1">Только товары в наличии</option>
+                      <option value="0" {% if availability == 0 %} selected {% endif %}>Все товары</option>
+                      <option value="1" {% if availability == 1 %} selected {% endif %}>Только товары в наличии</option>
                     </select>
                 </div>
             
@@ -390,7 +390,7 @@
 
 <script>
     function modifyAndHideLayout() {
-        // Изменение макета
+        
         document.querySelector('.home-container').classList.toggle('modified');
         document.querySelector('.filter-form').classList.toggle('modified');
     }
@@ -398,7 +398,7 @@
 
 <script>
     function modifyAndHideLayout() {
-        // Изменение макета
+
         const homeContainer = document.querySelector('.home-container');
         const filterContainer = document.querySelector('.filter-form');
         const filterHideIcon = document.querySelector('#filter-hide');
@@ -406,13 +406,57 @@
         homeContainer.classList.toggle('modified');
         filterContainer.classList.toggle('modified');
 
-        // Проверка наличия класса 'modified' и изменение содержимого span
         if (homeContainer.classList.contains('modified')) {
-            filterHideIcon.textContent = 'arrow_right_alt'; // Изменить на arrow_right_alt
+            filterHideIcon.textContent = 'arrow_right_alt'; 
         } else {
-            filterHideIcon.textContent = 'arrow_left_alt'; // Изменить на arrow_left_alt
+            filterHideIcon.textContent = 'arrow_left_alt';
         }
     }
 </script>
 
-<script src="{% static 'js/catalog.js' %}"></script>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', (event) => {
+  const minPriceInput = document.getElementById('min_price');
+  const maxPriceInput = document.getElementById('max_price');
+  const minYearInput = document.getElementById('min_year');
+  const maxYearInput = document.getElementById('max_year');
+  const availabilitySelect = document.getElementById('availability');
+  const sortSelect = document.getElementById('sort');
+
+  
+  function updateCatalog(event) {
+    if (event.type === 'keydown' && event.key !== 'Enter') {
+      return;
+    }
+
+    const minPrice = minPriceInput.value;
+    const maxPrice = maxPriceInput.value;
+    const minYear = minYearInput.value;
+    const maxYear = maxYearInput.value;
+    const availability = availabilitySelect.value;
+    const sort = sortSelect.value;
+
+    const currentUrl = new URL(window.location.href);
+
+    currentUrl.searchParams.set('min_price', minPrice);
+    currentUrl.searchParams.set('max_price', maxPrice);
+    currentUrl.searchParams.set('min_year', minYear);
+    currentUrl.searchParams.set('max_year', maxYear);
+    currentUrl.searchParams.set('availability', availability);
+    currentUrl.searchParams.set('sort', sort);
+
+    window.location.href = currentUrl.href;
+  }
+
+  minPriceInput.addEventListener('keydown', updateCatalog);
+  maxPriceInput.addEventListener('keydown', updateCatalog);
+  minYearInput.addEventListener('keydown', updateCatalog);
+  maxYearInput.addEventListener('keydown', updateCatalog);
+  availabilitySelect.addEventListener('change', updateCatalog);
+  sortSelect.addEventListener('change', updateCatalog);
+  
+});
+  
+
+</script>
