@@ -424,7 +424,7 @@ def updateProduct(request,pk):
             return redirect('info',pk)
 
     context = {'form':form, 'images':images, 'pk':pk}
-    return render(request, 'edit_form.html', context)
+    return render(request, 'edit_product.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')

@@ -91,7 +91,7 @@
       <br>
       <div id="gallery">
         {% for pic in images %}
-        <img src="{{ pic.image.url }}" width="150" height="150"> 
+          <img src="{{ pic.image.url }}" draggable="false" onclick="deleteImageFromServer({{ pk }},{{ pic.id }})"> 
         {% endfor %}
       </div>
     </div> 
@@ -110,11 +110,103 @@
                 </ul> 
               {% endif %} 
           {% endfor %} 
-          <input type="file" name="images" id="image-input" multiple>  
+          <input type="file" name="images" id="image-input" onchange="handleFiles(this.files);" multiple>
         </div>
-        <button id='submit-button' type="submit">Добавить товар</button> 
+        <button id='submit-button' type="submit">Применить изменения</button> 
       </form>
     </div>
   </div>
 </body>
 </html>
+
+<script>
+  function deleteImageFromServer(product_pk,image_pk){
+    console.log('aaa')
+    deleteImageURL = `/delete-image/${product_pk}/${image_pk}`;
+    window.location.href = deleteImageURL;
+  }
+</script>
+
+<script>
+  let uploadedFiles = [];
+  
+  let dropArea = document.querySelector('.image-drop-area');
+  
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false)
+  })
+  
+  
+  function preventDefaults (e) {
+      e.preventDefault()
+      e.stopPropagation()
+  }
+  
+  ;['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false)
+  })
+  
+  
+  ;['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false)
+  })
+  
+  function highlight(e) {
+      dropArea.classList.add('highlight')
+  }
+  
+  
+  function unhighlight(e) {
+      dropArea.classList.remove('highlight')
+  }
+  
+  dropArea.addEventListener('drop', handleDrop, false)
+  
+  
+  function handleDrop(e) {
+      let dt = e.dataTransfer
+      let files = dt.files
+      handleFiles(files)
+  }
+  
+  function handleFiles(files) {
+      files = [...files] 
+      files.forEach(previewFile)
+      uploadedFiles.push(...files);
+      transferFiles()
+  }
+  
+  function previewFile(file) {
+      let reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onloadend = function() {
+          let img = document.createElement('img')
+          img.src = reader.result
+          img.name = file.name;
+          img.onclick = function(){
+              deleteImage(img);
+          };
+          img.draggable = false;
+          document.getElementById('gallery').appendChild(img);
+      }
+  }
+  
+  function deleteImage(image_to_delete){
+      const images = document.querySelectorAll("#gallery img")
+      images.forEach((image) => {
+          if(image.name === image_to_delete.name) {image.remove();}
+      })
+      uploadedFiles = uploadedFiles.filter(file => file.name !== image_to_delete.name);
+      transferFiles()
+  }
+  
+  function transferFiles(){
+      const dataTransfer = new DataTransfer();
+  
+      uploadedFiles.forEach(file => {
+          dataTransfer.items.add(file);
+      });
+      const input = document.getElementById('image-input');
+      input.files = dataTransfer.files;
+  }
+  </script>

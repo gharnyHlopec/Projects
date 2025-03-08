@@ -165,13 +165,9 @@ fetch(addProductURL, {
     console.error("Ошибка: ",error);
 });
 };
-
 </script>
 
 <script>
-let filesDone = 0;
-let filesToDo = 0;
-
 let uploadedFiles = [];
 
 let dropArea = document.querySelector('.image-drop-area');
@@ -181,7 +177,7 @@ let dropArea = document.querySelector('.image-drop-area');
 })
 
 
-function preventDefaults (e) {
+function preventDefaults(e){
     e.preventDefault()
     e.stopPropagation()
 }
@@ -230,6 +226,7 @@ function previewFile(file) {
         img.onclick = function(){
             deleteImage(img);
         };
+        img.draggable = false
         document.getElementById('gallery').appendChild(img);
     }
 }
@@ -252,5 +249,4 @@ function transferFiles(){
     const input = document.getElementById('image-input');
     input.files = dataTransfer.files;
 }
-
 </script>
