@@ -4,52 +4,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="vieёport" content="width=device-width, initial-scale=1.0">
   <title>Редактирование товара</title>
+  <style>
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+        overflow-y: scroll;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+    .forms-container{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .form-container{
+        padding-left:auto;
+        padding-right:auto;
+    }
+    .form-container label,
+    .form-container input,
+    #submit-button,
+    .form-container select{
+        display: block;
+        box-sizing: border-box;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .form-container input,
+    #submit-button,
+    .form-container select{
+        border: 1px solid #ccc;
+        padding: 12px 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    #submit-button{
+        cursor: pointer;
+        background-color: #14b814;  
+        color: white;
+    }
+    #submit-button:hover{
+        background-color: green;  
+    }
+    .image-drop-area{
+        border: 3px dashed gray;
+        border-radius: 10px;
+        min-height: 100px;
+        text-align: center;
+    }
+    .image-drop-area.highlight{
+        border-color:purple;
+    }
+    #image-input{
+        display: none;
+    }
+    .image-upload-button{
+        display: inline-block;
+        padding: 10px 20px;
+        color:white;
+        background-color: rgb(160, 160, 160);
+        border-radius: 5px;
+        margin:10px;
+    }
+    .image-upload-button:hover{
+        background-color: rgb(78, 77, 77);
+    }
+    #gallery img {
+        width: 150px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }  
+  </style>
 </head>
 
 <body>
   {% include 'navbar.html' %}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/edit_form_style.css' %}">
-  {% for pic in images %}
-  <a href="{% url 'delete-image' pk=pk pk2=pic.id %}">
-    <img src="{{ pic.image.url }}" width="150" height="150"> 
-  </a>
-  {% endfor %}
   <div class="forms-container"> 
-  <div class="image-drop-area" id="image-drop-area"> 
-    Перетащите новые изображения сюда 
-    <div id="image-preview"></div> 
-  </div> 
-  <form method="POST" action="" id="product_form" enctype="multipart/form-data"> 
-    <div> 
-      {% csrf_token %} 
-      <label for="product_type">Выберите тип продукта:</label> 
-      <select id="product_type" name="product_type"> 
-        <option value="mouse">Мышь</option> 
-        <option value="keyboard">Клавиатура</option> 
-        <option value="headphones">Наушники</option> 
-      </select> 
+    <div class="image-drop-area"> 
+      Перетащите новые изображения сюда 
+      <br>
+      <label class="image-upload-button" for="image-input">Выбрать файлы</label>
+      <br>
+      <div id="gallery">
+        {% for pic in images %}
+        <img src="{{ pic.image.url }}" width="150" height="150"> 
+        {% endfor %}
+      </div>
     </div> 
-    <div id="form_container"> 
-      {% for field in form %} 
-        <div> 
-          {{ field.label_tag }} 
-          {{ field }} 
-          {% if field.errors %} 
-            <ul class="errorlist"> 
-              {% for error in field.errors %} 
-                <li>{{ error }}</li> 
-              {% endfor %} 
-            </ul> 
-          {% endif %} 
-        </div> 
-      {% endfor %} 
-      <input type="file" name="images" id="images" multiple style="display:none;">  
-    </div> 
-    <input type="submit" value="Применить изменения"/> 
-  </form>
+    <div class="form-container">
+      <form method="POST" id="product_form" enctype="multipart/form-data"> 
+        {% csrf_token %}  
+        <div class="field-container">
+          {% for field in form %} 
+              {{ field.label_tag }} 
+              {{ field }} 
+              {% if field.errors %} 
+                <ul class="errorlist"> 
+                  {% for error in field.errors %} 
+                    <li>{{ error }}</li> 
+                  {% endfor %} 
+                </ul> 
+              {% endif %} 
+          {% endfor %} 
+          <input type="file" name="images" id="image-input" multiple>  
+        </div>
+        <button id='submit-button' type="submit">Добавить товар</button> 
+      </form>
+    </div>
   </div>
 </body>
-<script src="{% static 'js/edit_form.js' %}"></script>
 </html>

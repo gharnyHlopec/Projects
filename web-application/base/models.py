@@ -51,7 +51,7 @@ class Headphones(models.Model):
     price = models.FloatField(validators=[MinValueValidator(0)])
     amount = models.IntegerField(validators=[MinValueValidator(0)])
     
-    date = models.IntegerField(validators=[MinValueValidator(2000), MaxValueValidator(2024)], null = True, blank = True)
+    date = models.IntegerField(validators=[MinValueValidator(1970), MaxValueValidator(2030)])
     type = models.CharField(max_length=20,choices=available_choices,default='')
     wireless = models.BooleanField(null = True, blank = True)
     ruggedness = models.BooleanField(null = True, blank = True)
@@ -115,7 +115,7 @@ class Mouse(models.Model):
     price = models.FloatField(validators=[MinValueValidator(0)])
     amount = models.IntegerField(validators=[MinValueValidator(0)])
     
-    date = models.IntegerField(validators=[MinValueValidator(2000), MaxValueValidator(2024)], null = True, blank = True)
+    date = models.IntegerField(validators=[MinValueValidator(1970), MaxValueValidator(2030)])
     type = models.CharField(max_length=20,choices=mouse_choices,default='')
     wireless = models.BooleanField(null = True, blank = True)
     sensor_type = models.CharField(max_length=20,choices=sensor_choices,default='')
@@ -182,7 +182,7 @@ class Keyboard(models.Model):
     price = models.FloatField(validators=[MinValueValidator(0)])
     amount = models.IntegerField(validators=[MinValueValidator(0)])
     
-    date = models.IntegerField(validators=[MinValueValidator(2000), MaxValueValidator(2024)], null = True, blank = True)
+    date = models.IntegerField(validators=[MinValueValidator(1970), MaxValueValidator(2030)])
     type = models.CharField(max_length=20,choices=keyboard_choices,default='')
     switch_type = models.CharField(max_length=30,choices=switch_choices,default='')
     switch_name = models.CharField(max_length=200, null = True, blank = True)

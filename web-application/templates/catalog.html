@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static %}
+{% load custom_filters %}
 <html lang="en">
     <head>
     <meta charset="UTF-8">
@@ -75,7 +75,7 @@
             margin-top: 10px;
         }
 
-        .product-item form{
+        .add-to-cart-div{
             margin-top: 10px;
         }
     
@@ -154,11 +154,36 @@
             border-radius: 10px;
             cursor: pointer;
         }
+        .add-to-cart-button:disabled{
+            background-color:lightgray;
+            cursor: default;
+        }
+        .add-to-cart-button:disabled:hover{
+            background-color:lightgray;
+        }
         .add-to-cart-button:hover{
             background-color: green;
         }
         .myDiv.hidden{
             display: none;
+        }
+        .not-found{
+            grid-column: span 3; 
+            width: 100%; 
+            text-align: center;
+        }
+        .reset-filter-button{
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-top: 8px;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            background-color: red;
+        }
+        .reset-filter-button:hover{
+            background-color: darkred;
+            cursor: pointer;
         }
         @media screen and (max-width: 750px){
             .product-grid{
@@ -168,8 +193,9 @@
     </style>
 </head>
 <body>
-    {% load static %}
-    {% include 'navbar.html' %}
+    <div class="navbar-div">
+        {% include 'navbar.html' %}
+    </div>
     <div class="home-container">
         <div class="filter-form">
             <h2>Цена</h2>
@@ -177,23 +203,23 @@
             <form method="get">
                 <div>
                     <label for="min_price">Минимальная цена:</label>
-                    <input type="number" name="min_price" id="min_price" value="{% if min_price %}{{ min_price }}{% endif %}"> 
-                </div>
+                    <input type="number" name="min_price" id="min_price" value="{% if min_price|number > 0 %}{{min_price}}{% endif %}"> 
+                </div> 
                 <div>
                     <label for="max_price">Максимальная цена:</label>
-                    <input type="number" name="max_price" id="max_price" value="{% if max_price %}{{ max_price }}{% endif %}"> 
+                    <input type="number" name="max_price" id="max_price" value="{% if max_price|number < 9999999 %}{{ max_price }}{% endif %}"> 
                 </div>
                 <br>
                 <h2>Год выпуска</h2>
                 <hr>
                 <div>
                     <label for="min_year">Минимальный год:</label>
-                    <input type="number" name="min_year" id="min_year" value="{% if min_year %}{{ min_year }}{% endif %}"> 
+                    <input type="number" name="min_year" id="min_year" value="{% if min_year|number > 0 %}{{ min_year }}{% endif %}"> 
                 </div>
 
                 <div>
                     <label for="max_year">Максимальный год:</label>
-                    <input type="number" name="max_year" id="max_year" value="{% if max_year %}{{ max_year }}{% endif %}"> 
+                    <input type="number" name="max_year" id="max_year" value="{% if max_year|number < 9999999 %}{{ max_year }}{% endif %}"> 
                 </div>
 
                 <br>
@@ -201,11 +227,16 @@
                 <hr>
                 <div>
                     <select name="availability" id="availability">
-                      <option value="0" {% if availability == 0 %} selected {% endif %}>Все товары</option>
-                      <option value="1" {% if availability == 1 %} selected {% endif %}>Только товары в наличии</option>
+                      <option value="-1" {% if availability == -1 %} selected {% endif %}>Все товары</option>
+                      <option value="0" {% if availability == 0 %} selected {% endif %}>Только товары в наличии</option>
                     </select>
                 </div>
-            
+                <button 
+                type="button" 
+                class="reset-filter-button"
+                onclick="resetFilters()">
+                Сбросить фильтры
+                </button>
             </form>
         </div>
         <div>
@@ -218,7 +249,7 @@
                 <form method="get">
                     <label for="sort">Сортировать по:</label>
                     <select name="sort" id="sort">
-                        <option value="">-</option>
+                        <option value="">Релевантности</option>
                         <option value="name" {% if sort == 'name' %}selected{% endif %}>Алфавиту (A-Z)</option>
                         <option value="-name" {% if sort == '-name' %}selected{% endif %}>Алфавиту (Z-A)</option>
                         <option value="-price" {% if sort == '-price' %}selected{% endif %}>Цене (от высокой к низкой)</option>
@@ -227,174 +258,14 @@
                 </form>
             </div>
             <div class="product-grid">
-                {% if page != 'all' %}
-                    {% for elem in obj %}
-                    <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
-                            <div class="image-container">
-                                {% if elem.first_image.image.url %}
-                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                {% else %}
-                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                {% endif %}
-                            </div>
-                        </a>
-                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a>
-                        
-                        {% if elem.get_review_count != 0 %}
-                            <div class="rating">
-                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
-                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
-                                ({{ elem.get_review_count }})
-                            </div>
-                        {% else %}
-                            <small>Пока нет отзывов</small>
-                        {% endif %}
-
-                        <strong class="price">{{ elem.price }} р</strong>    
-
-                        <form method="POST" action="{% url 'add-to-cart' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                            {% if elem.amount > 0 and request.user.is_staff == False %}
-                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
-                            {% else %}
-                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
-                            {% endif %}
-                        </form>
-  
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    {% for elem in headphones %}
-                    <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
-                            <div class="image-container">
-                                {% if elem.first_image.image.url %}
-                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                {% else %}
-                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                {% endif %}
-                            </div>
-                        </a>
-                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-
-                        {% if elem.get_review_count != 0 %}
-                            <div class="rating">
-                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
-                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
-                                ({{ elem.get_review_count }})
-                            </div>
-                        {% else %}
-                            <small>Пока нет отзывов</small>
-                        {% endif %}
-                        
-
-                        <strong class="price">{{ elem.price }} р</strong>
-  
-                        <form method="POST" action="{% url 'add-to-cart' %}">
-                           {% csrf_token %}
-                           <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                           {% if elem.amount > 0 and request.user.is_staff == False %}
-                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
-                           {% else %}
-                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
-                           {% endif %}
-                        </form>
-                    </div>
-                    {% endfor %}
-                    {% for elem in mouses %}
-                    <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
-                            <div class="image-container">
-                                {% if elem.first_image.image.url %}
-                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                {% else %}
-                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                {% endif %}
-                            </div>
-                        </a>
-                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-
-                        {% if elem.get_review_count != 0 %}
-                            <div class="rating">
-                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
-                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
-                                ({{ elem.get_review_count }})
-                            </div>
-                        {% else %}
-                            <small>Пока нет отзывов</small>
-                        {% endif %}
-                        
-
-                        <strong class="price">{{ elem.price }} р</strong>
-  
-                        <form method="POST" action="{% url 'add-to-cart' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                            {% if elem.amount > 0 and request.user.is_staff == False %}
-                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
-                            {% else %}
-                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
-                            {% endif %}
-                        </form>
-  
-                    </div>
-                    {% endfor %}
-                    {% for elem in keyboards %}
-                    <div class="product-item">
-                        <a href="{% url 'info' elem.shared_id %}" class="pic-link">
-                            <div class="image-container">
-                                {% if elem.first_image.image.url %}
-                                    <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
-                                {% else %}
-                                    <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
-                                {% endif %}
-                            </div>
-                        </a>
-                        <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a> 
-
-                        {% if elem.get_review_count != 0 %}
-                            <div class="rating">
-                                <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
-                                <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
-                                ({{ elem.get_review_count }})
-                            </div>
-                        {% else %}
-                            <small>Пока нет отзывов</small>
-                        {% endif %}
-
-                        <strong>{{ elem.price }} р</strong>
-  
-                        <form method="POST" action="{% url 'add-to-cart' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ elem.shared_id.id }}">
-                            {% if elem.amount > 0 and request.user.is_staff == False %}
-                                <button type="submit" class="button add-to-cart-button">Добавить в корзину</button>
-                            {% else %}
-                                <button type="submit" class="button add-to-cart-button" disabled>Добавить в корзину</button>
-                            {% endif %}
-                        </form>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% if sum == 0 %}
-                <h2>По запросу "{{q}}" ничего не найдено</h2>
-                {% endif %}
-            </div>
+                <!-- product-grid.html -->
+                {% include "product-grid.html" %}
+            </div> 
         </div>
     </div>
 </body>
 </html>
 
-<script>
-    function modifyAndHideLayout() {
-        
-        document.querySelector('.home-container').classList.toggle('modified');
-        document.querySelector('.filter-form').classList.toggle('modified');
-    }
-</script>
 
 <script>
     function modifyAndHideLayout() {
@@ -415,48 +286,108 @@
 </script>
 
 <script>
+
+function fetchData(url){
+    fetch(url,{
+        method:'GET',
+        headers:{
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok){
+            throw new Error('Newtowk response was not correct');
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.querySelector('.product-grid').innerHTML = data.html;
+        window.history.pushState({},'',url);
+    })
+    .catch(error => {
+        console.error("Error: ",error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const inputs = [
+        document.getElementById('min_price'),
+        document.getElementById('max_price'),
+        document.getElementById('min_year'),
+        document.getElementById('max_year'),
+        document.getElementById('availability'),
+        document.getElementById('sort')
+    ];
+  
+    function updateCatalog(event) {
+
+        const currentUrl = new URL(window.location.href);
+        inputs.forEach(input => {
+            currentUrl.searchParams.set(input.id, input.value);
+        });
     
-    document.addEventListener('DOMContentLoaded', (event) => {
-  const minPriceInput = document.getElementById('min_price');
-  const maxPriceInput = document.getElementById('max_price');
-  const minYearInput = document.getElementById('min_year');
-  const maxYearInput = document.getElementById('max_year');
-  const availabilitySelect = document.getElementById('availability');
-  const sortSelect = document.getElementById('sort');
-
-  
-  function updateCatalog(event) {
-    if (event.type === 'keydown' && event.key !== 'Enter') {
-      return;
+        fetchData(currentUrl.href)
     }
-
-    const minPrice = minPriceInput.value;
-    const maxPrice = maxPriceInput.value;
-    const minYear = minYearInput.value;
-    const maxYear = maxYearInput.value;
-    const availability = availabilitySelect.value;
-    const sort = sortSelect.value;
-
-    const currentUrl = new URL(window.location.href);
-
-    currentUrl.searchParams.set('min_price', minPrice);
-    currentUrl.searchParams.set('max_price', maxPrice);
-    currentUrl.searchParams.set('min_year', minYear);
-    currentUrl.searchParams.set('max_year', maxYear);
-    currentUrl.searchParams.set('availability', availability);
-    currentUrl.searchParams.set('sort', sort);
-
-    window.location.href = currentUrl.href;
-  }
-
-  minPriceInput.addEventListener('keydown', updateCatalog);
-  maxPriceInput.addEventListener('keydown', updateCatalog);
-  minYearInput.addEventListener('keydown', updateCatalog);
-  maxYearInput.addEventListener('keydown', updateCatalog);
-  availabilitySelect.addEventListener('change', updateCatalog);
-  sortSelect.addEventListener('change', updateCatalog);
   
+    inputs.forEach(input => {
+        input.addEventListener('change', updateCatalog);  
+    });
 });
-  
 
+function resetFilters(){
+    const currentUrl = new URL(window.location.href);
+        
+    const inputs = [
+        document.getElementById('min_price'),
+        document.getElementById('max_price'),
+        document.getElementById('min_year'),
+        document.getElementById('max_year'),
+        document.getElementById('availability'),
+        document.getElementById('sort')
+    ];
+
+    inputs.forEach(input => {
+        if (input.id === 'availability'){
+            input.value = -1;
+        } else{
+            input.value = '';
+        }
+    });
+    inputs.forEach(input => {
+        currentUrl.searchParams.set(input.id,input.value); 
+    });
+    fetchData(currentUrl.href);
+}
+</script>
+
+<script>
+    const addToCartUrl = "{% url 'add-to-cart' %}"
+    function addToCart(productID){
+        const csrfToken = '{{ csrf_token }}';
+        const response = fetch(addToCartUrl,{
+            method:'POST',
+            headers:{
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken':csrfToken
+            },
+            body: JSON.stringify({
+                'product_id':productID
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Ошибка:', response.status, response.statusText);
+                return response.text().then(text => {
+                    throw new Error(`Ошибка: ${response.status} - ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.querySelector('.navbar-div').innerHTML = data.html;
+        })
+        .catch(error => {
+            console.error("Ошибка: ",error);
+        });
+    }
 </script>

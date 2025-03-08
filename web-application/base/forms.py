@@ -51,7 +51,7 @@ class MyUserCreationForm(UserCreationForm):
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
-            'email': 'Email',
+            'Email': 'Email',
         }
 
 class MyUserEditForm(ModelForm):
@@ -122,7 +122,7 @@ class KeyboardForm(ModelForm):
             'type': 'Тип',
             'switch_type': 'Тип переключателей',
             'switch_name': 'Название переключателей',
-            'color': 'цвет',
+            'color': 'Цвет',
             'сyrillic': 'Кириллица',
             'wireless': 'Беспроводная',
             'cable_sleeving': 'Оплётка кабеля',

@@ -113,15 +113,15 @@
     <ul class="navbar-wrapper">
       <li class="main-nav-item">
         <a class="nav-link" id="main-nav-link" href="{% url 'main' %}">Shop</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
       </li>    
       <li class="nav-item">
         <a class="nav-link catalog-page" href="{% url 'catalog' page='mouse' %}">Мышки</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link catalog-page" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link catalog-page" href="{% url 'catalog' page='headphone' %}">Наушники</a>
+        <a class="nav-link catalog-page" href="{% url 'catalog' page='headphones' %}">Наушники</a>
       </li>
 
       <form class="search-form" method="GET" action="{% url 'catalog' page='all' %}">
@@ -154,7 +154,7 @@
 
         {% if request.user.is_staff %}
         <li class="nav-item icon">
-          <a class="nav-link" href="{% url 'add_product' %}">
+          <a class="nav-link" href="{% url 'add_product' product_type='mouse'  %}">
             <span class="material-symbols-outlined" id="add">Add</span>
           </a>
         </li>

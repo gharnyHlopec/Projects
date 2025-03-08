@@ -1,0 +1,26 @@
+<form method="POST" onsubmit="PostRequest(event)" id="object-form" enctype="multipart/form-data">
+    <div class="type-container">
+        {% csrf_token %}
+        <label for="product_type">Выберите тип продукта:</label>
+        <select id="product_type" name="product_type" onchange="changeForm(this.value)">
+            <option value="mouse" {% if product_type == 'mouse' %} selected {% endif %}>Мышь</option>
+            <option value="keyboard" {% if product_type == 'keyboard' %} selected {% endif %}>Клавиатура</option>
+            <option value="headphones" {% if product_type == 'headphones' %} selected {% endif %}>Наушники</option>
+        </select>
+    </div>
+    <div class="field-container">
+        {% for field in form %}
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <ul class="errorlist">
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endfor %}
+        <input type="file" name="images" id="image-input" onchange="handleFiles(this.files);" multiple>
+    </div>
+    <button id='submit-button' type="submit">Добавить товар</button>
+</form>

@@ -1,0 +1,104 @@
+{% load custom_filters %}
+<div class="order-list">
+    <h2>Заказы в работе</h2>
+    <hr>
+    {% for cart in carts %}
+        {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
+            <div class="order-item active-orders">
+                <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
+                <p class="order-status" data-status="{{ cart.status }}">
+                    <b>Статус заказа: {{ cart.status }}</b>
+                </p>
+                <div class="order-details">
+                    <p>Имя: {{ cart.first_name }}</p>
+                    <p>Фамилия: {{ cart.last_name }}</p>
+                    <p>Телефон: {{ cart.phone_number }}</p>
+                    {% if cart.email %}
+                        <p>Email: {{ cart.email }}</p>
+                    {% endif %}
+                </div>
+                <ul>
+                    {% for item in cart_items|get_item:cart %}
+                        <li>
+                            {% if item.product.type == 'Headphones' %}
+                                {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
+                                <br>
+                                {% if item.product.headphones.amount <  item.quantity %}
+                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.headphones.amount }}шт.</b>
+                                {% endif %}
+
+                            {% elif item.product.type == 'Mouse' %}
+                                {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
+                                <br>
+                                {% if item.product.mouse.amount <  item.quantity %}
+                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.mouse.amount }}шт.</b>
+                                {% endif %}
+
+                            {% elif item.product.type == 'Keyboard' %}
+                                {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
+                                <br>
+                                {% if item.product.keyboard.amount <  item.quantity %}
+                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.keyboard.amount }}шт.</b>
+                                {% endif %}
+
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
+                <div class="button-group">
+                    {% if cart.status == 'В обработке' %}
+                        <button onclick="changeOrderStatus({{ cart.id }},'accept')" class="button accept-button">Принять заказ</button>
+                    {% elif cart.status == 'Принят' %}
+                        <button onclick="changeOrderStatus({{ cart.id }},'finish')" class="button finish-button">Завершить заказ</button>
+                    {% endif %}
+                    <button onclick="changeOrderStatus({{ cart.id }},'decline')" class="button decline-button">Отменить заказ</button>
+                </div>
+            <hr>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+<div class="order-list">
+    <h2>Завершенные заказы</h2>
+    <hr>
+    {% for cart in carts|sort_carts %}
+        {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
+            <div class="order-item">
+                <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
+                <div class="order-details">
+                    <p>Имя: {{ cart.first_name }}</p>
+                    <p>Фамилия: {{ cart.last_name }}</p>
+                    <p>Телефон: {{ cart.phone_number }}</p>
+                    {% if cart.email %}
+                        <p>Email: {{ cart.email }}</p>
+                    {% endif %}
+                </div>
+                <p class="order-status" data-status="{{ cart.status }}">
+                    <b>Статус заказа: {{ cart.status }}</b>
+                </p>
+                <ul>
+                    {% for item in cart_items|get_item:cart %}
+                        <li>
+                            {% if item.product.type == 'Headphones' %}
+                                {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
+                            {% elif item.product.type == 'Mouse' %}
+                                {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
+                            {% elif item.product.type == 'Keyboard' %}
+                                {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
+                                <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
+            <hr>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

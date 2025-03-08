@@ -23,6 +23,10 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    .warning{
+        color:red;
+    }
+
     .order-status[data-status*="В обработке"] {
         color: blue; 
     }
@@ -73,112 +77,74 @@
     .button{
         cursor: pointer;
     }
+    .button:disabled{
+        cursor: default;
+        background-color: gray;
+    }
 
 </style>
 </head>
 
 <body>
-    {% load custom_filters %}
     {% include 'navbar.html' %}
     
     <div class="admin-panel-wrapper">
-        <div class="order-list">
-            <h2>Заказы в работе</h2>
-            <hr>
-            {% for cart in carts %}
-                {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
-                    <div class="order-item">
-                        <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                        <p class="order-status" data-status="{{ cart.status }}">
-                            <b>Статус заказа: {{ cart.status }}</b>
-                        </p>
-                        <div class="order-details">
-                            <p>Имя: {{ cart.first_name }}</p>
-                            <p>Фамилия: {{ cart.last_name }}</p>
-                            <p>Телефон: {{ cart.phone_number }}</p>
-                            {% if cart.email %}
-                                <p>Email: {{ cart.email }}</p>
-                            {% endif %}
-                        </div>
-                        <ul>
-                            {% for item in cart_items|get_item:cart %}
-                                <li>
-                                    {% if item.product.type == 'Headphones' %}
-                                        {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% elif item.product.type == 'Mouse' %}
-                                        {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% elif item.product.type == 'Keyboard' %}
-                                        {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                        <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
-                        <div class="button-group">
-                            {% if cart.status == 'В обработке' %}
-                                <form method="POST" action="{% url 'accept-order' cart.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button accept-button">Принять заказ</button>
-                                </form>
-                            {% elif cart.status == 'Принят' %}
-                                <form method="POST" action="{% url 'finish-order' cart.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button finish-button">Завершить заказ</button>
-                                </form>
-                            {% endif %}
-                            <form method="POST" action="{% url 'decline-order' cart.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="button decline-button">Отменить заказ</button> 
-                            </form>
-                        </div>
-                    <hr>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div class="order-list">
-            <h2>Завершенные заказы</h2>
-            <hr>
-            {% for cart in carts %}
-                {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
-                    <div class="order-item">
-                        <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                        <div class="order-details">
-                            <p>Имя: {{ cart.first_name }}</p>
-                            <p>Фамилия: {{ cart.last_name }}</p>
-                            <p>Телефон: {{ cart.phone_number }}</p>
-                            {% if cart.email %}
-                                <p>Email: {{ cart.email }}</p>
-                            {% endif %}
-                        </div>
-                        <p class="order-status" data-status="{{ cart.status }}">
-                            <b>Статус заказа: {{ cart.status }}</b>
-                        </p>
-                        <ul>
-                            {% for item in cart_items|get_item:cart %}
-                                <li>
-                                    {% if item.product.type == 'Headphones' %}
-                                        {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% elif item.product.type == 'Mouse' %}
-                                        {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% elif item.product.type == 'Keyboard' %}
-                                        {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                        <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                        <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
-                    <hr>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
+        {% include 'admin_panel_innerHTML.html' %}
+    </div> 
 </body>
 </html>
+
+<script>
+    updateButtonStates()
+    setInterval(() => {
+        const refreshOrdersURL = "{% url 'admin-panel' %}"
+        fetch(refreshOrdersURL,{
+            headers:{
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector(".admin-panel-wrapper").innerHTML=data.html;
+            updateButtonStates();
+        });
+    },5000);
+
+    function changeOrderStatus(pk,action){
+        acceptOrderURL='{% url "admin-panel" %}'
+        CSRFToken = "{{ csrf_token }}"
+        fetch(acceptOrderURL,{
+            method:'POST',
+            headers:{
+                'X-Requested-With':'XMLHttpRequest',
+                "X-CSRFToken":CSRFToken
+            },
+            body:JSON.stringify({
+                'action':action,
+                'pk':pk
+            })
+        })
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Newtowk response was not correct');
+            }else
+            return response.json();
+        })
+        .then(data => {
+            document.querySelector('.admin-panel-wrapper').innerHTML = data.html
+            updateButtonStates()
+        })
+        .catch(error => {
+            console.error("Error: ",error);
+        });
+    }
+
+    function updateButtonStates(){    
+        document.querySelectorAll('.active-orders').forEach(function(orderItem) {
+        if (orderItem.querySelector('.warning')) {
+            const button = orderItem.querySelector('.accept-button');
+            button.disabled = true;
+        }
+    });
+    }
+</script>
