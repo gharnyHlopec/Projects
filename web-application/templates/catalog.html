@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load custom_filters %}
+{% load static %}
 <html lang="en">
     <head>
     <meta charset="UTF-8">
@@ -24,9 +25,15 @@
             gap: 20px;
         }
         .filter-form{
-            padding: 0px 20px;
+            min-width: 200px;
         }
-        .filter-form.modified{
+        .filter-form > *{
+            width: 90%;
+        }
+        .filter-form select{
+            width: 100%;
+        }
+        .filter-form.hidden{
             display: none;
         }
         .filter-form input{
@@ -67,7 +74,7 @@
             padding: 6px;
         }
         #availability{
-            padding: 8px;
+            padding: 8px 0px;
         }
         .product-item{
             display: flex;
@@ -185,11 +192,6 @@
             background-color: darkred;
             cursor: pointer;
         }
-        @media screen and (max-width: 750px){
-            .product-grid{
-            grid-template-columns: repeat(2, 1fr);
-        }
-        }
     </style>
 </head>
 <body>
@@ -225,17 +227,15 @@
                 <br>
                 <h2>Наличие</h2>
                 <hr>
-                <div>
-                    <select name="availability" id="availability">
-                      <option value="-1" {% if availability == -1 %} selected {% endif %}>Все товары</option>
-                      <option value="0" {% if availability == 0 %} selected {% endif %}>Только товары в наличии</option>
-                    </select>
-                </div>
+                <select name="availability" id="availability">
+                    <option value="-1" {% if availability == -1 %} selected {% endif %}>Все товары</option>
+                    <option value="0" {% if availability == 0 %} selected {% endif %}>Только товары в наличии</option>
+                </select>
                 <button 
-                type="button" 
-                class="reset-filter-button"
-                onclick="resetFilters()">
-                Сбросить фильтры
+                    type="button" 
+                    class="reset-filter-button"
+                    onclick="resetFilters()">
+                    Сбросить фильтры
                 </button>
             </form>
         </div>
@@ -243,7 +243,7 @@
             <div class="sorting-container">
                 <div class="div-mod">
                 <a onclick="modifyAndHideLayout()">
-                    <span class="material-symbols-outlined" id="filter-hide">arrow_left_alt</span>
+                    <img id='filter-hide' src="{% static 'images/arrow_left.svg' %}" alt="Arrow_left">
                 </a>
                 </div>
                 <form method="get">
@@ -258,7 +258,6 @@
                 </form>
             </div>
             <div class="product-grid">
-                <!-- product-grid.html -->
                 {% include "product-grid.html" %}
             </div> 
         </div>
@@ -269,21 +268,38 @@
 
 <script>
     function modifyAndHideLayout() {
-
         const homeContainer = document.querySelector('.home-container');
         const filterContainer = document.querySelector('.filter-form');
         const filterHideIcon = document.querySelector('#filter-hide');
 
         homeContainer.classList.toggle('modified');
-        filterContainer.classList.toggle('modified');
+        filterContainer.classList.toggle('hidden');
 
         if (homeContainer.classList.contains('modified')) {
-            filterHideIcon.textContent = 'arrow_right_alt'; 
+            filterHideIcon.src = "{% static 'images/arrow_right.svg' %}"; 
         } else {
-            filterHideIcon.textContent = 'arrow_left_alt';
+            filterHideIcon.src = "{% static 'images/arrow_left.svg' %}"
+        }
+        changeLayout()
+    }
+
+    changeLayout()
+    window.addEventListener('resize',changeLayout)
+    function changeLayout(){
+        const productGrid = document.querySelector('.product-grid')
+        const filterContainer = document.querySelector('.filter-form');
+        if (window.innerWidth <= 580 && filterContainer.classList.contains('hidden')){
+            productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else if (window.innerWidth <= 580){
+            productGrid.style.gridTemplateColumns = 'repeat(1, 1fr)';
+        } else if (580<window.innerWidth && window.innerWidth<= 750){
+            productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else if (750 < window.innerWidth){
+            productGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
         }
     }
 </script>
+
 
 <script>
 

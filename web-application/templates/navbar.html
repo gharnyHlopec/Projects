@@ -65,10 +65,11 @@
 
   .search-form {
     width: 100%; 
+    text-align: center;
   }
 
   #search-input {
-    width: 100%; 
+    width: 100%;
     margin-right: 6px;
     padding: 12px 20px;
     border: 1px solid #ccc;
@@ -80,6 +81,9 @@
     .navbar-wrapper{
       display: block;
       text-align: center;
+      width:95%;
+      margin-left:auto;
+      margin-right:auto;
     }
     .catalog-page{
       box-sizing: border-box;
@@ -102,10 +106,6 @@
 
   }
   </style>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
 </head>
 <body>
@@ -137,14 +137,14 @@
         {% else %}
           <a class="nav-link" href="{% url 'login' %}">
         {% endif %}
-          <span class="material-symbols-outlined" id="user">person</span>
+          <img id='user' src="{% static 'images/person.svg' %}" alt="Person">
           </a>
         </li>
 
         {% if not request.user.is_staff %}
         <li class="nav-item icon cart-icon">
           <a class="nav-link" href="{% url 'cart' %}">
-          <span class="material-symbols-outlined">shopping_cart</span>
+          <img src="{% static 'images/shopping_cart.svg' %}" alt="Cart">
           {% if cart_item_count != 0 %}
             <span class="cart-count">{{ cart_item_count }}</span>
           {% endif %}
@@ -155,18 +155,18 @@
         {% if request.user.is_staff %}
         <li class="nav-item icon">
           <a class="nav-link" href="{% url 'add_product' product_type='mouse'  %}">
-            <span class="material-symbols-outlined" id="add">Add</span>
+            <img id='add' src="{% static 'images/plus.svg' %}" alt="Plus">
           </a>
         </li>
         <li class="nav-item icon">
           <a class="nav-link" href="{% url 'admin-panel' %}">
-            <span class="material-symbols-outlined" id="list">format_list_bulleted</span>
+            <img id='list' src="{% static 'images/bulleted_list.svg' %}" alt="list">
           </a>
         </li>
         {% elif request.user.is_staff == False and request.user.is_authenticated %}
         <li class="nav-item icon">
           <a class="nav-link" href="{% url 'user-orders' %}">
-            <span class="material-symbols-outlined" id="list">format_list_bulleted</span>
+            <img id='list' src="{% static 'images/bulleted_list.svg' %}" alt="list">
           </a>
         </li>
         {% endif %}

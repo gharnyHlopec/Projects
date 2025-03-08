@@ -196,8 +196,9 @@ def info(request,pk):
         data = [obj.date, obj.type, obj.switch_type, obj.switch_name, obj.color, obj.сyrillic, obj.wireless, obj.cable_sleeving]
 
     images = ProductImage.objects.filter(shared_id = elem)
+    image_amount = len(images)
     zipped_data = zip(info, data)
-    context = {"obj": obj, "zipped_data": zipped_data, "images":images, "average_rating": average_rating, 'review_count':review_count}
+    context = {"obj": obj, "zipped_data": zipped_data, "images":images, "average_rating": average_rating, 'review_count':review_count, "image_amount":image_amount}
 
     return render(request, 'info.html', context)
 

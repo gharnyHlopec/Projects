@@ -44,6 +44,11 @@ class Headphones(models.Model):
         ('С микрофоном', 'С микрофоном'),
         ('Игровые', 'Игровые'),
     ]
+    
+    boolean_choices = [
+        ('Yes','Да'),
+        ('No','Нет'),
+    ]
 
     shared_id = models.OneToOneField(SharedID, on_delete=models.CASCADE, null=True)
 
@@ -53,8 +58,8 @@ class Headphones(models.Model):
     
     date = models.IntegerField(validators=[MinValueValidator(1970), MaxValueValidator(2030)])
     type = models.CharField(max_length=20,choices=available_choices,default='')
-    wireless = models.BooleanField(null = True, blank = True)
-    ruggedness = models.BooleanField(null = True, blank = True)
+    wireless = models.BooleanField(null = True, blank = True, choices=boolean_choices)
+    ruggedness = models.BooleanField(null = True, blank = True, choices=boolean_choices)
     body_material = models.CharField(max_length=200, null = True, blank = True)
     headphone_color = models.CharField(max_length=200, null = True, blank = True)
     cable_color = models.CharField(max_length=200, null = True, blank = True)
@@ -109,6 +114,11 @@ class Mouse(models.Model):
         ('BlueTrack', 'BlueTrack'),
     ]
 
+    boolean_choices = [
+        ('Yes','Да'),
+        ('No','Нет'),
+    ]
+
     shared_id = models.OneToOneField(SharedID, on_delete=models.CASCADE, null=True)
 
     name = models.CharField(max_length=200)
@@ -117,13 +127,13 @@ class Mouse(models.Model):
     
     date = models.IntegerField(validators=[MinValueValidator(1970), MaxValueValidator(2030)])
     type = models.CharField(max_length=20,choices=mouse_choices,default='')
-    wireless = models.BooleanField(null = True, blank = True)
+    wireless = models.BooleanField(null = True, blank = True, choices=boolean_choices)
     sensor_type = models.CharField(max_length=20,choices=sensor_choices,default='')
     sensor_model = models.CharField(max_length=50, null = True, blank = True)
     max_sens_res = models.IntegerField(validators=[MinValueValidator(1)],null = True, blank = True)
     max_pooling_rate = models.IntegerField(validators=[MinValueValidator(1)],null = True, blank = True)
     body_material = models.CharField(max_length=200, null = True, blank = True)
-    backlight = models.BooleanField(null = True, blank = True)
+    backlight = models.BooleanField(null = True, blank = True, choices=boolean_choices)
     
     updated = models.DateTimeField(auto_now = True)
     created = models.DateTimeField(auto_now_add = True)
@@ -176,6 +186,11 @@ class Keyboard(models.Model):
         ('Оптическая', 'Оптическая'),
     ]
 
+    boolean_choices = [
+        ('Yes','Да'),
+        ('No','Нет'),
+    ]
+
     shared_id = models.OneToOneField(SharedID, on_delete=models.CASCADE, null=True)
 
     name = models.CharField(max_length=200)
@@ -187,9 +202,9 @@ class Keyboard(models.Model):
     switch_type = models.CharField(max_length=30,choices=switch_choices,default='')
     switch_name = models.CharField(max_length=200, null = True, blank = True)
     color = models.CharField(max_length=200, null = True, blank = True)
-    сyrillic = models.BooleanField(null = True, blank = True)
-    wireless = models.BooleanField(null = True, blank = True)
-    cable_sleeving = models.BooleanField(null = True, blank = True)
+    сyrillic = models.BooleanField(null = True, blank = True, choices=boolean_choices)
+    wireless = models.BooleanField(null = True, blank = True, choices=boolean_choices)
+    cable_sleeving = models.BooleanField(null = True, blank = True, choices=boolean_choices)
     
     updated = models.DateTimeField(auto_now = True)
     created = models.DateTimeField(auto_now_add = True)

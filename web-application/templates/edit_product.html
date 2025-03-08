@@ -91,7 +91,7 @@
       <br>
       <div id="gallery">
         {% for pic in images %}
-          <img src="{{ pic.image.url }}" draggable="false" onclick="deleteImageFromServer({{ pk }},{{ pic.id }})"> 
+          <img src="{{ pic.image.url }}" draggable="false" onclick="deleteImageFromServer({{ pk }},{{ pic.id }})">
         {% endfor %}
       </div>
     </div> 
