@@ -158,7 +158,16 @@
         margin-top: auto;
         margin-bottom:auto;
       }
-
+      .back-button-wrapper{
+        margin-bottom: 12px;
+      }
+    .back-button-link{
+        text-decoration: none;
+        color:gray;
+      }
+    .back-button-link:hover{
+        color: black;
+      }
       
     </style>
   </head>
@@ -166,10 +175,11 @@
     <div class="navbar-div">
       {% include 'navbar.html' %}
     </div>
-
     <div class="page-wrapper">
+      <div class="back-button-wrapper">
+        <a class="back-button-link" href="{% url 'catalog' page=product_type %}">←Назад к каталогу</a>
+      </div>
       <h2>{{ obj.name }}</h2>
-
       <div class="top-elem">
         <div class="left-elem">
           {% if image_amount != 0 %}

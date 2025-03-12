@@ -10,9 +10,8 @@ from django.db.models import Avg
 from django.contrib.sessions.backends.db import SessionStore
 from django.db import transaction
 from django.templatetags.static import static
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
-
+from django.contrib.auth.decorators import login_required,user_passes_test
+from django.core.paginator import Paginator
 
 def only_for_staff(user):
   return user.is_staff
@@ -102,7 +101,7 @@ def catalog(request, page):
                                      date__gte=min_year,
                                      date__lte=max_year,
                                      amount__gt=availability)
- 
+        
         if sort_param:
             headphones = headphones.order_by(sort_param)
             mouses = mouses.order_by(sort_param)
@@ -115,37 +114,14 @@ def catalog(request, page):
             'keyboards': keyboards,
             'sum': sum
         } 
-
-    elif page == 'headphones':
-        obj = Headphones.objects.all()
-
-        obj = obj.filter(price__gte=min_price,
-                            price__lte=max_price,
-                            date__gte=min_year,
-                            date__lte=max_year,
-                            amount__gt=availability)
-    
-        if sort_param:
-            obj = obj.order_by(sort_param)
-        context['obj'] = obj
-
-    elif page == 'mouse':
-        obj = Mouse.objects.all()
-
-        obj = obj.filter(price__gte=min_price,
-                            price__lte=max_price,
-                            date__gte=min_year,
-                            date__lte=max_year,
-                            amount__gt=availability)
-    
-        if sort_param:
-            obj = obj.order_by(sort_param)
-        context['obj'] = obj
-
-    elif page == 'keyboard':
-        obj = Keyboard.objects.all()
-
-
+    else:
+        if page == 'headphones':
+            obj = Headphones.objects.all()
+        elif page == 'mouse':
+            obj = Mouse.objects.all()
+        elif page == 'keyboard':
+            obj = Keyboard.objects.all()
+        
         obj = obj.filter(price__gte=min_price,
                             price__lte=max_price,
                             date__gte=min_year,
@@ -164,7 +140,12 @@ def catalog(request, page):
     context['max_year'] = max_year    
     context['availability'] = availability
     context['sort'] = sort_param     
-        
+    
+    # paginator = Paginator(obj,2)
+    # print(list(paginator.get_elided_page_range()))
+# Исправить sum
+# убрать разделение на 3 объекта
+    
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render(request,'product-grid.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
@@ -198,7 +179,7 @@ def info(request,pk):
     images = ProductImage.objects.filter(shared_id = elem)
     image_amount = len(images)
     zipped_data = zip(info, data)
-    context = {"obj": obj, "zipped_data": zipped_data, "images":images, "average_rating": average_rating, 'review_count':review_count, "image_amount":image_amount}
+    context = {"obj": obj, "zipped_data": zipped_data, "images":images, "average_rating": average_rating, 'review_count':review_count, "image_amount":image_amount, "product_type":elem.type.lower()}
 
     return render(request, 'info.html', context)
 
@@ -325,7 +306,7 @@ def postReview(request, pk):
         )        
         return redirect('product-reviews',pk)
     else:
-        context = {}
+        context = {'pk':pk}
     if not request.user.is_authenticated:
         return redirect('login') 
     return render(request, 'review_form.html', context)

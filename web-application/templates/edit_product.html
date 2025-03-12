@@ -78,11 +78,24 @@
         margin-right: 10px;
         vertical-align: middle;
     }  
+    .back-button-wrapper{
+      margin-bottom: 12px;
+    }
+    .back-button-link{
+      text-decoration: none;
+      color:gray;
+    }
+    .back-button-link:hover{
+      color: black;
+    }
   </style>
 </head>
 
 <body>
   {% include 'navbar.html' %}
+  <div class="back-button-wrapper">
+    <a class="back-button-link" href="{% url 'info' pk=pk %}">←Назад к товару</a>
+  </div>
   <div class="forms-container"> 
     <div class="image-drop-area"> 
       Перетащите новые изображения сюда 

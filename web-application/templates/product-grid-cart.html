@@ -1,0 +1,33 @@
+{% load static %}
+<div class="product-item">
+    <a href="{% url 'info' elem.shared_id %}" class="pic-link">
+        <div class="image-container">
+            {% if elem.first_image.image.url %}
+                <img src="{{ elem.first_image.image.url}}" alt="{{ elem.name }}">
+            {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+            {% endif %}
+        </div>
+    </a>
+    <a href="{% url 'info' elem.shared_id %}" class="product-title">{{ elem }}</a>
+    
+    {% if elem.get_review_count != 0 %}
+        <div class="rating">
+            <div class="Stars" style="--rating: {{ elem.get_average_rating  }};"></div>
+            <p class="average-rating">&nbsp;{{ elem.get_average_rating }}&nbsp;</p>  
+            ({{ elem.get_review_count }})
+        </div>
+    {% else %}
+        <small>Пока нет отзывов</small>
+    {% endif %}
+
+    <strong class="price">{{ elem.price }} р</strong>    
+
+    <div class="add-to-cart-div">
+        {% if elem.amount > 0 and request.user.is_staff == False %}
+        <button value="{{ elem.shared_id.id }}" class="button add-to-cart-button" onclick="addToCart(this.value)">Добавить в корзину</button>
+        {% else %}
+        <button value="{{ elem.shared_id.id }}" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+        {% endif %}
+    </div>
+</div>

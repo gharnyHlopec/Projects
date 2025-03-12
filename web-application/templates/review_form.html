@@ -68,7 +68,16 @@
         #submit-button:hover{
             background-color: green;
         }
-
+        .back-button-wrapper{
+            margin-bottom: 12px;
+        }
+        .back-button-link{
+            text-decoration: none;
+            color:gray;
+        }
+        .back-button-link:hover{
+            color: black;
+        }
         @media screen and (max-height: 485px),
         screen and (max-width: 775px){
             .comment-form{
@@ -79,10 +88,14 @@
                 margin: 10px auto;
             }
         }
+        
     </style>
 </head>
 <body>
     <div class="comment-form">
+        <div class="back-button-wrapper">
+            <a class="back-button-link" href="{% url 'product-reviews' pk %}">←Назад к отзывам</a>
+        </div>
         <form method="POST" action ="">
             {% csrf_token %}
             <label for="rating">Поставьте оценку:</label>

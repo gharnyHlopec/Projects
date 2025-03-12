@@ -14,7 +14,8 @@
 
         .contact-information{
             background-color: white;
-            width: 450px;
+            min-width: 350px;
+            max-width: 500px;
             padding: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin: 3% auto;
@@ -33,16 +34,29 @@
             box-sizing: border-box;
         }
 
-        .contact-information button[type="submit"]{
-            background-color: #14b814;
+        .contact-information button{
             border: none;
             width: 100%;
             padding: 10px;
             color: white;
+            border-radius: 10px;
         }
-
+        .contact-information button[type="button"]{
+            background-color: #939393;
+            margin-right:1%;
+        }
+        .contact-information button[type="button"]:hover{
+            background-color: #727272;
+        }
+        .contact-information button[type="submit"]{
+            background-color: #14b814;
+            margin-left:1%;
+        }
         .contact-information button[type="submit"]:hover{
             background-color: green;
+        }
+        .button-wrapper{
+            display: flex;
         }
     </style>
 </head>
@@ -69,13 +83,20 @@
                 <label for="id_phone_number">Номер телефона:</label>
                 {{ form.phone_number }}
             </div>
-            {% if cart_item_count != 0 %}
-                <button type="submit">Отправить заказ</button>
-            {% else %}
-                <button type="submit" id="submit-button" disabled>Отправить заказ</button>
-            {% endif %}
+            <div class="button-wrapper">
+                <button onclick="openCart()" type="button">Назад в корзину</button>
+                {% if cart_item_count != 0 %}
+                    <button type="submit">Отправить заказ</button>
+                {% else %}
+                    <button type="submit" id="submit-button" disabled>Отправить заказ</button>
+                {% endif %}
+            </div>
         </form>
     </div>
-
 </body>
 </html>
+<script>
+    function openCart(){
+        window.location.href = '{% url "cart" %}'
+    }
+</script>

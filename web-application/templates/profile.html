@@ -30,20 +30,36 @@
             text-decoration: none;
             color: white;
             border-radius: 10px;
-            border-width: 10px;
+            border-width: 5px;
         }
         .edit{
+            background-color: rgb(2, 165, 2);
+            margin-right: 1%;
+            margin-left:auto;
+        }
+        .edit:hover{
             background-color: green;
-            border-color: green;
         }
         .logout{
-            background-color: red;
+            background-color: rgb(255, 25, 25);
+            margin-left: 1%;
+            margin-right: auto;
+        }
+        .logout:hover{
+            background-color: rgb(121, 0, 0);
         }
         body{
             background-color: #f4f4f4;
             overflow-y: scroll;
         }
-
+        .button{
+            display:block;
+            width:30%;
+        }
+        .button-wrapper{
+            display: flex;
+            align-items: center;
+        }
         @media screen and (max-height: 420px), 
                screen and (max-width: 775px)
         {
@@ -74,8 +90,10 @@
                 {{ user.phone_number }}
             {% endif %}
         </p>
-        <a class="edit"href="{% url 'update-profile' %}" class="edit-button">Редактировать</a>
-        <a class="logout" href="{% url 'logout' %}">Выйти</a>
+        <div class="button-wrapper">
+            <a class="button edit" href="{% url 'update-profile' %}">Редактировать</a>
+            <a class="button logout" href="{% url 'logout' %}">Выйти</a>
+        </div>
     </div>
 
 </body>

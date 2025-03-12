@@ -61,6 +61,16 @@
         color: #FFDB8B;
         font-size: 24px;
     }
+    .back-button-wrapper{
+      margin-top: 10px;
+    }
+    .back-button-link{
+      text-decoration: none;
+      color:gray;
+    }
+    .back-button-link:hover{
+      color: black;
+    }
   </style>    
   {% load static %}
 </head>
@@ -70,6 +80,9 @@
 
 <div class="review-page-wrapper">
     <div class="review-button-wrapper">
+        <div class="back-button-wrapper">
+            <a class="back-button-link" href="{% url 'info' pk=pk %}">←Назад к товару</a>
+        </div>
         {% if request.user.is_staff == False %}
             <a href="{% url 'post-review' pk %}" class="leave-review-button">Оставить отзыв</a> 
         {% endif %}
