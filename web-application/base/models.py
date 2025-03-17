@@ -36,6 +36,35 @@ class SharedID(models.Model):
     def __str__(self):
         return str(self.id)
     
+
+
+#----------------------------------------------------------------------------------------------
+class Product(models.Model):
+    product_types = [
+        ('Keyboard', 'Клавиатура'),
+        ('Mouse', 'Мышь'),
+        ('Headphones', 'Наушники'),
+    ]
+
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=40, choices=product_types,default='')
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(validators=[MinValueValidator(0)],decimal_places=2, max_digits=10)
+    amount = models.IntegerField(validators=[MinValueValidator(0)])
+    year = models.IntegerField(validators=[MinValueValidator(1970),MaxValueValidator(2030)])
+    
+    description = models.JSONField(null=True,blank=True)
+
+    created = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return str(self.id)
+#----------------------------------------------------------------------------------------------
+    
+
+
+
+    
 class Headphones(models.Model):
         
     available_choices = [
@@ -238,11 +267,9 @@ class Keyboard(models.Model):
     def first_image(self):
         return self.shared_id.images.first()
 
-
 class ProductImage(models.Model):
     shared_id = models.ForeignKey(SharedID, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="product_images/", null = True, blank = True)
-
     
     def delete(self, *args, **kwargs):
         if self.image:

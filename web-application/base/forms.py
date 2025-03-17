@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Mouse, Keyboard, Headphones, Review, SharedID, ProductImage, User
+from .models import Mouse, Keyboard, Headphones, Review, SharedID, ProductImage, User,Product
 from django.db.models import Max
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
@@ -98,7 +98,7 @@ class MouseForm(ModelForm):
             'name': 'Название',
             'price': 'Цена',
             'amount': 'Количество',
-            'date': 'Год выпуска',
+            'date': 'Дата выхода на рынок',
             'type': 'Тип',
             'wireless': 'Беспроводная',
             'sensor_type': 'Тип сенсора',
@@ -118,7 +118,7 @@ class KeyboardForm(ModelForm):
             'name': 'Название',
             'price': 'Цена',
             'amount': 'Количество',
-            'date': 'Год выпуска',
+            'date': 'Дата выхода на рынок',
             'type': 'Тип',
             'switch_type': 'Тип переключателей',
             'switch_name': 'Название переключателей',
@@ -137,7 +137,7 @@ class HeadphonesForm(ModelForm):
             'name': 'Название',
             'price': 'Цена',
             'amount': 'Количество',
-            'date': 'Год выпуска',
+            'date': 'Дата выхода на рынок',
             'type': 'Тип',
             'wireless': 'Беспроводные',
             'ruggedness': 'Пыле-, влаго-защита',
@@ -157,4 +157,13 @@ class ProductImageForm(ModelForm):
         model = ProductImage
         fields = ['image']
 
-         
+class ProductForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name','price','amount','year']
+        labels = {
+            'name': 'Название',
+            'price': 'Цена',
+            'amount': 'Количество',
+            'year': 'Год выхода на рынок',
+        }

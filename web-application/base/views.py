@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Headphones, Mouse, Keyboard, SharedID, Review, ProductImage, Cart, CartItem, User
-from .forms import MouseForm, KeyboardForm, HeadphonesForm, ReviewForm, ProductImageForm, MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm
+from .models import Headphones, Mouse, Keyboard, SharedID, Review, ProductImage, Cart, CartItem, User, Product
+from .forms import MouseForm, KeyboardForm, HeadphonesForm, ReviewForm, ProductImageForm, MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
 from django.http import HttpResponse, JsonResponse
 import json
 from django.urls import reverse
@@ -140,7 +140,7 @@ def catalog(request, page):
     context['max_year'] = max_year    
     context['availability'] = availability
     context['sort'] = sort_param     
-    
+
     # paginator = Paginator(obj,2)
     # print(list(paginator.get_elided_page_range()))
 # Исправить sum
@@ -364,7 +364,7 @@ def addProduct(request,product_type):
         context = {'form': form, 'product_type':product_type}
 
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            html = render(request, 'add_product_form_innerHTML.html', context) 
+            html = render(request, 'add_product_form_innerHTML.html', context)
             return JsonResponse({'html':html.content.decode('utf-8')})
         return render(request, 'add_product.html', context)
 
@@ -393,7 +393,7 @@ def updateProduct(request,pk):
         elif elem.type =='Headphones':
              form = HeadphonesForm(request.POST, instance=obj)
 
-        form.save()
+        # form.save()
         pics = request.FILES.getlist('images')
         for pic in pics:
             ProductImage.objects.create(
@@ -579,3 +579,36 @@ def userOrders(request):
         return JsonResponse({'html':html.content.decode('utf-8')}) 
 
     return render(request, 'user-orders.html', context)
+
+def testView(request,product_type):
+    form = ProductForm()
+    if request.method == 'POST':
+        data = request.POST.get('json_data')
+        
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.description = data
+            product.save()
+            # images = request.FILES.getlist('images')
+            # for pic in images:
+            #     try:
+            #         ProductImage.objects.create(
+            #             shared_id=related_data,
+            #             image=pic
+            #         )
+            #     except Exception as e:
+            #         messages.error(request, "Произошла ошибка при загрузке изображения.")
+
+            return JsonResponse({'redirect':reverse('catalog',kwargs={'page':product_type}) })
+        else:
+            context = {'form': form, 'product_type':product_type}
+            html = render(request, 'test_innerHTML.html',context)
+            return JsonResponse({'html':html.content.decode('utf-8')})
+
+    context = {'form': form, 'product_type':product_type}
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        html = render(request, 'test_innerHTML.html',context)
+        return JsonResponse({'html':html.content.decode('utf-8')})
+    else:
+        return render(request, 'testHTML.html', context)

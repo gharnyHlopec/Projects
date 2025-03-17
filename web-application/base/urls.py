@@ -22,5 +22,6 @@ urlpatterns = [
     path('profile/',views.profile, name = 'profile'),
     path('update-profile/',views.updateProfile, name = 'update-profile'),
     path('user-orders/',views.userOrders, name = 'user-orders'),
-    path('contact-information/', views.contactInformation, name='contact-information')      
+    path('contact-information/', views.contactInformation, name='contact-information'),
+    path('test/<str:product_type>',views.testView,name='test')      
 ]
