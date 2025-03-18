@@ -129,15 +129,15 @@ def info(request,pk):
 
     if product.type == 'keyboard':
         info = ['Дата выхода на рынок','Тип','Технология переключателя', 'Наименование переключателей', 'Цвет', 'Кириллица', 'Беспроводная', 'Оплетка кабеля']
-        data = [product.year,product.type,description["switch_type"],description["switch_name"],description["color"],description["cyrillic"],description["wireless"],description["cable_braid"]]
+        data = [product.year,description["type"],description["switch_type"],description["switch_name"],description["color"],description["cyrillic"],description["wireless"],description["cable_braid"]]
 
     elif product.type == 'mouse':
         info = ['Дата выхода на рынок','Тип','Беспроводная', 'Тип сенсора', 'Модель сенсора', 'Максимальное разрешение сенсора', 'Максимальная частота опроса', 'материал корпуса', 'Подсветка']
-        data = [product.year,product.type,description["wireless"],description["sensor_type"],description["sensor_model"],description["sensor_resolution"],description["sensor_polling_rate"],description["case_material"],description["lighting"]]
+        data = [product.year,description["type"],description["wireless"],description["sensor_type"],description["sensor_model"],description["sensor_resolution"],description["sensor_polling_rate"],description["case_material"],description["lighting"]]
 
     elif product.type == 'headphones':
         info = ['Дата выхода на рынок','Тип','Беспроводной интерфейс','Пыле-, влаго-, ударопрочность','Материал корпуса','Цвет наушников','Цвет кабеля','Материал покрытия оголовья']
-        data = [product.year,product.type,description["wireless"],description["protection"],description["case_material"],description["headphones_color"],description["cable_color"],description["ear_cushion_material"]]
+        data = [product.year,description["type"],description["wireless"],description["protection"],description["case_material"],description["headphones_color"],description["cable_color"],description["ear_cushion_material"]]
         
     images = ProductImage.objects.filter(product_id = product)
     image_amount = len(images)

@@ -25,7 +25,7 @@
       }
 
       .c-img{
-        productect-fit: contain;
+        object-fit: contain;
         height: 400px;
         width: auto;
       }
@@ -239,7 +239,7 @@
               </button>
             </div>
           {% else %}
-            <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
+            <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder" class="d-block w-100 c-img">
           {% endif %}
         </div>
 
