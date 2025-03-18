@@ -6,12 +6,7 @@ register = template.Library()
 def sum_prices(items):
     total_price = 0
     for item in items:
-        if item.product.type == 'Headphones':
-            total_price += item.product.headphones.price * item.quantity
-        elif item.product.type == 'Mouse':
-            total_price += item.product.mouse.price * item.quantity
-        elif item.product.type == 'Keyboard':
-            total_price += item.product.keyboard.price * item.quantity
+        total_price += item.product.price * item.quantity
     return round(total_price,2)
 
 @register.filter

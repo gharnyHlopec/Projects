@@ -1,0 +1,9 @@
+{% load static %}
+
+{% for product in products %}
+    {% include 'catalog_grid_product_innerHTML.html' %}
+{% endfor %}
+
+{% if amount_of_products == 0 %}
+    <h2 class="not-found">Отсутствуют товары, соответствующие выбранным параметрам</h2>
+{% endif %}

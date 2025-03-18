@@ -3,8 +3,8 @@
         {% csrf_token %}
         <label for="product_type">Выберите тип продукта:</label>
         <select id="product_type" name="product_type" onchange="changeForm(this.value)">
-            <option value="mouse" {% if product_type == 'mouse' %} selected {% endif %}>Мышь</option>
             <option value="keyboard" {% if product_type == 'keyboard' %} selected {% endif %}>Клавиатура</option>
+            <option value="mouse" {% if product_type == 'mouse' %} selected {% endif %}>Мышь</option>
             <option value="headphones" {% if product_type == 'headphones' %} selected {% endif %}>Наушники</option>
         </select>
     </div>
@@ -20,6 +20,129 @@
             </ul>
             {% endif %}
         {% endfor %}
+
+        {% if product_type == 'mouse' %}
+            <label for="type">Тип:</label>
+            <select id="type" name="type">
+                <option>-</option>
+                <option>Офисная мышь</option>
+                <option>Игровая мышь</option>
+                <option>Трекпад</option>
+            </select>
+            
+            <label for="wireless">Беспроводная:</label>
+            <select id="wireless" name="wireless">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+            
+            <label for="sensor_type">Тип сенсора:</label>
+            <select id="sensor_type" name="sensor_type">
+                <option>-</option>
+                <option>Лазерный</option>
+                <option>Оптический</option>
+                <option>Bluetrack</option>
+            </select>
+            
+            <label for="sensor_model">Модель сенсора:</label>
+            <input type="text" id="sensor_model" name="sensor_model"/>
+            
+            <label for="sensor_resolution">Максимальное разрешение сенсора:</label>
+            <input type="number" min="0" step="1" id="sensor_resolution" name="sensor_resolution"/>
+            
+            <label for="sensor_polling_rate">Максимальная частота опроса сенсора:</label>
+            <input type="number" min="0" step="1" id="sensor_polling_rate" name="sensor_polling_rate"/>
+            
+            <label for="case_material">Материал корпуса:</label>
+            <input type="text" id="case_material" name="case_material"/>
+            
+            <label for="lighting">Подсветка:</label>
+            <select id="lighting" name="lighting">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+
+        {% elif product_type == 'keyboard' %}
+            <label for="type">Тип клавиатуры:</label>    
+            <select id="type" name="type">
+                <option>-</option>
+                <option>Игровая</option>
+                <option>Офисная</option>
+                <option>Стандартная</option>
+            </select>
+
+            <label for="switch_type">Тип переключателей:</label>    
+            <select id="switch_type" name="switch_type">
+                <option>-</option>
+                <option>Механическая</option>
+                <option>Мембранная</option>
+                <option>Оптическая</option>
+                <option>Магнитная</option>
+            </select>
+
+            <label for="switch_name">Название переключателей:</label>    
+            <input type="text" id="switch_name" name="switch_name"/>
+
+            <label for="color">Цвет:</label>    
+            <input type="text" id="color" name="color"/>
+
+            <label for="cyrillic">Кириллица:</label>    
+            <select id="cyrillic" name="cyrillic">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+
+            <label for="wireless">Беспроводная:</label>
+            <select id="wireless" name="wireless">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+
+            <label for="cable_braid">Оплётка кабеля:</label>
+            <select id="cable_braid" name="cable_braid">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+
+        {% elif product_type == 'headphones' %}
+            <label for="type">Тип наушников:</label>    
+            <select id="type" name="type">
+                <option>-</option>
+                <option>Без микрофона</option>
+                <option>С микрофоном</option>
+                <option>Игровые</option>
+            </select>
+
+            <label for="wireless">Беспроводные:</label>
+            <select id="wireless" name="wireless">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+            <label for="protection">Пыле-, влаго-защита:</label>
+            <select id="protection" name="protection">
+                <option>-</option>
+                <option>Да</option>
+                <option>Нет</option>
+            </select>
+
+            <label for="case_material">Материал корпуса:</label>
+            <input type="text" id="case_material" name="case_material"/>
+
+            <label for="headphones_color">Цвет наушников:</label>    
+            <input type="text" id="headphones_color" name="headphones_color"/>
+
+            <label for="cable_color">Цвет кабеля:</label>    
+            <input type="text" id="cable_color" name="cable_color"/>
+
+            <label for="ear_cushion_material">Материал амбюшур:</label>
+            <input type="text" id="ear_cushion_material" name="ear_cushion_material"/>
+        {% endif %}
         <input type="file" name="images" id="image-input" onchange="handleFiles(this.files);" multiple>
     </div>
     <button id='submit-button' type="submit">Добавить товар</button>

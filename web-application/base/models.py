@@ -41,9 +41,9 @@ class SharedID(models.Model):
 #----------------------------------------------------------------------------------------------
 class Product(models.Model):
     product_types = [
-        ('Keyboard', 'Клавиатура'),
-        ('Mouse', 'Мышь'),
-        ('Headphones', 'Наушники'),
+        ('keyboard', 'Клавиатура'),
+        ('mouse', 'Мышь'),
+        ('headphones', 'Наушники'),
     ]
 
     id = models.AutoField(primary_key=True)
@@ -59,6 +59,19 @@ class Product(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+    @property
+    def first_image(self):
+        return self.images.first()
+    
+    @property
+    def get_average_rating(self):
+        average = self.review_set.aggregate(Avg('rating'))['rating__avg'] #обратное отношение с именем <имя_модели>_set
+        return round(average, 1) if average is not None else 0.0 # считаем avg(rating) и получаем подключеваое значения словаря
+    
+    @property
+    def get_review_count(self):
+        return self.review_set.count() or 0  # считаем сколько отзывов соответствует этому продукту
 #----------------------------------------------------------------------------------------------
     
 
@@ -97,11 +110,6 @@ class Headphones(models.Model):
     updated = models.DateTimeField(auto_now = True)
     created = models.DateTimeField(auto_now_add = True)
 
-    @property
-    def first_image(self):
-        return self.shared_id.images.first()
-
-
     def save(self, *args, **kwargs):
         if not self.shared_id:
             shared_id = SharedID.objects.create(type='Headphones')  
@@ -118,14 +126,6 @@ class Headphones(models.Model):
     def __str__(self):
         return str(self.name)
     
-    def get_review_count(self):
-        return self.shared_id.review_set.count() or 0  
-
-    def get_average_rating(self):
-        average = self.shared_id.review_set.aggregate(Avg('rating'))['rating__avg']
-        return round(average, 1) if average is not None else 0.0
-    
-
 
 class Mouse(models.Model):
         
@@ -184,19 +184,7 @@ class Mouse(models.Model):
 
     def __str__(self):
         return str(self.name)
-
-    def get_review_count(self):
-        return self.shared_id.review_set.count() or 0  
-
-    def get_average_rating(self):
-        average = self.shared_id.review_set.aggregate(Avg('rating'))['rating__avg']
-        return round(average, 1) if average is not None else 0.0
     
-    @property
-    def first_image(self):
-        return self.shared_id.images.first()
-
-
 
 class Keyboard(models.Model):
         
@@ -256,20 +244,10 @@ class Keyboard(models.Model):
         return str(self.name)
     
 
-    def get_review_count(self):
-        return self.shared_id.review_set.count() or 0  
-
-    def get_average_rating(self):
-        average = self.shared_id.review_set.aggregate(Avg('rating'))['rating__avg']
-        return round(average, 1) if average is not None else 0.0
-
-    @property
-    def first_image(self):
-        return self.shared_id.images.first()
-
 class ProductImage(models.Model):
-    shared_id = models.ForeignKey(SharedID, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="product_images/", null = True, blank = True)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images", null=True)
+    # shared_id = models.ForeignKey(SharedID, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="product_images/", null=True, blank=True)
     
     def delete(self, *args, **kwargs):
         if self.image:
@@ -280,9 +258,9 @@ class ProductImage(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-    product = models.ForeignKey(SharedID, on_delete = models.CASCADE, null = True)
-    title = models.CharField(max_length=350, null=True)
-    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null = True)
+    product = models.ForeignKey(Product, on_delete = models.CASCADE,null=True)
+    title = models.CharField(max_length=350,null=True)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], null=True)
     body = models.TextField(null = True, blank = True)
     updated = models.DateTimeField(auto_now = True)
     created = models.DateTimeField(auto_now_add = True)
@@ -318,10 +296,9 @@ class Cart(models.Model):
     updated = models.DateTimeField(auto_now = True)
 
 
-
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(SharedID, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     
     @property

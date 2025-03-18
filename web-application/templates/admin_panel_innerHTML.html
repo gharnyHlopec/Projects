@@ -20,35 +20,16 @@
                 <ul>
                     {% for item in cart_items|get_item:cart %}
                         <li>
-                            {% if item.product.type == 'Headphones' %}
-                                {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
-                                <br>
-                                {% if item.product.headphones.amount <  item.quantity %}
-                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.headphones.amount }}шт.</b>
-                                {% endif %}
-
-                            {% elif item.product.type == 'Mouse' %}
-                                {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
-                                <br>
-                                {% if item.product.mouse.amount <  item.quantity %}
-                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.mouse.amount }}шт.</b>
-                                {% endif %}
-
-                            {% elif item.product.type == 'Keyboard' %}
-                                {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
-                                <br>
-                                {% if item.product.keyboard.amount <  item.quantity %}
-                                    <b class="warning">На складе недостаточно товара. В наличии есть только {{ item.product.keyboard.amount }}шт.</b>
-                                {% endif %}
-
+                            {{ item.product.name }} - {{ item.quantity }} шт. - 
+                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }} р.</b>
+                            <br>
+                            {% if item.product.amount < item.quantity and cart.status == 'В обработке' %}
+                                <b class="warning">На складе недостаточно товара: {{ item.product.name }}. В наличии только {{ item.product.amount }}шт.</b>
                             {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
-                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
+                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }} р.</p></b>
                 <div class="button-group">
                     {% if cart.status == 'В обработке' %}
                         <button onclick="changeOrderStatus({{ cart.id }},'accept')" class="button accept-button">Принять заказ</button>
@@ -83,16 +64,8 @@
                 <ul>
                     {% for item in cart_items|get_item:cart %}
                         <li>
-                            {% if item.product.type == 'Headphones' %}
-                                {{ item.product.headphones.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.headphones.price|multiply:item.quantity|floatformat:2 }}</b>
-                            {% elif item.product.type == 'Mouse' %}
-                                {{ item.product.mouse.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.mouse.price|multiply:item.quantity|floatformat:2 }}</b>
-                            {% elif item.product.type == 'Keyboard' %}
-                                {{ item.product.keyboard.name }} - {{ item.quantity }} шт. - 
-                                <b>Общая цена: {{ item.product.keyboard.price|multiply:item.quantity|floatformat:2 }}</b>
-                            {% endif %}
+                            {{ item.product.name }} - {{ item.quantity }} шт. - 
+                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }}</b>
                         </li>
                     {% endfor %}
                 </ul>

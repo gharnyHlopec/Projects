@@ -25,7 +25,7 @@
       }
 
       .c-img{
-        object-fit: contain;
+        productect-fit: contain;
         height: 400px;
         width: auto;
       }
@@ -54,22 +54,25 @@
         font-family: Arial, Helvetica, sans-serif
       }
       .page-wrapper{
-        margin-left: 10%;
-        margin-right: 10%;
+        margin-left: 5%;
+        margin-right: 5%;
       }
       .top-elem{
         display: grid;
-        grid-template-columns: 3fr 2fr;
+        grid-template-columns: 2fr 1fr;
       }
       .right-elem{
         text-align: right;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       .button{
         display: inline-block;
         text-decoration: none;
         color: white;
-        width: 80%;
-        max-width: 300px;
+        min-width: 260px;
+        width: 100%;
         padding-top: 6px;
         padding-bottom: 6px;
         border-radius: 8px;
@@ -124,28 +127,28 @@
 
       }
 
-          :root {
+      :root {
       --star-size: 25px;
       --star-color: #ccc;
       --star-background: #fc0;
-    }
-
-    .Stars {
-      --percent: calc(var(--rating) / 5 * 100% - 1.1%);
-      
-      display: inline-block;
-      font-size: var(--star-size);
-      
-      line-height: 1;
-      
-      &::before {
-        content: '★★★★★';
-        letter-spacing: 3px;
-        background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
       }
-    }
+
+      .Stars {
+        --percent: calc(var(--rating) / 5 * 100% - 1.1%);
+        
+        display: inline-block;
+        font-size: var(--star-size);
+        
+        line-height: 1;
+        
+        &::before {
+          content: '★★★★★';
+          letter-spacing: 3px;
+          background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
 
       .rating{
           display: flex;
@@ -161,14 +164,33 @@
       .back-button-wrapper{
         margin-bottom: 12px;
       }
-    .back-button-link{
-        text-decoration: none;
-        color:gray;
+      .back-button-link{
+          text-decoration: none;
+          color:gray;
       }
-    .back-button-link:hover{
-        color: black;
+      .back-button-link:hover{
+          color: black;
       }
-      
+      .buttons{
+          margin-left:10px;
+          box-sizing: border-box;
+      }
+        @media screen and (max-width:770px){
+          .top-elem{
+            display: inline;
+          }
+          .right-elem{
+            margin-top:20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+          }
+          .information{
+            text-align: left;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+          }
+        }
     </style>
   </head>
   <body>
@@ -177,83 +199,87 @@
     </div>
     <div class="page-wrapper">
       <div class="back-button-wrapper">
-        <a class="back-button-link" href="{% url 'catalog' page=product_type %}">←Назад к каталогу</a>
+        <a class="back-button-link" href="{% url 'catalog' page=product.type %}">←Назад к каталогу</a>
       </div>
-      <h2>{{ obj.name }}</h2>
+      <h2>{{ product.name }}</h2>
       <div class="top-elem">
         <div class="left-elem">
           {% if image_amount != 0 %}
-          <div id="carouselExampleIndicators" class="carousel slide" data-bs-theme="dark">
-                <div class="carousel-indicators">
-                  {% for pic in images %}
-                    {% if forloop.counter0 == 0 %}
-                      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" class="active" aria-current="true"></button>
-                    {% else %}
-                      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}"></button>
-                    {% endif %}                
-                  {% endfor %}
-                </div>
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-theme="dark">
+                  <div class="carousel-indicators">
+                    {% for pic in images %}
+                      {% if forloop.counter0 == 0 %}
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" class="active" aria-current="true"></button>
+                      {% else %}
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}"></button>
+                      {% endif %}                
+                    {% endfor %}
+                  </div>
 
-                <div class="carousel-inner с-item">
-                  {% for pic in images %}
-                    {% if forloop.counter0 == 0 %}
-                      <div class="carousel-item active c-item">
-                        <img src="{{ pic.image.url }}" class="d-block w-100 c-img">
-                      </div>
-                    {% else %}
-                      <div class="carousel-item c-item">
-                        <img src="{{ pic.image.url }}" class="d-block w-100 c-img">
-                      </div>
-                    {% endif %}
-                  {% endfor %}
-                </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
+                  <div class="carousel-inner с-item">
+                    {% for pic in images %}
+                      {% if forloop.counter0 == 0 %}
+                        <div class="carousel-item active c-item">
+                          <img src="{{ pic.image.url }}" class="d-block w-100 c-img">
+                        </div>
+                      {% else %}
+                        <div class="carousel-item c-item">
+                          <img src="{{ pic.image.url }}" class="d-block w-100 c-img">
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
           {% else %}
             <img src="{% static 'images/placeholder.jpg' %}" alt="Placeholder">
           {% endif %}
         </div>
 
         <div class="right-elem">
-          <h2>{{ obj.price }} р.</h2>
-          {% if review_count != 0 %}
-          <div class="rating">
-              <div class="Stars" style="--rating: {{ average_rating }};"></div>
-          <p class="average-rating">&nbsp;{{ average_rating }}&nbsp;</p>  
-          ({{ review_count }})
-          </div>
-          {% else %}
-          <div class="rating">
-            Пока нет отзывов
-          </div>
-          {% endif %}
-          {% if request.user.is_staff %}
-          <h2>Количество: {{ obj.amount }}</h2>
-          <p>
-            <a href="{% url 'update-product' obj.shared_id %}" class="button change-button">Изменить информацию о товаре</a>
-          </p>
-          <p>
-            <a href="{% url 'delete-product' obj.shared_id %}" class="button delete-button">Удалить товар из каталога</a>
-          </p>
-          {% elif obj.amount == 0 %}
-          <h2>Доступность: нет в наличии</h2>
-          {% endif %}
-          <p>
-            <a href="{% url 'product-reviews' obj.shared_id %}" class="button review-button">Отзывы</a>
-          </p>
-          <div class="add-to-cart-div">
-            {% if obj.amount > 0 and request.user.is_staff == False %}
-            <button value="{{ obj.shared_id.id }}" class="button add-to-cart-button">Добавить в корзину</button>
+          <div class="information">
+            <h2>{{ product.price }} р.</h2>
+            {% if product.get_review_count != 0 %}
+              <div class="rating">
+                  <div class="Stars" style="--rating: {{ product.get_average_rating }};"></div>
+              <p class="average-rating">&nbsp;{{ product.get_average_rating }}&nbsp;</p>  
+              ({{ product.get_review_count }})
+              </div>
             {% else %}
-            <button value="{{ obj.shared_id.id }}" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                <p>Пока нет отзывов</p>
             {% endif %}
+            {% if request.user.is_staff %}
+              <h3>Количество: {{ product.amount }}</h3>
+            {% elif product.amount == 0 %}
+              <h2>Доступность: нет в наличии</h2>
+            {% endif %}
+          </div>
+          <div class="buttons">
+            {% if request.user.is_staff %}
+            <p>
+              <a href="{% url 'update-product' product.id %}" class="button change-button">Изменить информацию о товаре</a>
+            </p>
+            <p>
+              <a href="{% url 'delete-product' product.id %}" class="button delete-button">Удалить товар из каталога</a>
+            </p>
+            {% endif %}
+            <p>
+              <a href="{% url 'product-reviews' product.id %}" class="button review-button">Отзывы</a>
+            </p>
+            <div class="add-to-cart-div">
+              {% if product.amount > 0 and request.user.is_staff == False %}
+                <button value="{{ product.id }}" class="button add-to-cart-button">Добавить в корзину</button>
+              {% else %}
+                <button value="{{ product.id }}" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
@@ -267,28 +293,27 @@
         </thead>
         <tbody>
           {% for item, value in zipped_data %}
-          {% if value != None and value != '-' %}
-          <tr>
-            <td>{{ item }}</td>
-            <td>
-              {% if value == True %}
-              ✓
-              {% elif value == False %}
-              x
-              {% else %}
-              {{ value }}
-              {% if 'Дата выхода' in item %} г
-              {% elif 'разрешение' in item %} DPI
-              {% elif 'опрос' in item %} Гц
-              {% endif %}
-              {% endif %}
-            </td>
-          </tr>
-          {% endif %}
+            {% if value != '' and value != '-' %}
+              <tr>
+                <td>{{ item }}</td>
+                <td>
+                  {% if value == True %}
+                    ✓
+                  {% elif value == False %}
+                    x
+                  {% else %}
+                    {{ value }}
+                    {% if 'Дата выхода' in item %} г
+                    {% elif 'разрешение' in item %} DPI
+                    {% elif 'опрос' in item %} Гц
+                    {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>
-
   </div>
 </body>
 </html>

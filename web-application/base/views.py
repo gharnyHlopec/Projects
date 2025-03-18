@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import Headphones, Mouse, Keyboard, SharedID, Review, ProductImage, Cart, CartItem, User, Product
 from .forms import MouseForm, KeyboardForm, HeadphonesForm, ReviewForm, ProductImageForm, MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 import json
 from django.urls import reverse
 from django.db.models import Avg
@@ -80,74 +80,43 @@ def catalog(request, page):
 
     availability = int(request.GET.get('availability', -1))
 
-
-    context = {}
     if page == 'all':
-        headphones = Headphones.objects.filter(name__icontains=q,
-                                       price__gte=min_price,
-                                       price__lte=max_price,
-                                       date__gte=min_year,
-                                       date__lte=max_year,
-                                       amount__gt=availability)
-        mouses = Mouse.objects.filter(name__icontains=q,
-                               price__gte=min_price,
-                               price__lte=max_price,
-                               date__gte=min_year,
-                               date__lte=max_year,
-                               amount__gt=availability)
-        keyboards = Keyboard.objects.filter(name__icontains=q,
-                                     price__gte=min_price,
-                                     price__lte=max_price,
-                                     date__gte=min_year,
-                                     date__lte=max_year,
-                                     amount__gt=availability)
-        
-        if sort_param:
-            headphones = headphones.order_by(sort_param)
-            mouses = mouses.order_by(sort_param)
-            keyboards = keyboards.order_by(sort_param)
-        sum = len(headphones) + len(mouses) + len(keyboards)
+        products = Product.objects.filter(name__icontains=q,
+                                            price__gte=min_price,
+                                            price__lte=max_price,
+                                            year__gte=min_year,
+                                            year__lte=max_year,
+                                            amount__gt=availability)
 
-        context = {
-            'headphones': headphones,
-            'mouses': mouses,
-            'keyboards': keyboards,
-            'sum': sum
-        } 
     else:
-        if page == 'headphones':
-            obj = Headphones.objects.all()
-        elif page == 'mouse':
-            obj = Mouse.objects.all()
-        elif page == 'keyboard':
-            obj = Keyboard.objects.all()
-        
-        obj = obj.filter(price__gte=min_price,
-                            price__lte=max_price,
-                            date__gte=min_year,
-                            date__lte=max_year,
-                            amount__gt=availability)
-    
-        if sort_param:
-            obj = obj.order_by(sort_param)
-        context['obj'] = obj
+        products = Product.objects.filter(type=page,
+                                        price__gte=min_price,
+                                        price__lte=max_price,
+                                        year__gte=min_year,
+                                        year__lte=max_year,
+                                        amount__gt=availability)
+    if sort_param:
+        products = products.order_by(sort_param)
+    amount_of_products = len(products)
 
-    context['page'] = page
-    context['q'] = q
-    context['min_price'] = min_price
-    context['max_price'] = max_price
-    context['min_year'] = min_year
-    context['max_year'] = max_year    
-    context['availability'] = availability
-    context['sort'] = sort_param     
+    context = {
+        'products': products,
+        'page':page,
+        'q':q,
+        'min_price':min_price,
+        'max_price':max_price,
+        'min_year':min_year,
+        'max_year':max_year,
+        'availability':availability,
+        'sort':sort_param,
+        'amount_of_products': amount_of_products
+    }   
 
     # paginator = Paginator(obj,2)
     # print(list(paginator.get_elided_page_range()))
-# Исправить sum
-# убрать разделение на 3 объекта
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'product-grid.html',context)
+        html = render(request,'catalog_grid_innerHTML.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
         return render(request, 'catalog.html', context)
@@ -155,31 +124,25 @@ def catalog(request, page):
 
 def info(request,pk):
     
-    elem = SharedID.objects.get(id = pk)
-    average_rating = Review.objects.filter(product=elem).aggregate(Avg('rating'))['rating__avg'] or 0
-    average_rating = round(average_rating,1)
-    review_count = Review.objects.filter(product=elem).count()
+    product = Product.objects.get(id=pk)
+    description = json.loads(product.description)
 
-    if elem.type == 'Headphones':
-        obj = Headphones.objects.get(shared_id = pk)
-        info = ['Дата выхода на рынок','Тип','Беспроводной интерфейс','Пыле-, влаго-, ударопрочность','Материал корпуса','Цвет наушников','Цвет кабеля','Материал покрытия оголовья']
-        data = [obj.date, obj.type, obj.wireless, obj.ruggedness, obj.body_material, obj.headphone_color, obj.cable_color, obj.earpad_material]
-
-        
-    elif elem.type == 'Mouse':
-        obj = Mouse.objects.get(shared_id = pk)
-        info = ['Дата выхода на рынок','Тип','Беспроводная', 'Тип сенсора', 'Модель сенсора', 'Максимальное разрешение сенсора', 'Максимальная частота опроса', 'материал корпуса', 'Подсветка']
-        data = [obj.date, obj.type, obj.wireless, obj.sensor_type, obj.sensor_model, obj.max_sens_res, obj.max_pooling_rate, obj.body_material, obj.backlight]
-
-    elif elem.type == 'Keyboard':
-        obj = Keyboard.objects.get(shared_id = pk)
+    if product.type == 'keyboard':
         info = ['Дата выхода на рынок','Тип','Технология переключателя', 'Наименование переключателей', 'Цвет', 'Кириллица', 'Беспроводная', 'Оплетка кабеля']
-        data = [obj.date, obj.type, obj.switch_type, obj.switch_name, obj.color, obj.сyrillic, obj.wireless, obj.cable_sleeving]
+        data = [product.year,product.type,description["switch_type"],description["switch_name"],description["color"],description["cyrillic"],description["wireless"],description["cable_braid"]]
 
-    images = ProductImage.objects.filter(shared_id = elem)
+    elif product.type == 'mouse':
+        info = ['Дата выхода на рынок','Тип','Беспроводная', 'Тип сенсора', 'Модель сенсора', 'Максимальное разрешение сенсора', 'Максимальная частота опроса', 'материал корпуса', 'Подсветка']
+        data = [product.year,product.type,description["wireless"],description["sensor_type"],description["sensor_model"],description["sensor_resolution"],description["sensor_polling_rate"],description["case_material"],description["lighting"]]
+
+    elif product.type == 'headphones':
+        info = ['Дата выхода на рынок','Тип','Беспроводной интерфейс','Пыле-, влаго-, ударопрочность','Материал корпуса','Цвет наушников','Цвет кабеля','Материал покрытия оголовья']
+        data = [product.year,product.type,description["wireless"],description["protection"],description["case_material"],description["headphones_color"],description["cable_color"],description["ear_cushion_material"]]
+        
+    images = ProductImage.objects.filter(product_id = product)
     image_amount = len(images)
     zipped_data = zip(info, data)
-    context = {"obj": obj, "zipped_data": zipped_data, "images":images, "average_rating": average_rating, 'review_count':review_count, "image_amount":image_amount, "product_type":elem.type.lower()}
+    context = {"product": product, "zipped_data": zipped_data, "images":images, "image_amount":image_amount}
 
     return render(request, 'info.html', context)
 
@@ -191,9 +154,9 @@ def cart(request):
     #Если запрос пришел с AJAX, то добавляем/убавляем количество товара в корзине
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         data = json.loads(request.body)
-        item_id = data.get('product_id')
+        cart_id = data.get('product_id')
         value = data.get('value')
-        cart_item = get_object_or_404(CartItem, id=item_id)
+        cart_item = get_object_or_404(CartItem, id=cart_id)
 
         if value:
             cart_item.quantity += int(value)
@@ -216,23 +179,15 @@ def cart(request):
         return render(request, 'cart.html', context)
 
     #Расписываем подробнее её содержимое
-    items_with_details = []
+    products_with_details = []
     for item in cart_products:
-        product_type = item.product.type
-        
-        if product_type == 'Headphones':
-            details = Headphones.objects.get(shared_id=item.product)
-        elif product_type == 'Mouse':
-            details = Mouse.objects.get(shared_id=item.product)
-        elif product_type == 'Keyboard':
-            details = Keyboard.objects.get(shared_id=item.product)
-
+        details = Product.objects.get(id=item.product.id)
         item_details = {
             'cart_item_id': item.id,
             'name': details.name,
-            'price': round(details.price,2),
+            'price': details.price,
             'quantity': item.quantity,
-            'result': round(details.price * item.quantity,2),
+            'result': details.price * item.quantity,
         }
 
         if item.first_image is not None:
@@ -240,15 +195,12 @@ def cart(request):
         else:
             item_details['image'] = static('/images/placeholder.jpg')
 
-        items_with_details.append(item_details) 
+        products_with_details.append(item_details) 
 
-    for elem in items_with_details:
-        total_sum +=elem['result']
+    for product_with_details in products_with_details:
+        total_sum += product_with_details['result']
 
-    total_sum = round(total_sum,2)
-
-    context = {'cart_products':cart_products, 
-                'items_with_details':items_with_details, 'total_sum':total_sum}
+    context = {'products_with_details':products_with_details, 'total_sum':total_sum}
     #Если AJAX-запрос, то просто меняем внутренности корзины
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest': 
         navbar_html = render(request,'navbar.html')
@@ -288,9 +240,9 @@ def contactInformation(request):
 
 
 def reviews(request, pk):
-    elem = SharedID.objects.get(id = pk)
-    reviews = elem.review_set.all().order_by('-created')
-    context = {'reviews':reviews, "pk":pk}
+    product = Product.objects.get(id = pk)
+    reviews = product.review_set.all().order_by('-created')
+    context = {'reviews':reviews, "product":product}
     return render(request, 'reviews.html', context)
 
 @login_required(login_url='/login')
@@ -299,7 +251,7 @@ def postReview(request, pk):
     if request.method == 'POST':
         Review.objects.create(
             user=request.user,
-            product = SharedID.objects.get(id = pk),
+            product = Product.objects.get(id = pk),
             title=request.POST.get('title'),
             rating = request.POST.get('rating'),
             body=request.POST.get('body')
@@ -315,58 +267,12 @@ def postReview(request, pk):
 def deleteReview(request, prod_id, pk):
     review = Review.objects.get(id=pk)
 
-    if request.user != review.user and request.user.is_staff !=  True:
+    if request.user != review.user and request.user.is_staff != True:
         return HttpResponse('You are not allowed here!!')
     if request.method == 'POST':
         review.delete()
         return redirect('product-reviews', prod_id)
-    return render(request, 'delete.html', {'obj':review.body[:50]})
-
-
-@login_required(login_url='/login')
-@user_passes_test(only_for_staff, login_url='/login')
-def addProduct(request,product_type):
-    if request.method == 'POST':
-        product_type = request.POST.get('product_type')
-        if product_type == 'mouse':
-            form = MouseForm(request.POST, request.FILES)
-        elif product_type == 'keyboard':
-            form = KeyboardForm(request.POST, request.FILES)
-        elif product_type == 'headphones':
-            form = HeadphonesForm(request.POST, request.FILES)
-        if form.is_valid():
-            elem = form.save()
-            related_data = SharedID.objects.get(pk=elem.shared_id.id)
-
-            images = request.FILES.getlist('images')
-            for pic in images:
-                try:
-                    ProductImage.objects.create(
-                        shared_id=related_data,
-                        image=pic
-                    )
-                except Exception as e:
-                    messages.error(request, "Произошла ошибка при загрузке изображения.")
-            return JsonResponse({'redirect':reverse('catalog',kwargs={'page':product_type}) })
-        else:
-            errors = form.errors
-            messages.error(request, 'Error')
-            context = {'form': form,'errors': errors, 'product_type':product_type}
-            html = render(request, 'add_product_form_innerHTML.html',context)
-            return JsonResponse({'html':html.content.decode('utf-8')})
-    else:
-        if product_type == 'mouse':
-            form = MouseForm()
-        elif product_type == 'keyboard':
-            form = KeyboardForm()
-        else:
-            form = HeadphonesForm()
-        context = {'form': form, 'product_type':product_type}
-
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            html = render(request, 'add_product_form_innerHTML.html', context)
-            return JsonResponse({'html':html.content.decode('utf-8')})
-        return render(request, 'add_product.html', context)
+    return render(request, 'delete.html')
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -411,22 +317,11 @@ def updateProduct(request,pk):
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
 def deleteProduct(request,pk):
-    elem = SharedID.objects.get(id = pk) 
-    if elem.type == 'Keyboard':
-        obj = Keyboard.objects.get(shared_id=pk)
-        page = 'keyboard'
-    elif elem.type == 'Mouse':
-        obj = Mouse.objects.get(shared_id=pk)
-        page = 'mouse'        
-    elif elem.type =='Headphones':
-        obj = Headphones.objects.get(shared_id=pk)
-        page = 'headphones'
-
+    product = Product.objects.get(id = pk) 
     if request.method == 'POST':
-        obj.delete()
-        return redirect('catalog', page)
-    
-    return render(request, 'delete.html', {'obj':obj})
+        product.delete()
+        return redirect('catalog',product.type)
+    return render(request, 'delete.html', {'pruduct':product})
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -443,12 +338,11 @@ def addToCart(request):
         data = json.loads(request.body)
         product_id = data.get('product_id')
         quantity = 1
-        product = get_object_or_404(SharedID, id=product_id)
+        product = get_object_or_404(Product, id=product_id)
 
         if (not request.user.is_authenticated) and (not request.session.session_key):
             session = SessionStore()
             session.create()
-            session_key = session.session_key
             request.session = session
             
         cart, _ = Cart.objects.get_or_create(
@@ -481,13 +375,7 @@ def adminPanel(request):
             with transaction.atomic():
                 cartItems = CartItem.objects.filter(cart=cart)
                 for item in cartItems:
-                    if item.product.type == 'Headphones':
-                        details = Headphones.objects.get(shared_id=item.product)
-                    elif item.product.type == 'Mouse':
-                        details = Mouse.objects.get(shared_id=item.product)
-                    elif item.product.type == 'Keyboard':
-                        details = Keyboard.objects.get(shared_id=item.product)
-
+                    details = Product.objects.get(id=item.product.id)
                     if item.quantity > details.amount:
                         cart.status = 'Отменен системой (на складе недостаточно товара)'
                         cart.save()
@@ -495,19 +383,12 @@ def adminPanel(request):
                     else:
                         details.amount -= item.quantity
                         details.save()
-
                 cart.status = 'Принят'
         elif data.get('action') == 'decline':
             if cart.status == 'Принят':
                 cartItems = CartItem.objects.filter(cart=cart)
                 for item in cartItems:
-                    if item.product.type == 'Headphones':
-                        details = Headphones.objects.get(shared_id=item.product)
-                    elif item.product.type == 'Mouse':
-                        details = Mouse.objects.get(shared_id=item.product)
-                    elif item.product.type == 'Keyboard':
-                        details = Keyboard.objects.get(shared_id=item.product)
-
+                    details = Product.objects.get(id=item.product.id)
                     details.amount += item.quantity
                     details.save()
             cart.status = 'Отменен'
@@ -580,35 +461,39 @@ def userOrders(request):
 
     return render(request, 'user-orders.html', context)
 
-def testView(request,product_type):
-    form = ProductForm()
-    if request.method == 'POST':
-        data = request.POST.get('json_data')
-        
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.description = data
-            product.save()
-            # images = request.FILES.getlist('images')
-            # for pic in images:
-            #     try:
-            #         ProductImage.objects.create(
-            #             shared_id=related_data,
-            #             image=pic
-            #         )
-            #     except Exception as e:
-            #         messages.error(request, "Произошла ошибка при загрузке изображения.")
-
-            return JsonResponse({'redirect':reverse('catalog',kwargs={'page':product_type}) })
-        else:
-            context = {'form': form, 'product_type':product_type}
-            html = render(request, 'test_innerHTML.html',context)
-            return JsonResponse({'html':html.content.decode('utf-8')})
-
-    context = {'form': form, 'product_type':product_type}
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request, 'test_innerHTML.html',context)
-        return JsonResponse({'html':html.content.decode('utf-8')})
+def addProduct(request,product_type,allowed_types):
+    if product_type not in allowed_types.split('|'):
+        return HttpResponseNotFound('Invalid product type')
     else:
-        return render(request, 'testHTML.html', context)
+        form = ProductForm()
+        if request.method == 'POST':
+            data = request.POST.get('json_data')
+            
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                product = form.save(commit=False)
+                product.type = product_type
+                product.description = data
+                product.save()
+                product_id = Product.objects.get(pk=product.id)
+                images = request.FILES.getlist('images')
+                for pic in images:
+                    try:
+                        ProductImage.objects.create(
+                            product_id=product_id,
+                            image=pic
+                        )
+                    except Exception as e:
+                        messages.error(request, "Произошла ошибка при загрузке изображения.")
+                return JsonResponse({'redirect':reverse('catalog',kwargs={'page':product_type}) })
+            else:
+                context = {'form': form, 'product_type':product_type}
+                html = render(request, 'add_product_form_innerHTML.html',context)
+                return JsonResponse({'html':html.content.decode('utf-8')})
+
+        context = {'form': form, 'product_type':product_type}
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render(request, 'add_product_form_innerHTML.html',context)
+            return JsonResponse({'html':html.content.decode('utf-8')})
+        else:
+            return render(request, 'add_product.html', context)

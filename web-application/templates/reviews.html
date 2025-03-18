@@ -81,10 +81,10 @@
 <div class="review-page-wrapper">
     <div class="review-button-wrapper">
         <div class="back-button-wrapper">
-            <a class="back-button-link" href="{% url 'info' pk=pk %}">←Назад к товару</a>
+            <a class="back-button-link" href="{% url 'info' pk=product.id %}">←Назад к товару</a>
         </div>
         {% if request.user.is_staff == False %}
-            <a href="{% url 'post-review' pk %}" class="leave-review-button">Оставить отзыв</a> 
+            <a href="{% url 'post-review' product.id %}" class="leave-review-button">Оставить отзыв</a> 
         {% endif %}
     </div>
     <div class="review-wrapper">
@@ -99,7 +99,7 @@
                         {{ review.user.first_name }} -
                         {{ review.created|date:"H:i:s d/m/Y" }}
                         {% if request.user == review.user or request.user.is_staff == True %}
-                            - <a href="{% url 'delete-review' pk review.id %}" class="delete-review">Удалить</a>
+                            - <a href="{% url 'delete-review' product.id review.id %}" class="delete-review">Удалить</a>
                         {% endif %}
                     </div>
                 </div>

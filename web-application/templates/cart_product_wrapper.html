@@ -1,21 +1,21 @@
 <div class="cart-products-wrapper">
     {% if cart_item_count != 0 %}
-        {% for elem in items_with_details %}
+        {% for product in products_with_details %}
             <div class="cart-item">
                 <div class="image-container">
-                    <img src="{{ elem.image }}" alt="{{ elem.name }}">
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
                 </div>
-                <h2 class="item-name">{{ elem.name }}</h2>
+                <h2 class="item-name">{{ product.name }}</h2>
                 <div class="quantity-controls">
-                    <h2 class="item-price">{{ elem.result }}р</h2>
-                    {% if elem.quantity > 1 %}
-                    <button onclick="changeQuantity(this.value,'-1')" value="{{ elem.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
+                    <h2 class="item-price">{{ product.result }}р</h2>
+                    {% if product.quantity > 1 %}
+                        <button onclick="changeQuantity(this.value,'-1')" value="{{ product.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
                     {% else %}
-                    <button disabled onclick="changeQuantity(this.value,'-1')" value="{{ elem.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
+                        <button disabled onclick="changeQuantity(this.value,'-1')" value="{{ product.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
                     {% endif %}
-                    <span id="quantity-{{ elem.cart_item_id }}">{{ elem.quantity }}</span>
-                    <button onclick="changeQuantity(this.value,'1')" value="{{ elem.cart_item_id }}" id="plus-button" class="button quantity-button">+</button>
-                    <button value="{{ elem.cart_item_id }}" onclick="deleteFromCart(this.value)" class="button delete-button">Удалить</button>
+                    <span id="quantity-{{ product.cart_item_id }}">{{ product.quantity }}</span>
+                    <button onclick="changeQuantity(this.value,'1')" value="{{ product.cart_item_id }}" id="plus-button" class="button quantity-button">+</button>
+                    <button value="{{ product.cart_item_id }}" onclick="deleteFromCart(this.value)" class="button delete-button">Удалить</button>
                 </div>
             </div>
         {% endfor %}

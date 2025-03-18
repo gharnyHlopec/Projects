@@ -6,7 +6,7 @@ urlpatterns = [
     path('login/',views.loginPage, name = 'login'),
     path('logout/',views.logoutUser, name = 'logout'),
     path('register/',views.registerPage, name = 'register'),
-    path('add_product/<str:product_type>', views.addProduct, name='add_product'),
+    path('add_product/<str:product_type>', views.addProduct, name='add_product', kwargs={'allowed_types':'mouse|keyboard|headphones'}),
     path('update-product/<str:pk>', views.updateProduct, name='update-product'),
     path('delete-product/<str:pk>', views.deleteProduct, name='delete-product'),
     path('delete-image/<str:pk>/<str:pk2>', views.deleteImage, name='delete-image'), # возможно нужно будет удалить
@@ -22,6 +22,5 @@ urlpatterns = [
     path('profile/',views.profile, name = 'profile'),
     path('update-profile/',views.updateProfile, name = 'update-profile'),
     path('user-orders/',views.userOrders, name = 'user-orders'),
-    path('contact-information/', views.contactInformation, name='contact-information'),
-    path('test/<str:product_type>',views.testView,name='test')      
+    path('contact-information/', views.contactInformation, name='contact-information')      
 ]
