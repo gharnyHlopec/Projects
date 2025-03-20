@@ -13,9 +13,9 @@
             {{ field.label_tag }}
             {{ field }}
             {% if field.errors %}
-            <ul class="errorlist">
+            <ul class="errorlist" style="color: red;">
                 {% for error in field.errors %}
-                <li>{{ error }}</li>
+                <p>{{ error }}<p>
                 {% endfor %}
             </ul>
             {% endif %}

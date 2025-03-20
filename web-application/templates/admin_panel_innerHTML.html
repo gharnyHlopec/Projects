@@ -65,12 +65,12 @@
                     {% for item in cart_items|get_item:cart %}
                         <li>
                             {{ item.product.name }} - {{ item.quantity }} шт. - 
-                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }}</b>
+                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }} р.</b>
                         </li>
                     {% endfor %}
                 </ul>
-                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}</p></b>
-            <hr>
+                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }} р.</p></b>
+                <hr>
             </div>
         {% endif %}
     {% endfor %}

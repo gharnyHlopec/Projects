@@ -36,7 +36,7 @@ def loginPage(request):
         try:
             user = User.objects.get(email = email)
         except:
-            messages.error(request, 'Пользователь не существует')
+            ...
 
         user = authenticate(request, email = email, password = password)
 
@@ -44,7 +44,7 @@ def loginPage(request):
             login(request, user)
             return redirect('main')
         else:
-            messages.error(request, "Имя пользователя или пароль не существует")
+            messages.error(request, "Имя пользователя или пароль некорректны")
 
     context = {'page':page}
     return render(request, 'login_register.html',context)
@@ -63,9 +63,6 @@ def registerPage(request):
             user.save()
             login(request, user)
             return redirect('main')
-        else:
-            messages.error(request,'Во время регистрации возникла ошибка')
-
 
     return render(request,'login_register.html', {'form' : form})
 

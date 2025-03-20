@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if page == 'login' %}
-    <title>Вход</title>
+      <title>Вход</title>
     {% else %}
-    <title>Регистрация</title>
+      <title>Регистрация</title>
     {% endif %}
     <style>
       body{
@@ -48,18 +48,18 @@
         border-radius: 4px;
         box-sizing: border-box;
       }
-      .login-register-container input[type=submit]{
+      .login-register-container button[type=submit]{
         width: 100%;
         background-color: #14b814;  
         color: white;
         padding: 14px 20px;
-        margin: 0;
         border: none;
         border-radius: 8px;
-        cursor: poiner;
+        cursor: pointer;
+        margin-top:10px;
       }
 
-      .login-register-container input[type=submit]:hover {
+      .login-register-container button[type=submit]:hover {
         background-color: #4CAF50;
         
       }
@@ -71,6 +71,11 @@
       .form-ref:hover{
         text-decoration: underline;
         color: blue;
+      }
+      .messages{
+        color:red;
+        margin-top: 5px;
+        margin-bottom: 5px;
       }
 
       @media screen and (max-height: 465px),
@@ -102,19 +107,17 @@
           <label>Пароль:</label>
           <input type="password" name="password" />
           
-          <input type="submit" value="Войти" />
+          <button type="submit">Войти</button> 
         </form>
-
         {% if messages %}
-          <ul class="messages">
+          <div class="messages">
             {% for message in messages %}
-              <li>{{ message }}</li>
+              <p>{{ message }}</p>
             {% endfor %}
-          </ul>
+          </div>
         {% endif %}
 
-        Ещё не зарегистрировались?
-        <a class = "form-ref" href="{% url 'register' %}">Зарегистрироваться</a>
+        <p>Ещё не зарегистрировались? <a class="form-ref" href="{% url 'register' %}">Зарегистрироваться</a></p>
       </div>
     </div>
   {% else %}
@@ -123,17 +126,19 @@
         <h2>Регистрация</h2>
         <form method="POST" action="">
           {% csrf_token %}
-          {{ form.as_p }}
-          <input type="submit" value="Зарегистрироваться" />
-        </form>
+          
+          {% for field in form %}
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+              {% for error in field.errors %}
+              <p style="color:red">{{ error }}<p>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}  
 
-        {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-              <li>{{ message }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
+          <button type="submit">Зарегистрироваться</button>
+        </form>
 
         <p>Уже есть аккаунт? <a class="form-ref" href="{% url 'login' %}">Войти</a></p>
       </div>

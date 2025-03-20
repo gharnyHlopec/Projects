@@ -48,23 +48,11 @@ class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
-        labels = {
-            'first_name': 'Имя',
-            'last_name': 'Фамилия',
-            'Email': 'Email',
-        }
 
 class MyUserEditForm(ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'phone_number']
-
-        labels = {
-            'first_name': 'Имя',
-            'last_name': 'Фамилия',
-            'email': 'Email',
-            'phone_number': 'Номер телефона',
-        }
 
     phone_number = forms.CharField(
         max_length=20,
@@ -77,12 +65,6 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'phone_number']
-        labels = {
-            'first_name': 'Имя',
-            'last_name': 'Фамилия',
-            'email': 'Email',
-            'phone_number': 'Номер телефона',
-        }
 
 
 class SharedID(ModelForm):
