@@ -42,12 +42,17 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('main')
+            # return redirect('main')
+            return JsonResponse({'redirect':reverse('main') })
         else:
             messages.error(request, "Имя пользователя или пароль некорректны")
 
     context = {'page':page}
-    return render(request, 'login_register.html',context)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        html = render(request,'login-container.html',context)
+        return JsonResponse({'html':html.content.decode('utf-8')})
+    else:
+        return render(request, 'login_register.html',context)
 
 def logoutUser(request):
     logout(request)

@@ -96,35 +96,13 @@
 {% include 'navbar.html' %}
   {% if page == 'login' %}
     <div class="login-register-container login-container">
-      <div class="form-container">
-        <h2>Вход</h2>
-        <form method="POST">
-          {% csrf_token %}
-
-          <label>Email:</label>
-          <input type="text" name="email" />
-          
-          <label>Пароль:</label>
-          <input type="password" name="password" />
-          
-          <button type="submit">Войти</button> 
-        </form>
-        {% if messages %}
-          <div class="messages">
-            {% for message in messages %}
-              <p>{{ message }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        <p>Ещё не зарегистрировались? <a class="form-ref" href="{% url 'register' %}">Зарегистрироваться</a></p>
-      </div>
+      {% include 'login-container.html' %}
     </div>
   {% else %}
     <div class="login-register-container register-container">
       <div class="form-container">
         <h2>Регистрация</h2>
-        <form method="POST" action="">
+        <form method="POST" action="" id="register-form">
           {% csrf_token %}
           
           {% for field in form %}
@@ -146,3 +124,37 @@
   {% endif %}
 </body>
 </html>
+
+<script>
+  function login(event){
+    event.preventDefault();
+    csrf = '{{ csrf_token }}'
+    const formData = new FormData(document.getElementById('login-form'));
+    loginURL = '{% url "login" %}'
+    fetch(loginURL,{
+      method:'POST',
+      headers:{
+        'X-Requested-With':'XMLHttpRequest',
+        'X-CSRFToken':csrf
+      },
+      body:formData,
+    })
+    .then(response => {
+      if(!response.ok){
+          throw new Error('Newtowk response was not correct');
+      } else return response.json();
+    })
+    .then(data => {
+      if (data.redirect){
+            window.location.href = data.redirect
+        } 
+      else {
+        document.querySelector('.login-container').innerHTML = data.html;
+        document.querySelector('input[name="email"]').value = formData.get('email');
+      }
+    })
+    .catch(error => {
+        console.error("Error: ",error);
+    });
+  }
+</script>

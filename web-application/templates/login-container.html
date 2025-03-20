@@ -1,0 +1,23 @@
+<div class="form-container">
+    <h2>Вход</h2>
+    <form method="POST" id="login-form">
+      {% csrf_token %}
+
+      <label>Email:</label>
+      <input type="text" name="email" />
+      
+      <label>Пароль:</label>
+      <input type="password" name="password" />
+      
+      <button type="submit" onclick="login(event)">Войти</button> 
+    </form>
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <p>Ещё не зарегистрировались? <a class="form-ref" href="{% url 'register' %}">Зарегистрироваться</a></p>
+</div>
