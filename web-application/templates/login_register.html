@@ -100,37 +100,18 @@
     </div>
   {% else %}
     <div class="login-register-container register-container">
-      <div class="form-container">
-        <h2>Регистрация</h2>
-        <form method="POST" action="" id="register-form">
-          {% csrf_token %}
-          
-          {% for field in form %}
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.errors %}
-              {% for error in field.errors %}
-              <p style="color:red">{{ error }}<p>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}  
-
-          <button type="submit">Зарегистрироваться</button>
-        </form>
-
-        <p>Уже есть аккаунт? <a class="form-ref" href="{% url 'login' %}">Войти</a></p>
-      </div>
+      {% include 'register-container.html' %}
     </div>
   {% endif %}
 </body>
 </html>
 
 <script>
-  function login(event){
+  function login(event,operation){
     event.preventDefault();
     csrf = '{{ csrf_token }}'
-    const formData = new FormData(document.getElementById('login-form'));
-    loginURL = '{% url "login" %}'
+    const formData = new FormData(document.getElementById(`${operation}-form`));
+    loginURL = `/${operation}/`
     fetch(loginURL,{
       method:'POST',
       headers:{
@@ -141,7 +122,7 @@
     })
     .then(response => {
       if(!response.ok){
-          throw new Error('Newtowk response was not correct');
+        throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
       } else return response.json();
     })
     .then(data => {
@@ -149,8 +130,10 @@
             window.location.href = data.redirect
         } 
       else {
-        document.querySelector('.login-container').innerHTML = data.html;
+        document.querySelector(`.${operation}-container`).innerHTML = data.html;
+        if (operation == 'login'){
         document.querySelector('input[name="email"]').value = formData.get('email');
+        }
       }
     })
     .catch(error => {

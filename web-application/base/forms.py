@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Mouse, Keyboard, Headphones, Review, SharedID, ProductImage, User,Product
+from .models import Review, ProductImage, User,Product
 from django.db.models import Max
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
@@ -49,6 +49,7 @@ class MyUserCreationForm(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
 
+
 class MyUserEditForm(ModelForm):
     class Meta:
         model = User
@@ -67,77 +68,17 @@ class UserForm(ModelForm):
         fields = ['first_name', 'last_name', 'email', 'phone_number']
 
 
-class SharedID(ModelForm):
-    class Meta:
-        model = SharedID
-        fields = '__all__'
-
-class MouseForm(ModelForm):
-    class Meta:
-        model = Mouse
-        fields = ['name', 'price', 'amount', 'date', 'type', 'wireless','sensor_type', 'sensor_model','max_sens_res','max_pooling_rate','body_material', 'backlight']
-        labels = {
-            'name': 'Название',
-            'price': 'Цена',
-            'amount': 'Количество',
-            'date': 'Дата выхода на рынок',
-            'type': 'Тип',
-            'wireless': 'Беспроводная',
-            'sensor_type': 'Тип сенсора',
-            'sensor_model': 'Модель сенсора',
-            'max_sens_res': 'Максимальное разрешение сенсора',
-            'max_pooling_rate': 'Максимальная частота опроса',
-            'body_material': 'Материал корпуса',
-            'backlight': 'Подсветка',
-        }
-
-class KeyboardForm(ModelForm):
-    class Meta:
-        model = Keyboard
-        fields = ['name', 'price', 'amount', 'date', 'type', 'switch_type','switch_name', 'color','сyrillic','wireless','cable_sleeving']
-        
-        labels = {
-            'name': 'Название',
-            'price': 'Цена',
-            'amount': 'Количество',
-            'date': 'Дата выхода на рынок',
-            'type': 'Тип',
-            'switch_type': 'Тип переключателей',
-            'switch_name': 'Название переключателей',
-            'color': 'Цвет',
-            'сyrillic': 'Кириллица',
-            'wireless': 'Беспроводная',
-            'cable_sleeving': 'Оплётка кабеля',
-        }
-
-class HeadphonesForm(ModelForm):
-    class Meta:
-        model = Headphones
-        fields = ['name', 'price', 'amount', 'date', 'type', 'wireless','ruggedness', 'body_material','headphone_color','cable_color','earpad_material']
-
-        labels = {
-            'name': 'Название',
-            'price': 'Цена',
-            'amount': 'Количество',
-            'date': 'Дата выхода на рынок',
-            'type': 'Тип',
-            'wireless': 'Беспроводные',
-            'ruggedness': 'Пыле-, влаго-защита',
-            'body_material': 'Материал корпуса',
-            'headphone_color': 'Цвет наушников',
-            'cable_color': 'Цвет кабеля',
-            'earpad_material': 'Материал амбушюр',
-        }
-
 class ReviewForm(ModelForm):
     class Meta:
         model = Review
         fields = '__all__'
 
+
 class ProductImageForm(ModelForm):
     class Meta:
         model = ProductImage
         fields = ['image']
+
 
 class ProductForm(ModelForm):
     class Meta:

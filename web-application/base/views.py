@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Headphones, Mouse, Keyboard, SharedID, Review, ProductImage, Cart, CartItem, User, Product
-from .forms import MouseForm, KeyboardForm, HeadphonesForm, ReviewForm, ProductImageForm, MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
+from .models import Review, ProductImage, Cart, CartItem, User, Product
+from .forms import MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
 from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 import json
 from django.urls import reverse
-from django.db.models import Avg
+from django.db.models import F
 from django.contrib.sessions.backends.db import SessionStore
 from django.db import transaction
 from django.templatetags.static import static
@@ -42,10 +42,9 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            # return redirect('main')
             return JsonResponse({'redirect':reverse('main') })
         else:
-            messages.error(request, "Имя пользователя или пароль некорректны")
+            messages.error(request, "Email или пароль введены неверно")
 
     context = {'page':page}
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -67,10 +66,13 @@ def registerPage(request):
             user = form.save(commit = False)
             user.save()
             login(request, user)
-            return redirect('main')
-
-    return render(request,'login_register.html', {'form' : form})
-
+            # return redirect('main')
+            return JsonResponse({'redirect':reverse('main') })
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        html = render(request,'register-container.html',{'form' : form})
+        return JsonResponse({'html':html.content.decode('utf-8')})
+    else:
+        return render(request, 'login_register.html',{'form' : form})
 
 def catalog(request, page):
     q = request.GET.get('q', '')
@@ -243,9 +245,21 @@ def contactInformation(request):
 
 def reviews(request, pk):
     product = Product.objects.get(id = pk)
-    reviews = product.review_set.all().order_by('-created')
-    context = {'reviews':reviews, "product":product}
-    return render(request, 'reviews.html', context)
+    q = request.GET.get('stars', '')
+    sort = request.GET.get('sort', '-created')
+    q = list(map(int, q))
+    if q:
+        reviews = product.review_set.filter(rating__in=q).order_by(sort)
+    else:
+        reviews = product.review_set.all().order_by(sort)
+    
+    star_reviews = [product.review_set.filter(rating=i).count() for i in range(5, 0,-1)]
+    context = {'reviews':reviews, "product":product, 'star_reviews':star_reviews, 'sort':sort}
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        html = render(request,'reviews_innerHTML.html',context)
+        return JsonResponse({'html':html.content.decode('utf-8')})
+    else:
+        return render(request, 'reviews.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(staff_not_allowed, login_url='/login')

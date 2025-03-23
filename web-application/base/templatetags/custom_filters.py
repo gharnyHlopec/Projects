@@ -24,3 +24,7 @@ def number(string):
 @register.filter
 def sort_carts(array):
     return array.order_by('updated')
+
+@register.filter
+def module(number):
+    return number%10

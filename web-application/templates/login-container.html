@@ -4,12 +4,12 @@
       {% csrf_token %}
 
       <label>Email:</label>
-      <input type="text" name="email" />
+      <input type="email" name="email" />
       
       <label>Пароль:</label>
-      <input type="password" name="password" />
+      <input type="password" name="password" required/>
       
-      <button type="submit" onclick="login(event)">Войти</button> 
+      <button type="submit" onclick="login(event,'login')">Войти</button> 
     </form>
     {% if messages %}
       <div class="messages">

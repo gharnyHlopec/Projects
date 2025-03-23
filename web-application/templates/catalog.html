@@ -187,6 +187,7 @@
             padding: 8px;
             border: 1px solid #ccc;
             background-color: red;
+            color:white;
         }
         .reset-filter-button:hover{
             background-color: darkred;
@@ -250,7 +251,7 @@
                     <label for="sort">Сортировать по:</label>
                     <select name="sort" id="sort">
                         <option value="">Релевантности</option>
-                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Алфавиту (A-Z)</option>
+                        <option value="name" {% if sort == 'name' %} selected{% endif %}>Алфавиту (A-Z)</option>
                         <option value="-name" {% if sort == '-name' %}selected{% endif %}>Алфавиту (Z-A)</option>
                         <option value="-price" {% if sort == '-price' %}selected{% endif %}>Цене (от высокой к низкой)</option>
                         <option value="price" {% if sort == 'price' %}selected{% endif %}>Цене (от низкой к высокой)</option>

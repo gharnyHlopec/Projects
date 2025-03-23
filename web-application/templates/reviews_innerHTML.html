@@ -1,0 +1,29 @@
+{% load static %}
+{% load custom_filters %}
+
+{% for review in reviews %}
+    <div class="review-content">
+        <div class="review-header">
+            <div class="review-user">
+                {{ review.user.first_name }} -
+                {{ review.created|date:"H:i:s d/m/Y" }}
+                {% if request.user == review.user or request.user.is_staff == True %}
+                    - <a href="{% url 'delete-review' product.id review.id %}" class="delete-review">Удалить</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="rating">
+            {% for i in '12345'|make_list %}
+                {% if forloop.counter <= review.rating %}
+                    <span>★</span>
+                {% else %}
+                    <span>☆</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <h4>{{ review.title }}</h4>
+        <p></p>
+        <p class="review-body">{{ review.body }}</p>
+        <hr>
+    </div>
+{% endfor %}
