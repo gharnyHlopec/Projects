@@ -16,9 +16,6 @@
             display: grid;
             grid-template-columns: 1fr 3fr;
         }
-        .home-container.modified{
-            grid-template-columns: 1fr;
-        }
         .product-grid{
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -33,8 +30,40 @@
         .filter-form select{
             width: 100%;
         }
-        .filter-form.hidden{
+        .home-container.modified{
+            grid-template-columns: 1fr;
+        }
+        .filter-form.closed{
             display: none;
+        }
+        .filter-form img{
+            display:none;
+            margin-left:auto;
+            margin-right:0;
+            width:30px;
+        }
+        .filter-form img:hover{
+            cursor: pointer;
+        }
+        .filter-form.opened{
+            display: flex;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top:0;
+            left:0;
+            z-index: 3;
+            background-color: rgb(0,0,0,0.7);
+            cursor: pointer;
+        }
+        .filter-form.opened form{
+            background-color: white;
+            width:40%;
+            padding:10px;
+            cursor: default;
+        }
+        .filter-form.opened img{
+            display:block;
         }
         .filter-form input{
             width: 100%;
@@ -65,7 +94,6 @@
             display: flex; 
             justify-content: space-between;
             align-items: center; 
-
         }
         .sorting-container .div-mod{
             text-align: left;
@@ -172,9 +200,6 @@
         .add-to-cart-button:hover{
             background-color: green;
         }
-        .myDiv.hidden{
-            display: none;
-        }
         .not-found{
             grid-column: span 3; 
             width: 100%; 
@@ -202,7 +227,6 @@
             padding: 10px;
             border-radius: 5px;
         }
-
         .pagination a{
             text-decoration: none;
             color: #007bff;
@@ -236,10 +260,12 @@
         {% include 'navbar.html' %}
     </div>
     <div class="home-container">
-        <div class="filter-form">
-            <h2>Цена</h2>
-            <hr> 
+        <div class="filter-form"> 
             <form method="get">
+                <img class="close-icon" src="{% static 'images/cross.svg' %}" onclick="closeFilters()" alt="cross">
+                
+                <h2>Цена</h2>
+                <hr>
                 <div>
                     <label for="min_price">Минимальная цена:</label>
                     <input type="number" name="min_price" id="min_price" value="{% if min_price|number > 0 %}{{min_price}}{% endif %}"> 
@@ -279,8 +305,8 @@
         <div>
             <div class="sorting-container">
                 <div class="div-mod">
-                <a onclick="modifyAndHideLayout()">
-                    <img id='filter-hide' src="{% static 'images/arrow_left.svg' %}" alt="Arrow_left">
+                <a onclick="openFilters()">
+                    <img class='filter-icon' src="{% static 'images/tune.svg' %}" alt="Tune">
                 </a>
                 </div>
                 <form method="get">
@@ -308,11 +334,11 @@
     function changePage(newPage) {
         if(newPage != '...'){
             const url = new URL(window.location.href);
-            url.searchParams.set('page', newPage); // Изменяем параметр page
+            url.searchParams.set('page', newPage);
             fetchData(url)
             window.scrollTo({
                 top: 0,
-                behavior: 'smooth' // Добавляет плавность прокрутки
+                behavior: 'smooth'
             });
         }
     }
@@ -320,37 +346,50 @@
 
 
 <script>
-    function modifyAndHideLayout() {
-        const homeContainer = document.querySelector('.home-container');
-        const filterContainer = document.querySelector('.filter-form');
-        const filterHideIcon = document.querySelector('#filter-hide');
+    const homeContainer = document.querySelector('.home-container');
+    const filterContainer = document.querySelector('.filter-form');
+    const filterIcon = document.querySelector('.filter-icon');
+    const closeIcon = document.querySelector('.close-icon');
+    const pagination = document.querySelector('.pagination')
+    const productGrid = document.querySelector('.product-grid')
 
-        homeContainer.classList.toggle('modified');
-        filterContainer.classList.toggle('hidden');
-
-        if (homeContainer.classList.contains('modified')) {
-            filterHideIcon.src = "{% static 'images/arrow_right.svg' %}"; 
-        } else {
-            filterHideIcon.src = "{% static 'images/arrow_left.svg' %}"
-        }
-        changeLayout()
+    function openFilters(){
+        filterContainer.classList.add('opened');
     }
 
-    changeLayout()
+    filterContainer.addEventListener('click',(event) => {
+        if (event.target === filterContainer){
+            closeFilters()
+        }
+    })
     
+    function closeFilters(){
+        filterContainer.classList.remove('opened');
+    }
+
     window.addEventListener('resize',changeLayout)
+    changeLayout()
     function changeLayout(){
-        const productGrid = document.querySelector('.product-grid')
-        const filterContainer = document.querySelector('.filter-form');
-        if (window.innerWidth <= 580 && filterContainer.classList.contains('hidden')){
+
+        if (window.innerWidth <= 665){
+            filterIcon.style.display = '';
             productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-        } else if (window.innerWidth <= 580){
-            productGrid.style.gridTemplateColumns = 'repeat(1, 1fr)';
-        } else if (580 < window.innerWidth && window.innerWidth<= 750){
+            filterContainer.classList.add('closed');
+            homeContainer.classList.add('modified');
+        } else if (665 < window.innerWidth && window.innerWidth<= 750){
+            filterIcon.style.display = 'none';
+            filterContainer.classList.remove('closed');
+            homeContainer.classList.remove('modified');
+            filterContainer.classList.remove('opened');
             productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
         } else if (750 < window.innerWidth){
+            filterIcon.style.display = 'none';
+            filterContainer.classList.remove('closed');
+            homeContainer.classList.remove('modified');
+            filterContainer.classList.remove('opened');
             productGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
         }
+
     }
 </script>
 
