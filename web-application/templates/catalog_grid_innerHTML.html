@@ -1,5 +1,5 @@
 {% load static %}
-
+<div class="product-grid">
 {% for product in products %}
     {% include 'catalog_grid_product_innerHTML.html' %}
 {% endfor %}
@@ -7,3 +7,9 @@
 {% if amount_of_products == 0 %}
     <h2 class="not-found">Отсутствуют товары, соответствующие выбранным параметрам</h2>
 {% endif %}
+</div>
+<div class="pagination">
+    {% for page in page_list %}
+        <a {% if page == current_page %} class="active" {% endif %} onclick="changePage({{ page }})">{{ page }}</a>
+    {% endfor %}
+</div> 

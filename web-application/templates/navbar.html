@@ -115,16 +115,16 @@
         <a class="nav-link" id="main-nav-link" href="{% url 'main' %}">Shop</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link catalog-page" href="{% url 'catalog' page='keyboard' %}">Клавиатуры</a>
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='keyboard' %}">Клавиатуры</a>
       </li>    
       <li class="nav-item">
-        <a class="nav-link catalog-page" href="{% url 'catalog' page='mouse' %}">Мышки</a>
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='mouse' %}">Мышки</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link catalog-page" href="{% url 'catalog' page='headphones' %}">Наушники</a>
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='headphones' %}">Наушники</a>
       </li>
 
-      <form class="search-form" method="GET" action="{% url 'catalog' page='all' %}">
+      <form class="search-form" method="GET" action="{% url 'catalog' products='all' %}">
         <input type="text" id="search-input" placeholder="Введите запрос..." name="q" aria-label="Search">
       </form>
 

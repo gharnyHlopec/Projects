@@ -63,7 +63,8 @@
             padding: 14px 8px;
 
             display: flex; 
-            justify-content: space-between; 
+            justify-content: space-between;
+            align-items: center; 
 
         }
         .sorting-container .div-mod{
@@ -193,6 +194,41 @@
             background-color: darkred;
             cursor: pointer;
         }
+        .pagination{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            list-style: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .pagination a{
+            text-decoration: none;
+            color: #007bff;
+            padding: 10px 15px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        .pagination .prev,
+        .pagination .next {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -255,16 +291,32 @@
                         <option value="-name" {% if sort == '-name' %}selected{% endif %}>Алфавиту (Z-A)</option>
                         <option value="-price" {% if sort == '-price' %}selected{% endif %}>Цене (от высокой к низкой)</option>
                         <option value="price" {% if sort == 'price' %}selected{% endif %}>Цене (от низкой к высокой)</option>
+                        <option value="-year" {% if sort == '-year' %}selected{% endif %}>Год выпуска (сначала новые)</option>
+                        <option value="year" {% if sort == 'year' %}selected{% endif %}>Год выпуска (сначала старые)</option>
                     </select>
                 </form>
             </div>
-            <div class="product-grid">
+            <div class="product-grid-and-pagination">
                 {% include "catalog_grid_innerHTML.html" %}
-            </div> 
+            </div>
         </div>
     </div>
 </body>
 </html>
+
+<script>
+    function changePage(newPage) {
+        if(newPage != '...'){
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', newPage); // Изменяем параметр page
+            fetchData(url)
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Добавляет плавность прокрутки
+            });
+        }
+    }
+</script>
 
 
 <script>
@@ -285,6 +337,7 @@
     }
 
     changeLayout()
+    
     window.addEventListener('resize',changeLayout)
     function changeLayout(){
         const productGrid = document.querySelector('.product-grid')
@@ -293,7 +346,7 @@
             productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
         } else if (window.innerWidth <= 580){
             productGrid.style.gridTemplateColumns = 'repeat(1, 1fr)';
-        } else if (580<window.innerWidth && window.innerWidth<= 750){
+        } else if (580 < window.innerWidth && window.innerWidth<= 750){
             productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
         } else if (750 < window.innerWidth){
             productGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
@@ -318,7 +371,8 @@ function fetchData(url){
         return response.json();
     })
     .then(data => {
-        document.querySelector('.product-grid').innerHTML = data.html;
+        document.querySelector('.product-grid-and-pagination').innerHTML = data.html;
+        changeLayout()
         window.history.pushState({},'',url);
     })
     .catch(error => {

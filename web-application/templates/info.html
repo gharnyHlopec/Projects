@@ -199,7 +199,7 @@
     </div>
     <div class="page-wrapper">
       <div class="back-button-wrapper">
-        <a class="back-button-link" href="{% url 'catalog' page=product.type %}">←Назад к каталогу</a>
+        <a class="back-button-link" href="{% url 'catalog' products=product.type %}">←Назад к каталогу</a>
       </div>
       <h2>{{ product.name }}</h2>
       <div class="top-elem">

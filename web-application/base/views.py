@@ -66,7 +66,6 @@ def registerPage(request):
             user = form.save(commit = False)
             user.save()
             login(request, user)
-            # return redirect('main')
             return JsonResponse({'redirect':reverse('main') })
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render(request,'register-container.html',{'form' : form})
@@ -74,17 +73,18 @@ def registerPage(request):
     else:
         return render(request, 'login_register.html',{'form' : form})
 
-def catalog(request, page):
+def catalog(request, products):
     q = request.GET.get('q', '')
     sort_param = request.GET.get('sort', '')
     min_price = request.GET.get('min_price') or '-1'
     max_price = request.GET.get('max_price') or '9999999'
     min_year = request.GET.get('min_year') or '-1'
     max_year = request.GET.get('max_year') or '9999999'
+    current_page = int(request.GET.get('page',1))
 
     availability = int(request.GET.get('availability', -1))
 
-    if page == 'all':
+    if products == 'all':
         products = Product.objects.filter(name__icontains=q,
                                             price__gte=min_price,
                                             price__lte=max_price,
@@ -93,7 +93,7 @@ def catalog(request, page):
                                             amount__gt=availability)
 
     else:
-        products = Product.objects.filter(type=page,
+        products = Product.objects.filter(type=products,
                                         price__gte=min_price,
                                         price__lte=max_price,
                                         year__gte=min_year,
@@ -103,9 +103,14 @@ def catalog(request, page):
         products = products.order_by(sort_param)
     amount_of_products = len(products)
 
+    paginator = Paginator(products,12)
+    products = list(paginator.page(current_page))
+    page_list = list(paginator.get_elided_page_range(current_page, on_each_side=2,on_ends=1))
+
     context = {
         'products': products,
-        'page':page,
+        'page_list': page_list,
+        'current_page':current_page,
         'q':q,
         'min_price':min_price,
         'max_price':max_price,
@@ -115,9 +120,6 @@ def catalog(request, page):
         'sort':sort_param,
         'amount_of_products': amount_of_products
     }   
-
-    # paginator = Paginator(obj,2)
-    # print(list(paginator.get_elided_page_range()))
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render(request,'catalog_grid_innerHTML.html',context)
@@ -501,7 +503,7 @@ def addProduct(request,product_type,allowed_types):
                         )
                     except Exception as e:
                         messages.error(request, "Произошла ошибка при загрузке изображения.")
-                return JsonResponse({'redirect':reverse('catalog',kwargs={'page':product_type}) })
+                return JsonResponse({'redirect':reverse('catalog',kwargs={'products':product_type}) })
             else:
                 context = {'form': form, 'product_type':product_type}
                 html = render(request, 'add_product_form_innerHTML.html',context)
