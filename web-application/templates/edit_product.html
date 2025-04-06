@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -109,32 +110,90 @@
       </div>
     </div> 
     <div class="form-container">
-      <form method="POST" id="product_form" enctype="multipart/form-data"> 
-        {% csrf_token %}  
-        <div class="field-container">
-          {% for field in form %} 
-              {{ field.label_tag }} 
-              {{ field }} 
-              {% if field.errors %} 
-                <ul class="errorlist"> 
-                  {% for error in field.errors %} 
-                    <li>{{ error }}</li> 
-                  {% endfor %} 
-                </ul> 
-              {% endif %} 
-          {% endfor %} 
-          <input type="file" name="images" id="image-input" onchange="handleFiles(this.files);" multiple>
-        </div>
-        <button id='submit-button' type="submit">Применить изменения</button> 
-      </form>
+      {% include 'edit_product_form_innerHTML.html' %}
     </div>
   </div>
 </body>
 </html>
 
 <script>
+  function PostRequest(e){
+      e.preventDefault();
+      const csrf = "{{ csrf_token }}"
+      const product_id="{{ product.id }}"
+      const product_type="{{ product.type }}"
+      const updateProductURL = `/update-product/${product_id}`;
+      const formData = new FormData(document.getElementById('product_form'));
+      let properties = {};
+      if (product_type == 'mouse'){
+          properties = {
+              type: document.getElementById('type').value,
+              wireless: document.getElementById('wireless').value,
+              sensor_type: document.getElementById('sensor_type').value,
+              sensor_model: document.getElementById('sensor_model').value,
+              sensor_resolution: document.getElementById('sensor_resolution').value,
+              sensor_polling_rate: document.getElementById('sensor_polling_rate').value,
+              case_material: document.getElementById('case_material').value,
+              lighting: document.getElementById('lighting').value,
+          }
+      }
+      if (product_type == 'keyboard'){
+          properties = {
+              type: document.getElementById('type').value,
+              switch_type: document.getElementById('switch_type').value,
+              switch_name: document.getElementById('switch_name').value,
+              color: document.getElementById('color').value,
+              cyrillic: document.getElementById('cyrillic').value,
+              wireless: document.getElementById('wireless').value,
+              cable_braid: document.getElementById('cable_braid').value,
+          }
+      }
+      if (product_type == 'headphones'){
+          properties = {
+              type: document.getElementById('type').value,
+              wireless: document.getElementById('wireless').value,
+              protection: document.getElementById('protection').value,
+              case_material: document.getElementById('case_material').value,
+              headphones_color: document.getElementById('headphones_color').value,
+              cable_color: document.getElementById('cable_color').value,
+              ear_cushion_material: document.getElementById('ear_cushion_material').value,
+          }
+      }
+      formData.append('json_data',JSON.stringify(properties));
+  
+      fetch(updateProductURL,{
+      method:'POST',
+      headers:{
+          'X-Requested-With':'XMLHttpRequest',
+          'X-CSRFToken':csrf
+      },
+      body: formData,
+      })
+      .then(response => {
+          if (!response.ok){
+              throw new Error(`Ошибка: ${response.status} - ${response.statusText}`);
+          }
+          return response.json();
+      })
+      .then(data => {
+          if (data.redirect){
+              window.location.href = data.redirect
+          } else{
+          document.querySelector('.form-container').innerHTML = data.html;
+          for (let key in properties) {
+              document.getElementById(key).value = properties[key];
+          }
+          transferFiles();
+          }
+      })
+      .catch(error => {
+          console.error("Ошибка: ",error);
+      });
+  }
+  </script>
+
+<script>
   function deleteImageFromServer(product_pk,image_pk){
-    console.log('aaa')
     deleteImageURL = `/delete-image/${product_pk}/${image_pk}`;
     window.location.href = deleteImageURL;
   }

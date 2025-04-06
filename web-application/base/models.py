@@ -59,7 +59,6 @@ class Product(models.Model):
     
 class ProductImage(models.Model):
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images", null=True)
-    # shared_id = models.ForeignKey(SharedID, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="product_images/", null=True, blank=True)
     
     def delete(self, *args, **kwargs):

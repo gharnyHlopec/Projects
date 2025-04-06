@@ -131,19 +131,18 @@ def catalog(request, products):
 def info(request,pk):
     
     product = Product.objects.get(id=pk)
-    description = json.loads(product.description)
 
     if product.type == 'keyboard':
         info = ['Дата выхода на рынок','Тип','Технология переключателя', 'Наименование переключателей', 'Цвет', 'Кириллица', 'Беспроводная', 'Оплетка кабеля']
-        data = [product.year,description["type"],description["switch_type"],description["switch_name"],description["color"],description["cyrillic"],description["wireless"],description["cable_braid"]]
+        data = [product.year,product.description["type"],product.description["switch_type"],product.description["switch_name"],product.description["color"],product.description["cyrillic"],product.description["wireless"],product.description["cable_braid"]]
 
     elif product.type == 'mouse':
         info = ['Дата выхода на рынок','Тип','Беспроводная', 'Тип сенсора', 'Модель сенсора', 'Максимальное разрешение сенсора', 'Максимальная частота опроса', 'материал корпуса', 'Подсветка']
-        data = [product.year,description["type"],description["wireless"],description["sensor_type"],description["sensor_model"],description["sensor_resolution"],description["sensor_polling_rate"],description["case_material"],description["lighting"]]
+        data = [product.year,product.description["type"],product.description["wireless"],product.description["sensor_type"],product.description["sensor_model"],product.description["sensor_resolution"],product.description["sensor_polling_rate"],product.description["case_material"],product.description["lighting"]]
 
     elif product.type == 'headphones':
         info = ['Дата выхода на рынок','Тип','Беспроводной интерфейс','Пыле-, влаго-, ударопрочность','Материал корпуса','Цвет наушников','Цвет кабеля','Материал покрытия оголовья']
-        data = [product.year,description["type"],description["wireless"],description["protection"],description["case_material"],description["headphones_color"],description["cable_color"],description["ear_cushion_material"]]
+        data = [product.year,product.description["type"],product.description["wireless"],product.description["protection"],product.description["case_material"],product.description["headphones_color"],product.description["cable_color"],product.description["ear_cushion_material"]]
         
     images = ProductImage.objects.filter(product_id = product)
     image_amount = len(images)
@@ -295,41 +294,30 @@ def deleteReview(request, prod_id, pk):
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
 def updateProduct(request,pk):
-    elem = SharedID.objects.get(id = pk)
-    images = ProductImage.objects.filter(shared_id = elem)
-    if elem.type == 'Keyboard':
-        obj = Keyboard.objects.get(shared_id=pk)
-        form = KeyboardForm(instance=obj)
-
-    elif elem.type == 'Mouse':
-        obj = Mouse.objects.get(shared_id=pk) 
-        form = MouseForm(instance=obj)
-        
-    elif elem.type =='Headphones':
-        obj = Headphones.objects.get(shared_id=pk)
-        form = HeadphonesForm(instance=obj)
+    product = Product.objects.get(id = pk)
+    images = ProductImage.objects.filter(product_id = product)
+    form = ProductForm(instance = product)
 
     if request.method == 'POST':
-        if elem.type == 'Keyboard':
-            form = KeyboardForm(request.POST, instance = obj)
-        elif elem.type == 'Mouse':
-            form = MouseForm(request.POST, instance=obj)
-        elif elem.type =='Headphones':
-             form = HeadphonesForm(request.POST, instance=obj)
-
-        # form.save()
+        data = request.POST.get('json_data')
+        form = ProductForm(request.POST, instance = product)
         pics = request.FILES.getlist('images')
-        for pic in pics:
-            ProductImage.objects.create(
-            shared_id=elem,
-            image=pic
-        )  
         
         if form.is_valid():
-            form.save()
-            return redirect('info',pk)
-
-    context = {'form':form, 'images':images, 'pk':pk}
+            for pic in pics:
+                ProductImage.objects.create(
+                product_id=product,
+                image=pic
+            )  
+            product = form.save(commit=False)
+            product.description = json.loads(data)
+            product.save()
+            return JsonResponse({'redirect':reverse('info',kwargs={'pk':pk}) })
+        else:
+            context = {'form': form, 'product':product}
+            html = render(request, 'edit_product_form_innerHTML.html',context)
+            return JsonResponse({'html':html.content.decode('utf-8')})
+    context = {'form':form, 'images':images, 'pk':pk, 'product':product}
     return render(request, 'edit_product.html', context)
 
 @login_required(login_url='/login')
@@ -479,6 +467,8 @@ def userOrders(request):
 
     return render(request, 'user-orders.html', context)
 
+@login_required(login_url='/login')
+@user_passes_test(only_for_staff, login_url='/login')
 def addProduct(request,product_type,allowed_types):
     if product_type not in allowed_types.split('|'):
         return HttpResponseNotFound('Invalid product type')
@@ -486,12 +476,11 @@ def addProduct(request,product_type,allowed_types):
         form = ProductForm()
         if request.method == 'POST':
             data = request.POST.get('json_data')
-            
             form = ProductForm(request.POST)
             if form.is_valid():
                 product = form.save(commit=False)
                 product.type = product_type
-                product.description = data
+                product.description = json.loads(data)
                 product.save()
                 product_id = Product.objects.get(pk=product.id)
                 images = request.FILES.getlist('images')
@@ -502,7 +491,7 @@ def addProduct(request,product_type,allowed_types):
                             image=pic
                         )
                     except Exception as e:
-                        messages.error(request, "Произошла ошибка при загрузке изображения.")
+                        messages.error(request, "Произошла ошибка при загрузке изображений")
                 return JsonResponse({'redirect':reverse('catalog',kwargs={'products':product_type}) })
             else:
                 context = {'form': form, 'product_type':product_type}
