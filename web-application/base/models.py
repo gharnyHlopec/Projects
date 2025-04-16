@@ -112,7 +112,8 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    
+    price = models.DecimalField(validators=[MinValueValidator(0)],decimal_places=2, max_digits=10, null=True)
+
     @property
     def first_image(self):
         if self.product.images.first():

@@ -13,7 +13,7 @@
                     {% for item in cart_items|get_item:cart %}
                         <li>
                             {{ item.product.name }} - {{ item.quantity }} шт. -
-                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }}р</b>
+                            <b>Общая цена: {{ item.price|multiply:item.quantity }}р</b>
                         </li>
                     {% endfor %}
                 </ul>
@@ -35,7 +35,7 @@
                     {% for item in cart_items|get_item:cart %}
                         <li>
                             {{ item.product.name }} - {{ item.quantity }} шт. -
-                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }}р</b>
+                            <b>Общая цена: {{ item.price|multiply:item.quantity }}р</b>
                         </li>
                     {% endfor %}
                 </ul>

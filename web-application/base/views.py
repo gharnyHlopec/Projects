@@ -106,6 +106,8 @@ def catalog(request, products):
     paginator = Paginator(products,12)
     products = list(paginator.page(current_page))
     page_list = list(paginator.get_elided_page_range(current_page, on_each_side=2,on_ends=1))
+    if page_list == [1]:
+        page_list = None
 
     context = {
         'products': products,
@@ -232,6 +234,10 @@ def contactInformation(request):
             cart = Cart.objects.get(session_key=request.session.session_key, status = '-')
             form = GuestOrderForm(request.POST)
         if form.is_valid():
+            items_in_cart = CartItem.objects.filter(cart=cart)
+            for item in items_in_cart:
+                item.price = item.product.price
+                item.save()
             cart.first_name = form.cleaned_data['first_name']
             cart.last_name = form.cleaned_data['last_name']
             cart.phone_number = form.cleaned_data['phone_number']

@@ -21,7 +21,7 @@
                     {% for item in cart_items|get_item:cart %}
                         <li>
                             {{ item.product.name }} - {{ item.quantity }} шт. - 
-                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }} р.</b>
+                            <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
                             <br>
                             {% if item.product.amount < item.quantity and cart.status == 'В обработке' %}
                                 <b class="warning">На складе недостаточно товара: {{ item.product.name }}. В наличии только {{ item.product.amount }}шт.</b>
@@ -65,7 +65,7 @@
                     {% for item in cart_items|get_item:cart %}
                         <li>
                             {{ item.product.name }} - {{ item.quantity }} шт. - 
-                            <b>Общая цена: {{ item.product.price|multiply:item.quantity }} р.</b>
+                            <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
                         </li>
                     {% endfor %}
                 </ul>
