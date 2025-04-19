@@ -6,9 +6,9 @@ def cart_item_count(request):
     cart_count = 0
     cart = None
     if request.user.is_authenticated:
-        cart,_ = Cart.objects.get_or_create(user=request.user, status = '-')
+        cart,_ = Cart.objects.get_or_create(user=request.user)
     elif request.session.session_key != None:
-        cart,_ = Cart.objects.get_or_create(session_key=request.session.session_key,status = '-')
+        cart,_ = Cart.objects.get_or_create(session_key=request.session.session_key)
     if cart:
         cart_products = CartItem.objects.filter(cart=cart)
         if cart_products.exists():

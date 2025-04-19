@@ -6,7 +6,7 @@ register = template.Library()
 def sum_prices(items):
     total_price = 0
     for item in items:
-        total_price += item.product.price * item.quantity
+        total_price += item.price * item.quantity
     return round(total_price,2)
 
 @register.filter
@@ -22,8 +22,8 @@ def number(string):
     return float(string)
 
 @register.filter
-def sort_carts(array):
-    return array.order_by('updated')
+def sort_orders(array):
+    return array.order_by('updated_at')
 
 @register.filter
 def module(number):

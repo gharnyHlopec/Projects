@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Review, ProductImage, Cart, CartItem, User, Product
+from .models import Review, ProductImage, Cart, CartItem, Order, OrderItem, User, Product
 from .forms import MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
 from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 import json
@@ -173,10 +173,10 @@ def cart(request):
 
     #Получаем или создаем корзину
     if request.user.is_authenticated:
-        cart,_ = Cart.objects.get_or_create(user=request.user, status = '-')
+        cart, _ = Cart.objects.get_or_create(user=request.user)
     else:
         if request.session.session_key:
-            cart = Cart.objects.filter(session_key=request.session.session_key, status = '-').last()
+            cart = Cart.objects.filter(session_key=request.session.session_key).last()
 
     #Если корзина есть, то получаем её содержимое 
     if cart:
@@ -217,38 +217,51 @@ def cart(request):
     else: # Если нет то полностью отрисовываем страницу
         return render(request, 'cart.html', context)
 
+@user_passes_test(staff_not_allowed, login_url='/login')
 def contactInformation(request):
     if request.user.is_authenticated:
-        cart,_ = Cart.objects.get_or_create(user=request.user, status = '-')
+        cart,_ = Cart.objects.get_or_create(user=request.user)
         form = UserForm(instance=request.user)
     else:
         if request.session.session_key:
-            cart = Cart.objects.filter(session_key=request.session.session_key, status = '-').last()
+            cart = Cart.objects.filter(session_key=request.session.session_key).last()
         form = GuestOrderForm()
-
+#-----------------------------------------------------------------------------------------------------------------------------------
     if request.method == 'POST':    
         if request.user.is_authenticated:
-            cart = Cart.objects.get(user=request.user, status = '-')
+            cart = Cart.objects.get(user=request.user)
             form = UserForm(request.POST, instance = request.user)
         else:
-            cart = Cart.objects.get(session_key=request.session.session_key, status = '-')
+            cart = Cart.objects.filter(session_key=request.session.session_key).last()
             form = GuestOrderForm(request.POST)
         if form.is_valid():
+            order = Order.objects.create(
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    phone_number=form.cleaned_data['phone_number'],
+                    email=form.cleaned_data['email'],
+                    status = "В обработке"
+                )
+            if request.user.is_authenticated:
+                order.user = request.user
+                order.save()
+    
             items_in_cart = CartItem.objects.filter(cart=cart)
             for item in items_in_cart:
-                item.price = item.product.price
-                item.save()
-            cart.first_name = form.cleaned_data['first_name']
-            cart.last_name = form.cleaned_data['last_name']
-            cart.phone_number = form.cleaned_data['phone_number']
-            cart.email = form.cleaned_data['email']
-            cart.status = "В обработке"
-            cart.save()
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    name=item.product.name,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+                item.delete()
+
             return redirect('main')
 
     context = {"form":form,"cart":cart}
     return render(request, 'contact-information.html', context)
-
+#-----------------------------------------------------------------------------------------------------------------------------------
 
 def reviews(request, pk):
     product = Product.objects.get(id = pk)
@@ -360,7 +373,6 @@ def addToCart(request):
         cart, _ = Cart.objects.get_or_create(
             user=request.user if request.user.is_authenticated else None,
             session_key=request.session.session_key if not request.user.is_authenticated else None, 
-            status = '-'
         )
 
         cart_item, created = CartItem.objects.get_or_create(
@@ -382,42 +394,42 @@ def addToCart(request):
 def adminPanel(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        cart = Cart.objects.get(id = data.get('pk'))
+        order = Order.objects.get(id = data.get('pk'))
         if data.get('action') == 'accept':
             with transaction.atomic():
-                cartItems = CartItem.objects.filter(cart=cart)
-                for item in cartItems:
+                orderItems = OrderItem.objects.filter(order=order)
+                for item in orderItems:
                     details = Product.objects.get(id=item.product.id)
                     if item.quantity > details.amount:
-                        cart.status = 'Отменен системой (на складе недостаточно товара)'
-                        cart.save()
+                        order.status = 'Отменен системой (на складе недостаточно товара)'
+                        order.save()
                         return redirect('admin-panel') 
                     else:
                         details.amount -= item.quantity
                         details.save()
-                cart.status = 'Принят'
+                order.status = 'Принят'
         elif data.get('action') == 'decline':
-            if cart.status == 'Принят':
-                cartItems = CartItem.objects.filter(cart=cart)
-                for item in cartItems:
+            if order.status == 'Принят':
+                orderItems = OrderItem.objects.filter(order=order)
+                for item in orderItems:
                     details = Product.objects.get(id=item.product.id)
                     details.amount += item.quantity
                     details.save()
-            cart.status = 'Отменен'
+            order.status = 'Отменен'
         elif data.get('action') == 'finish':
-            cart.status = 'Завершен'
-        cart.save()
+            order.status = 'Завершен'
+        order.save()
 
-    carts = Cart.objects.exclude(status = '-').order_by('status')
-    cart_items = {}  
+    orders = Order.objects.all().order_by('status')
+    order_items = {}  
 
-    for cart in carts:
-        items = CartItem.objects.filter(cart=cart)
-        cart_items[cart] = items  
+    for order in orders:
+        corresponding_items = OrderItem.objects.filter(order=order)
+        order_items[order] = corresponding_items  
 
     context = {
-        'carts': carts,
-        'cart_items': cart_items, 
+        'orders': orders,
+        'order_items': order_items, 
         }
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -455,16 +467,16 @@ def updateProfile(request):
 @login_required(login_url='/login')
 @user_passes_test(staff_not_allowed, login_url='/login')
 def userOrders(request):
-    carts = Cart.objects.exclude(status='-').filter(user=request.user).order_by('-updated')
-    cart_items = {} 
+    orders = Order.objects.filter(user=request.user).order_by('-updated_at')
+    order_items = {} 
 
-    for cart in carts:
-        items = CartItem.objects.filter(cart=cart)
-        cart_items[cart] = items  
+    for order in orders:
+        items = OrderItem.objects.filter(order=order)
+        order_items[order] = items  
 
     context = {
-        'carts': carts,
-        'cart_items': cart_items, 
+        'orders': orders,
+        'order_items': order_items, 
         }
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

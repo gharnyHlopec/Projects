@@ -4,20 +4,20 @@
 <div class="order-list in-progress">
     <h2>Заказы в работе</h2>
     <hr>
-    {% for cart in carts %}
-        {% if cart.status != 'Отменен' and cart.status != 'Завершен' and cart.status != 'Отменен системой (на складе недостаточно товара)' %}
+    {% for order in orders %}
+        {% if order.status != 'Отменен' and order.status != 'Завершен' and order.status != 'Отменен системой (на складе недостаточно товара)' %}
             <div class="order-item">
-                <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                <p class="order-status" data-status="{{ cart.status }}"><b>Статус заказа: {{ cart.status }}</b></p>
+                <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
+                <p class="order-status" data-status="{{ order.status }}"><b>Статус заказа: {{ order.status }}</b></p>
                 <ul>
-                    {% for item in cart_items|get_item:cart %}
+                    {% for item in order_items|get_item:order %}
                         <li>
-                            {{ item.product.name }} - {{ item.quantity }} шт. -
+                            {{ item.name }} - {{ item.quantity }} шт. -
                             <b>Общая цена: {{ item.price|multiply:item.quantity }}р</b>
                         </li>
                     {% endfor %}
                 </ul>
-                <p class="order-total"><b>Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}р</b></p>
+                <p class="order-total"><b>Общая стоимость заказа: {{ order_items|get_item:order|sum_prices }}р</b></p>
             <hr>
             </div>
         {% endif %}
@@ -26,22 +26,22 @@
 <div class="order-list finished">
     <h2>Завершенные заказы</h2>
     <hr>
-    {% for cart in carts %}
-        {% if cart.status == 'Отменен' or cart.status == 'Завершен' or cart.status == 'Отменен системой (на складе недостаточно товара)' %}
+    {% for order in orders %}
+        {% if order.status == 'Отменен' or order.status == 'Завершен' or order.status == 'Отменен системой (на складе недостаточно товара)' %}
             <div class="order-item">
-                <p class="order-date">Последнее обновление: {{ cart.updated|date:"d.m.Y H:i" }}</p>
-                <p class="order-status" data-status="{{ cart.status }}"><b>Статус заказа: {{ cart.status }}</b></p>
+                <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
+                <p class="order-status" data-status="{{ order.status }}"><b>Статус заказа: {{ order.status }}</b></p>
                 <ul>
-                    {% for item in cart_items|get_item:cart %}
+                    {% for item in order_items|get_item:order %}
                         <li>
-                            {{ item.product.name }} - {{ item.quantity }} шт. -
+                            {{ item.name }} - {{ item.quantity }} шт. -
                             <b>Общая цена: {{ item.price|multiply:item.quantity }}р</b>
                         </li>
                     {% endfor %}
                 </ul>
-                <b><p class="order-total">Общая стоимость заказа: {{ cart_items|get_item:cart|sum_prices }}р</p></b>
+                <b><p class="order-total">Общая стоимость заказа: {{ order_items|get_item:order|sum_prices }}р</p></b>
             </div>
             <hr>
         {% endif %}
-    {% endfor %}
+    {% endfor %} 
 </div>

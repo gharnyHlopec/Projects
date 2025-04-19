@@ -85,11 +85,25 @@ class Review(models.Model):
         return str(self.id)
     
 
-
 class Cart(models.Model):
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=100, null=True, blank=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    @property
+    def first_image(self):
+        if self.product.images.first():
+            return self.product.images.first()
+
+class Order(models.Model):
 
     statuses = [
-        ('-', '-'),
         ('В обработке', 'В обработке'),
         ('Принят', 'Принят'),
         ('Отменен', 'Отменен'),
@@ -98,24 +112,19 @@ class Cart(models.Model):
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    session_key = models.CharField(max_length=100, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, choices=statuses, default='-')
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
-    updated = models.DateTimeField(auto_now = True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now = True)
 
 
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=350,null=True)
+    quantity = models.PositiveIntegerField(null=True)
     price = models.DecimalField(validators=[MinValueValidator(0)],decimal_places=2, max_digits=10, null=True)
-
-    @property
-    def first_image(self):
-        if self.product.images.first():
-            return self.product.images.first()
-        
