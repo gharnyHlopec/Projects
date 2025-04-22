@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetDoneView,PasswordResetCompleteView
 from .models import Review, ProductImage, Cart, CartItem, Order, OrderItem, User, Product
 from .forms import MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
 from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 import json
 from django.urls import reverse
-from django.db.models import F
-from django.contrib.sessions.backends.db import SessionStore
 from django.db import transaction
 from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -522,3 +523,26 @@ def addProduct(request,product_type,allowed_types):
             return JsonResponse({'html':html.content.decode('utf-8')})
         else:
             return render(request, 'add_product.html', context)
+        
+@login_required(login_url='/login')
+def changePassword(request):
+    form = PasswordChangeForm(request.user)
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request,user)
+            return redirect('main') 
+    return render(request,'password_change.html',{'form':form})
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'password_reset_form.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'password_reset_confirm.html'
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'password_reset_done.html'
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'password_reset_complete.html'

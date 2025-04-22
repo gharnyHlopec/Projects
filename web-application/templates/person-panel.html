@@ -46,6 +46,8 @@ body{
 }
 
 .tabs{
+    display: flex;
+    flex-direction: row;
     padding: 20px 0px 0px 10px;
     margin: 0;
     font-size: 20px;
@@ -83,24 +85,43 @@ border: none;
 .tab-content.active {
     display: block;
 }
-
-.exit-link{
+.links{
+    display: flex;
+    margin-left:auto;
+    margin-right:0;
+    
+}
+.link{
     margin-right: 10px;
     float: right;
     padding: 10px;
-    border-bottom: 3px solid red;
     cursor: pointer;
     color: black;
     text-decoration: none;
 }
-
+.exit-link{
+    border-bottom: 3px solid red;
+}
 .exit-link:hover{
     color: red;
-
 }
-@media screen and (max-width: 515px) {
-    .tabs > * {
-        font-size: 18px;
+.change-password-link{
+    border-bottom: 3px solid blue;
+}
+.change-password-link:hover{
+    color: blue;
+}
+
+@media screen and (max-width: 700px) {
+    .tabs > *{
+        font-size: 16px;
+    }
+}
+@media screen and (max-width: 595px) {
+    .tabs > *{
+        text-align: center;
+        align-items: flex-end;
+        box-sizing: border-box;
     }
 }
 
@@ -113,7 +134,10 @@ border: none;
         <ul class="tabs">
             <li class="tab-link active" data-tab="customers">Клиенты</li>
             <li class="tab-link" data-tab="staff">Работники</li>
-            <a class="exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
+            <div class="links">
+                <a class="link change-password-link" href="{% url 'change-password' %}">Изменить пароль</a>
+                <a class="link exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
+            </div>
         </ul>
         <div id="customers" class="tab-content active">
             {% for user in users %}
