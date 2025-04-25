@@ -1,0 +1,11 @@
+course_work/
+.env
+
+course_work/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+*.sqlite3
+
+/media/
