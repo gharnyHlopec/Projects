@@ -1,3 +1,6 @@
+<head>
+  <meta name="google-signin-client_id" content="475540162676-d5369k78mif1ha93jcn7ngq9k84t93f9.apps.googleusercontent.com">
+</head>
 <div class="form-container">
     <h2>Вход</h2>
     <form method="POST" id="login-form">
@@ -18,7 +21,44 @@
         {% endfor %}
       </div>
     {% endif %}
+    
+    <div style="margin-top:10px" 
+         class="g-signin2" 
+         data-width="250" 
+         data-height="50" 
+         data-longtitle="true"
+         data-content="signin"
+         data-ux_mode="popup"
+         data-login_uri="http://localhost:8000/auth-receiver"
+         data-itp_support="true">
+    </div>
+    <script>
+      function onSuccess(googleUser) {
+        console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+      }
+      function onFailure(error) {
+        console.log(error);
+      }
+      function renderButton() {
+        gapi.signin2.render('my-signin2', {
+          'scope': 'profile email',
+          'width': 240,
+          'height': 50,
+          'longtitle': true,
+          'theme': 'dark',
+          'onsuccess': onSuccess,
+          'onfailure': onFailure
+        });
+      }
+    </script>
 
+    <!-- <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script> -->
+    <li class="google">
+      <a href="{% url "social:begin" "google-oauth2" %}">
+        Sign in with Google
+      </a>
+    </li>
     <p><a class="form-ref" href="{% url 'password_reset' %}">Забыли пароль?</a></p>
     <p>Ещё не зарегистрировались? <a class="form-ref" href="{% url 'register' %}">Зарегистрироваться</a></p>
 </div>
+

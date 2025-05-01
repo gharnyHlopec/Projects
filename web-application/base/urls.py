@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -24,6 +24,7 @@ urlpatterns = [
     path('user-orders/',views.userOrders, name = 'user-orders'),
     path('contact-information/', views.contactInformation, name='contact-information'),
     path('change-password/', views.changePassword, name='change-password'),
+    path('auth/', include('social_django.urls', namespace='social')),
     path('password-reset/',
          views.CustomPasswordResetView.as_view(),
          name='password_reset'),

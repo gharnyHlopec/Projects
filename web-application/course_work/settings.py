@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base',
     'bootstrap5',
+    'social_django',
 ]
 
 AUTH_USER_MODEL = 'base.User'
@@ -53,6 +54,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',  # обязательно!
 ]
 
 ROOT_URLCONF = 'course_work.urls'
@@ -145,3 +151,10 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET') 
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'  
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'  
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/'  
