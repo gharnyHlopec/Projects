@@ -26,9 +26,11 @@
 
     <div class="add-to-cart-div">
         {% if product.amount > 0 and request.user.is_staff == False %}
-        <button value="{{ product.id }}" class="button add-to-cart-button" onclick="addToCart(this.value)">Добавить в корзину</button>
+        <div class="product-{{ product.id }}">
+            {% include 'quantity-change.html' %}
+        </div>
         {% else %}
-        <button value="{{ product.id }}" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+        <button class="button add-to-cart-button" disabled>Добавить в корзину</button>
         {% endif %}
     </div>
 </div>

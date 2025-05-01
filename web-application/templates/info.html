@@ -71,13 +71,15 @@
         display: inline-block;
         text-decoration: none;
         color: white;
-
         width: 100%;
-        padding-top: 6px;
-        padding-bottom: 6px;
+        padding: 8.5px 0;
         border-radius: 8px;
         text-align: center;
         cursor: pointer;
+        font-size: 19px;
+      }
+      .button:hover{
+        transition: 0.3s;
       }
       .change-button{
         background-color: #036ffc;
@@ -99,17 +101,14 @@
       }
       .add-to-cart-button{
         background-color: #14b814;  
-        font-size: 16px;
         border: none;
       }
       .add-to-cart-button:hover{
         background-color: #4CAF50;
-        font-size: 16px;
       }
       .add-to-cart-button:disabled{
         background-color: #ccc;
         color: black;
-        font-size: 16px;
         cursor: default;
       }
       .info-table{
@@ -175,25 +174,28 @@
           margin-left:10px;
           box-sizing: border-box;
       }
-        @media screen and (max-width:770px){
-          .top-elem{
-            display: inline;
-          }
-          .right-elem{
-            margin-top:20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-          }
-          .information{
-            text-align: left;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-          }
-          .rating{
-            justify-content: left;
-          }
+      .quantity-div{
+        margin: 0;
+      }
+      @media screen and (max-width:770px){
+        .top-elem{
+          display: inline;
         }
+        .right-elem{
+          margin-top:20px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .information{
+          text-align: left;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+        }
+        .rating{
+          justify-content: left;
+        }
+      }
     </style>
   </head>
   <body>
@@ -278,9 +280,11 @@
             </p>
             <div class="add-to-cart-div">
               {% if product.amount > 0 and request.user.is_staff == False %}
-                <button value="{{ product.id }}" class="button add-to-cart-button">Добавить в корзину</button>
+                  <div class="quantity-div product-{{ product.id }}">
+                    {% include 'quantity-change.html' %}
+                  </div>
               {% else %}
-                <button value="{{ product.id }}" class="button add-to-cart-button" disabled>Добавить в корзину</button>
+                <button class="button add-to-cart-button" disabled>Добавить в корзину</button>
               {% endif %}
             </div>
           </div>
@@ -314,41 +318,3 @@
   </div>
 </body>
 </html>
-
-
-<script>
-  const addToCartUrl = "{% url 'add-to-cart' %}"
-  function addToCart(productID){
-      const csrfToken = '{{ csrf_token }}';
-      console.log(csrfToken)
-      const response = fetch(addToCartUrl,{
-          method:'POST',
-          headers:{
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRFToken':csrfToken
-          },
-          body: JSON.stringify({
-              'product_id':productID
-          })
-      })
-      .then(response => {
-          if (!response.ok) {
-              console.error('Ошибка:', response.status, response.statusText);
-              return response.text().then(text => {
-                  throw new Error(`Ошибка: ${response.status} - ${text}`);
-              });
-          }
-          return response.json();
-      })
-      .then(data => {
-          document.querySelector('.navbar-div').innerHTML = data.html;
-      })
-      .catch(error => {
-          console.error("Ошибка: ",error);
-      });
-  }
-  const buttons = document.querySelectorAll('.add-to-cart-button');
-  buttons.forEach(button => {
-      button.addEventListener('click',()=>{addToCart(button.value)});
-  });
-</script>

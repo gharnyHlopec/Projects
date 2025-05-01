@@ -150,6 +150,13 @@ def info(request,pk):
     images = ProductImage.objects.filter(product_id = product)
     image_amount = len(images)
     zipped_data = zip(info, data)
+    
+    if request.user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+    else:
+        if request.session.session_key:
+            cart = Cart.objects.filter(session_key=request.session.session_key).last()
+
     context = {"product": product, "zipped_data": zipped_data, "images":images, "image_amount":image_amount}
 
     return render(request, 'info.html', context)
@@ -159,7 +166,8 @@ def cart(request):
     cart = None
     cart_products = None
     total_sum = 0
-    #Если запрос пришел с AJAX, то добавляем/убавляем количество товара в корзине
+    
+    #Если запрос пришел с AJAX, то добавляем/убавляем количество товара в корзине или удаляем товар из корзины
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         data = json.loads(request.body)
         cart_id = data.get('product_id')
@@ -227,7 +235,6 @@ def contactInformation(request):
         if request.session.session_key:
             cart = Cart.objects.filter(session_key=request.session.session_key).last()
         form = GuestOrderForm()
-#-----------------------------------------------------------------------------------------------------------------------------------
     if request.method == 'POST':    
         if request.user.is_authenticated:
             cart = Cart.objects.get(user=request.user)
@@ -257,12 +264,11 @@ def contactInformation(request):
                     price=item.product.price
                 )
                 item.delete()
-
+            messages.success(request, "Ваш заказ был успешно отправлен")
             return redirect('main')
 
     context = {"form":form,"cart":cart}
     return render(request, 'contact-information.html', context)
-#-----------------------------------------------------------------------------------------------------------------------------------
 
 def reviews(request, pk):
     product = Product.objects.get(id = pk)
@@ -363,13 +369,8 @@ def addToCart(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         data = json.loads(request.body)
         product_id = data.get('product_id')
-        quantity = 1
+        quantity = data.get('quantity')
         product = get_object_or_404(Product, id=product_id)
-
-        if (not request.user.is_authenticated) and (not request.session.session_key):
-            session = SessionStore()
-            session.create()
-            request.session = session
             
         cart, _ = Cart.objects.get_or_create(
             user=request.user if request.user.is_authenticated else None,
@@ -378,15 +379,19 @@ def addToCart(request):
 
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
-            product=product
+            product=product,
         )
 
         if not created:
             cart_item.quantity += quantity
         cart_item.save()
-        html = render(request,'navbar.html')
-        
-        return JsonResponse({'html':html.content.decode('utf-8')})
+        if cart_item.quantity == 0:
+            cart_item.delete()
+        navbar_html = render(request,'navbar.html')
+        quantity_html = render(request,'quantity-change.html',{'product':product, 'cart':cart})
+ 
+        return JsonResponse({'navbar_html':navbar_html.content.decode('utf-8'),
+                             'quantity_html':quantity_html.content.decode('utf-8')})
     else:
         redirect('main')
 
@@ -532,7 +537,11 @@ def changePassword(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request,user)
-            return redirect('main') 
+            messages.success(request, "Ваш пароль был успешно изменён")
+            if user.is_staff:   
+                return redirect('person-panel')
+            else:  
+                return redirect('profile')
     return render(request,'password_change.html',{'form':form})
 
 class CustomPasswordResetView(PasswordResetView):

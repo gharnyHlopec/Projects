@@ -1,0 +1,26 @@
+<style>
+  .messages{
+      font-family: Arial, Helvetica, sans-serif;
+      width: 100%;
+      box-sizing: border-box;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      z-index: 5;
+    }
+    .messages p{
+      margin: 0;
+    }
+</style>
+
+{% if messages %}
+<div class="messages">
+{% for message in messages %}
+  {% if message.tags == "success" %}
+    <p class="message">{{ message }}</p>
+  {% endif %}
+{% endfor %}
+</div>
+{% endif %}

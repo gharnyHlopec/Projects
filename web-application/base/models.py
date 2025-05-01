@@ -56,6 +56,11 @@ class Product(models.Model):
     def get_review_count(self):
         return self.review_set.count() or 0  
     
+    def delete(self, *args, **kwargs):
+        for img in self.images.all():
+            img.delete()
+        super().delete(*args,**kwargs) 
+    
     
 class ProductImage(models.Model):
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images", null=True)
@@ -92,7 +97,7 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 

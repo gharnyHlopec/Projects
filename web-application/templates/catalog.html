@@ -186,9 +186,10 @@
             color: white;
             background-color: #14b814;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
             cursor: pointer;
+            font-size: 17px;
         }
         .add-to-cart-button:disabled{
             background-color:lightgray;
@@ -346,6 +347,18 @@
 
 
 <script>
+    document.querySelectorAll('.quantity-change').forEach(elem => {
+        classes = elem.classList;
+        last_class = elem.classList[classes.length-1];
+        numbers = last_class.split('-');
+        last_number = numbers[numbers.length-1];
+        if (document.querySelector(`.quantity-change-product-${last_number}`)){
+            document.querySelector(`.add-to-cart-product-${last_number}`).style.display='none';
+        }
+        else{
+            document.querySelector(`.add-to-cart-product-${last_number}`).style.display='';
+        }
+    })
     const homeContainer = document.querySelector('.home-container');
     const filterContainer = document.querySelector('.filter-form');
     const filterIcon = document.querySelector('.filter-icon');
@@ -468,36 +481,4 @@ function resetFilters(){
     });
     fetchData(currentUrl.href);
 }
-</script>
-
-<script>
-    const addToCartUrl = "{% url 'add-to-cart' %}"
-    function addToCart(productID){
-        const csrfToken = '{{ csrf_token }}';
-        const response = fetch(addToCartUrl,{
-            method:'POST',
-            headers:{
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken':csrfToken
-            },
-            body: JSON.stringify({
-                'product_id':productID
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                console.error('Ошибка:', response.status, response.statusText);
-                return response.text().then(text => {
-                    throw new Error(`Ошибка: ${response.status} - ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.querySelector('.navbar-div').innerHTML = data.html;
-        })
-        .catch(error => {
-            console.error("Ошибка: ",error);
-        });
-    }
 </script>

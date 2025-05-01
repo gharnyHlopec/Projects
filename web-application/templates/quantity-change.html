@@ -1,0 +1,94 @@
+{% load static %}
+<style>
+    .quantity-change{
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        width:100%;
+        padding: 0;
+        font-size: 28.5px;
+        border: 2px solid black;
+      }
+    .quantity-change-button{
+        position: absolute;
+        width: auto;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+    .quantity-change-button:hover{
+        background-color: #14b814;
+        transition: 0.3s;
+      }
+    .minus-button{
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        border-right: 2px solid black;
+        left: 0;
+        top: 0;
+        bottom: 0;
+      }
+    .plus-button{
+        border-left: 2px solid black;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+</style>
+
+{% for elem in cart.cart_items.all %}
+    {% if elem.product.id == product.id %}
+    <div class="quantity-change quantity-change-product-{{ product.id }}">
+        <img onclick="addToCart({{ product.id }},-1)" id='minus' class="quantity-change-button minus-button" src="{% static 'images/minus.svg' %}" alt="Minus">
+        {{ elem.quantity }}
+        <img onclick="addToCart({{ product.id }},1)" id='plus' class="quantity-change-button plus-button" src="{% static 'images/plus.svg' %}" alt="Plus">  
+    </div>
+    {% endif %}
+{% endfor %}
+<button onclick="addToCart({{ product.id }},1)" class="button add-to-cart-button add-to-cart-product-{{product.id}}">Добавить в корзину</button>
+
+<script>
+    const addToCartUrl = "{% url 'add-to-cart' %}";
+    function addToCart(productID, quantity){
+        const csrfToken = '{{ csrf_token }}';
+        const response = fetch(addToCartUrl,{
+            method:'POST',
+            headers:{
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken':csrfToken
+            },
+            body: JSON.stringify({
+                'product_id':productID,
+                'quantity':quantity
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error('Ошибка:', response.status, response.statusText);
+                return response.text().then(text => {
+                    throw new Error(`Ошибка: ${response.status} - ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.querySelector('.navbar-div').innerHTML = data.navbar_html;
+            document.querySelector(`.product-${productID}`).innerHTML = data.quantity_html;
+            if (document.querySelector(`.quantity-change-product-${productID}`)){
+                document.querySelector(`.add-to-cart-product-${productID}`).style.display='none';
+            }
+            else{
+                document.querySelector(`.add-to-cart-product-${productID}`).style.display='';
+            }
+        })
+        .catch(error => {
+            console.error("Ошибка: ",error);
+        });
+    }
+</script>  
