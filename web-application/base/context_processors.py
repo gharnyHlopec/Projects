@@ -3,8 +3,6 @@ from django.db.models import Sum
 from django.contrib.sessions.backends.db import SessionStore
 
 def cart_item_count(request):
-    cart_count = 0
-
     if (not request.user.is_authenticated) and (not request.session.session_key):
         session = SessionStore()
         session.create()
@@ -19,6 +17,6 @@ def cart_item_count(request):
     if cart_products.exists():
         cart_count = cart_products.aggregate(Sum('quantity'))['quantity__sum']
     else:
-        cart_count = 0  
-
+        cart_count = 0
+        
     return {'cart':cart,'cart_item_count': cart_count}

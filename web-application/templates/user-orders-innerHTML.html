@@ -26,7 +26,7 @@
 <div class="order-list finished">
     <h2>Завершенные заказы</h2>
     <hr>
-    {% for order in orders %}
+    {% for order in orders|sort_orders %}
         {% if order.status == 'Отменен' or order.status == 'Завершен' or order.status == 'Отменен системой (на складе недостаточно товара)' %}
             <div class="order-item">
                 <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>

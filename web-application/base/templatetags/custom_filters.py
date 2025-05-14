@@ -23,7 +23,7 @@ def number(string):
 
 @register.filter
 def sort_orders(array):
-    return array.order_by('updated_at')
+    return array.order_by('-updated_at')
 
 @register.filter
 def module(number):

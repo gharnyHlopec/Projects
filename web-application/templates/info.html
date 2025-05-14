@@ -150,10 +150,10 @@
       }
 
       .rating{
-          display: flex;
-          justify-content: right;
-          align-items: center; 
-          margin-bottom: 10px;
+        display: flex;
+        justify-content: right;
+        align-items: center; 
+        margin-bottom: 10px;
       }
       .average-rating{
         color:#fc0; 
@@ -164,15 +164,15 @@
         margin-bottom: 12px;
       }
       .back-button-link{
-          text-decoration: none;
-          color:gray;
+        text-decoration: none;
+        color:gray;
       }
       .back-button-link:hover{
-          color: black;
+        color: black;
       }
       .buttons{
-          margin-left:10px;
-          box-sizing: border-box;
+        margin-left:10px;
+        box-sizing: border-box;
       }
       .quantity-div{
         margin: 0;
@@ -318,3 +318,12 @@
   </div>
 </body>
 </html>
+
+<script>
+  if (document.querySelector('.quantity-change')){
+      document.querySelector('.add-to-cart-button').style.display='none';
+  }
+  else{
+      document.querySelector('add-to-cart-button').style.display='';
+  }
+</script>

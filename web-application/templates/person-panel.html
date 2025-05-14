@@ -6,30 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Клиенты/Работники</title>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                const tabId = tab.getAttribute('data-tab');
-                tabContents.forEach(content => {
-                    if (content.id === tabId) {
-                        content.classList.add('active');
-                    } else {
-                        content.classList.remove('active');
-                    }
-                });
-            });
-        });
-    });
-</script>
-
-
 <style>
 body{
     font-family: Arial, Helvetica, sans-serif;
@@ -53,6 +29,11 @@ body{
     font-size: 20px;
     list-style-type: none;
     border-bottom: 1px solid gray;
+}
+.tabs > *{
+        text-align: center;
+        align-items: flex-end;
+        box-sizing: border-box;
 }
 
 .tab-link{
@@ -117,13 +98,6 @@ border: none;
         font-size: 16px;
     }
 }
-@media screen and (max-width: 595px) {
-    .tabs > *{
-        text-align: center;
-        align-items: flex-end;
-        box-sizing: border-box;
-    }
-}
 
 </style>
 </head>
@@ -171,3 +145,26 @@ border: none;
     </div>
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const tabId = tab.getAttribute('data-tab');
+                tabContents.forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+        });
+    });
+</script>

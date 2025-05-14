@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Каталог</title>
-
     <style>
         body{
             overflow-y: scroll;
@@ -448,7 +447,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         inputs.forEach(input => {
             currentUrl.searchParams.set(input.id, input.value);
         });
-    
+        currentUrl.searchParams.set('page', 1);
+
         fetchData(currentUrl.href)
     }
   
@@ -479,6 +479,7 @@ function resetFilters(){
     inputs.forEach(input => {
         currentUrl.searchParams.set(input.id,input.value); 
     });
+    currentUrl.searchParams.set('page', 1);
     fetchData(currentUrl.href);
 }
 </script>

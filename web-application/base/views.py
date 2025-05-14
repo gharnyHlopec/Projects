@@ -11,7 +11,8 @@ from django.urls import reverse
 from django.db import transaction
 from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required,user_passes_test
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
+
 
 def only_for_staff(user):
   return user.is_staff
@@ -80,9 +81,10 @@ def catalog(request, products):
     max_price = request.GET.get('max_price') or '9999999'
     min_year = request.GET.get('min_year') or '-1'
     max_year = request.GET.get('max_year') or '9999999'
-    current_page = int(request.GET.get('page',1))
 
     availability = int(request.GET.get('availability', -1))
+
+    current_page = int(request.GET.get('page',1))
 
     if products == 'all':
         products = Product.objects.filter(name__icontains=q,
@@ -104,8 +106,11 @@ def catalog(request, products):
     amount_of_products = len(products)
 
     paginator = Paginator(products,12)
+
     products = list(paginator.page(current_page))
+        
     page_list = list(paginator.get_elided_page_range(current_page, on_each_side=2,on_ends=1))
+
     if page_list == [1]:
         page_list = None
 
@@ -150,20 +155,12 @@ def info(request,pk):
     image_amount = len(images)
     zipped_data = zip(info, data)
     
-    if request.user.is_authenticated:
-        cart, _ = Cart.objects.get_or_create(user=request.user)
-    else:
-        if request.session.session_key:
-            cart = Cart.objects.filter(session_key=request.session.session_key).last()
-
     context = {"product": product, "zipped_data": zipped_data, "images":images, "image_amount":image_amount}
 
     return render(request, 'info.html', context)
 
 @user_passes_test(staff_not_allowed, login_url='/login')
 def cart(request):
-    cart = None
-    cart_products = None
     total_sum = 0
     
     #Если запрос пришел с AJAX, то добавляем/убавляем количество товара в корзине или удаляем товар из корзины
@@ -180,18 +177,13 @@ def cart(request):
             cart_item.delete()  
 
     #Получаем или создаем корзину
-    if request.user.is_authenticated:
-        cart, _ = Cart.objects.get_or_create(user=request.user)
-    else:
-        if request.session.session_key:
-            cart = Cart.objects.filter(session_key=request.session.session_key).last()
+    cart, _ = Cart.objects.get_or_create(
+        user=request.user if request.user.is_authenticated else None,
+        session_key=request.session.session_key if not request.user.is_authenticated else None, 
+    )
 
-    #Если корзина есть, то получаем её содержимое 
-    if cart:
-        cart_products = CartItem.objects.filter(cart=cart)
-    else:
-        context = {'cart_products':cart_products}
-        return render(request, 'cart.html', context)
+    #Получаем содержимое корзины 
+    cart_products = CartItem.objects.filter(cart=cart)
 
     #Расписываем подробнее её содержимое
     products_with_details = []
@@ -204,11 +196,17 @@ def cart(request):
             'quantity': item.quantity,
             'result': details.price * item.quantity,
         }
-
+    # for cart_product in cart_products:
+    # cart_product.id
+    # cart_product.product.name
+    # cart_product.product.price
+    # cart_product.quantity
+    # cart_product.product.price * cart_product.quantity
         if item.first_image is not None:
             item_details['image'] = item.first_image.image.url
         else:
             item_details['image'] = static('/images/placeholder.jpg')
+
 
         products_with_details.append(item_details) 
 
