@@ -126,6 +126,12 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now = True)
 
+    @property
+    def get_total_cost(self):
+        total_cost = 0
+        for product in self.items.all():
+            total_cost += product.price * product.quantity
+        return total_cost
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
