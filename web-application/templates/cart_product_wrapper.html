@@ -1,29 +1,36 @@
+{% load static %}
+{% load custom_filters %}
+
 <div class="cart-products-wrapper">
-    {% if cart_item_count != 0 %}
-        {% for product in products_with_details %}
-            <div class="cart-item">
-                <div class="image-container">
-                    <img src="{{ product.image }}" alt="{{ product.name }}">
-                </div>
-                <h2 class="item-name">{{ product.name }}</h2>
-                <div class="quantity-controls">
-                    <h2 class="item-price">{{ product.result }}р</h2>
-                    {% if product.quantity > 1 %}
-                        <button onclick="changeQuantity(this.value,'-1')" value="{{ product.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
-                    {% else %}
-                        <button disabled onclick="changeQuantity(this.value,'-1')" value="{{ product.cart_item_id }}" id="minus-button" class="button quantity-button">-</button> 
-                    {% endif %}
-                    <span id="quantity-{{ product.cart_item_id }}">{{ product.quantity }}</span>
-                    <button onclick="changeQuantity(this.value,'1')" value="{{ product.cart_item_id }}" id="plus-button" class="button quantity-button">+</button>
-                    <button value="{{ product.cart_item_id }}" onclick="deleteFromCart(this.value)" class="button delete-button">Удалить</button>
-                </div>
+    {% for cart_product in cart_products %}
+        <div class="cart-item">
+            <div class="image-container">
+                {% if cart_product.first_image %}
+                    <img src="{{ cart_product.first_image.image.url }}" alt="{{ cart_product.product.name }}">
+                {% else %}
+                    <img src="{% static '/images/placeholder.jpg' %}" alt="Placeholder">
+                {% endif %}
             </div>
-        {% endfor %}
-        <div class="bottom-div">
-            <h2 class="total-sum">Итоговая стоимость: {{ total_sum }}р</h2>
-            <a style="text-decoration:none "class="contact-information-button" href="{% url 'contact-information' %}">Перейти к контактной информации</a> 
+            <h2 class="item-name">{{ cart_product.product.name }}</h2>
+            <div class="quantity-controls">
+                <h2 class="item-price">{{ cart_product.product.price|multiply:cart_product.quantity }}р</h2>
+                {% if cart_product.quantity > 1 %}
+                    <button onclick="changeQuantity(this.value,'-1')" value="{{ cart_product.id }}" id="minus-button" class="button quantity-button">-</button> 
+                {% else %}
+                    <button disabled onclick="changeQuantity(this.value,'-1')" value="{{ cart_product.id }}" id="minus-button" class="button quantity-button">-</button> 
+                {% endif %}
+                <span id="quantity-{{ cart_product.id }}">{{ cart_product.quantity }}</span>
+                <button onclick="changeQuantity(this.value,'1')" value="{{ cart_product.id }}" id="plus-button" class="button quantity-button">+</button>
+                <button value="{{ cart_product.id }}" onclick="deleteFromCart(this.value)" class="button delete-button">Удалить</button>
+            </div>
         </div>
-    {% else %}
+    {% endfor %}
+    {% if cart_products|length == 0 %}
         <h2 class="empty-cart">Ваша корзина пуста</h2>
+    {% else %}
+    <div class="bottom-div">
+        <h2 class="total-sum">Итоговая стоимость: {{ total_sum }}р</h2>
+        <a style="text-decoration:none "class="contact-information-button" href="{% url 'contact-information' %}">Перейти к контактной информации</a> 
+    </div>
     {% endif %}
 </div>

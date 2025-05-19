@@ -5,13 +5,13 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetDoneView,PasswordResetCompleteView
 from .models import Review, ProductImage, Cart, CartItem, Order, OrderItem, User, Product
 from .forms import MyUserCreationForm, UserForm, GuestOrderForm, MyUserEditForm,ProductForm
-from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
+from django.http import JsonResponse,HttpResponseNotFound
 import json
 from django.urls import reverse
 from django.db import transaction
 from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required,user_passes_test
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator
 
 
 def only_for_staff(user):
@@ -161,8 +161,7 @@ def info(request,pk):
 
 @user_passes_test(staff_not_allowed, login_url='/login')
 def cart(request):
-    total_sum = 0
-    
+
     #Если запрос пришел с AJAX, то добавляем/убавляем количество товара в корзине или удаляем товар из корзины
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         data = json.loads(request.body)
@@ -185,35 +184,13 @@ def cart(request):
     #Получаем содержимое корзины 
     cart_products = CartItem.objects.filter(cart=cart)
 
-    #Расписываем подробнее её содержимое
-    products_with_details = []
-    for item in cart_products:
-        details = Product.objects.get(id=item.product.id)
-        item_details = {
-            'cart_item_id': item.id,
-            'name': details.name,
-            'price': details.price,
-            'quantity': item.quantity,
-            'result': details.price * item.quantity,
-        }
-    # for cart_product in cart_products:
-    # cart_product.id
-    # cart_product.product.name
-    # cart_product.product.price
-    # cart_product.quantity
-    # cart_product.product.price * cart_product.quantity
-        if item.first_image is not None:
-            item_details['image'] = item.first_image.image.url
-        else:
-            item_details['image'] = static('/images/placeholder.jpg')
+    total_sum = 0
+    
+    for cart_product in cart_products:
+        total_sum += cart_product.product.price * cart_product.quantity
 
-
-        products_with_details.append(item_details) 
-
-    for product_with_details in products_with_details:
-        total_sum += product_with_details['result']
-
-    context = {'products_with_details':products_with_details, 'total_sum':total_sum}
+    context = {'cart_products':cart_products, 'total_sum':total_sum}
+    
     #Если AJAX-запрос, то просто меняем внутренности корзины
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest': 
         navbar_html = render(request,'navbar.html')
@@ -226,18 +203,19 @@ def cart(request):
 @user_passes_test(staff_not_allowed, login_url='/login')
 def contactInformation(request):
     if request.user.is_authenticated:
-        cart,_ = Cart.objects.get_or_create(user=request.user)
         form = UserForm(instance=request.user)
     else:
-        if request.session.session_key:
-            cart = Cart.objects.filter(session_key=request.session.session_key).last()
         form = GuestOrderForm()
+
+    cart, _ = Cart.objects.get_or_create(
+        user=request.user if request.user.is_authenticated else None,
+        session_key=request.session.session_key if not request.user.is_authenticated else None, 
+    )
+    
     if request.method == 'POST':    
         if request.user.is_authenticated:
-            cart = Cart.objects.get(user=request.user)
             form = UserForm(request.POST, instance = request.user)
         else:
-            cart = Cart.objects.filter(session_key=request.session.session_key).last()
             form = GuestOrderForm(request.POST)
         if form.is_valid():
             order = Order.objects.create(
@@ -306,9 +284,8 @@ def postReview(request, pk):
 
 def deleteReview(request, prod_id, pk):
     review = Review.objects.get(id=pk)
-
     if request.user != review.user and request.user.is_staff != True:
-        return HttpResponse('You are not allowed here!!')
+        return redirect('product-reviews', prod_id)
     if request.method == 'POST':
         review.delete()
         return redirect('product-reviews', prod_id)
@@ -398,9 +375,9 @@ def adminPanel(request):
     if request.method == "POST":
         data = json.loads(request.body)
         order = Order.objects.get(id = data.get('pk'))
+        orderItems = OrderItem.objects.filter(order=order)
         if data.get('action') == 'accept':
             with transaction.atomic():
-                orderItems = OrderItem.objects.filter(order=order)
                 for item in orderItems:
                     details = Product.objects.get(id=item.product.id)
                     if item.quantity > details.amount:
@@ -413,7 +390,6 @@ def adminPanel(request):
                 order.status = 'Принят'
         elif data.get('action') == 'decline':
             if order.status == 'Принят':
-                orderItems = OrderItem.objects.filter(order=order)
                 for item in orderItems:
                     details = Product.objects.get(id=item.product.id)
                     details.amount += item.quantity
@@ -424,16 +400,8 @@ def adminPanel(request):
         order.save()
 
     orders = Order.objects.all().order_by('status')
-    order_items = {}  
 
-    for order in orders:
-        corresponding_items = OrderItem.objects.filter(order=order)
-        order_items[order] = corresponding_items  
-
-    context = {
-        'orders': orders,
-        'order_items': order_items, 
-        }
+    context = {'orders': orders}
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render(request, 'admin_panel_innerHTML.html',context)
@@ -471,16 +439,8 @@ def updateProfile(request):
 @user_passes_test(staff_not_allowed, login_url='/login')
 def userOrders(request):
     orders = Order.objects.filter(user=request.user).order_by('-updated_at')
-    order_items = {} 
 
-    for order in orders:
-        items = OrderItem.objects.filter(order=order)
-        order_items[order] = items  
-
-    context = {
-        'orders': orders,
-        'order_items': order_items, 
-        }
+    context = {'orders': orders}
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render(request,'user-orders-innerHTML.html',context)

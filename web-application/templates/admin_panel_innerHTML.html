@@ -18,7 +18,7 @@
                     {% endif %}
                 </div>
                 <ul>
-                    {% for item in order_items|get_item:order %}
+                    {% for item in order.items.all %}
                         <li>
                             {{ item.name }} - {{ item.quantity }} шт. - 
                             <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
@@ -33,7 +33,7 @@
                         </li>
                     {% endfor %}
                 </ul>
-                <b><p class="order-total">Общая стоимость заказа: {{ order_items|get_item:order|sum_prices }} р.</p></b>
+                <b><p class="order-total">Общая стоимость заказа: {{ order.items.all|sum_prices }} р.</p></b>
                 <div class="button-group">
                     {% if order.status == 'В обработке' %}
                         <button onclick="changeOrderStatus({{ order.id }},'accept')" class="button accept-button">Принять заказ</button>
@@ -66,14 +66,14 @@
                     <b>Статус заказа: {{ order.status }}</b>
                 </p>
                 <ul>
-                    {% for item in order_items|get_item:order %}
+                    {% for item in order.items.all %}
                         <li>
                             {{ item.name }} - {{ item.quantity }} шт. - 
                             <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
                         </li>
                     {% endfor %}
                 </ul>
-                <b><p class="order-total">Общая стоимость заказа: {{ order_items|get_item:order|sum_prices }} р.</p></b>
+                <b><p class="order-total">Общая стоимость заказа: {{ order.items.all|sum_prices }} р.</p></b>
                 <hr>
             </div>
         {% endif %}
