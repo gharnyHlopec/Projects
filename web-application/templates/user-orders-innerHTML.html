@@ -9,6 +9,18 @@
             <div class="order-item">
                 <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
                 <p class="order-status" data-status="{{ order.status }}"><b>Статус заказа: {{ order.status }}</b></p>
+                <div class="order-details">
+                    <p>Имя: {{ order.first_name }}</p>
+                    <p>Фамилия: {{ order.last_name }}</p>
+                    <p>Телефон: {{ order.phone_number }}</p>
+                    {% if order.email %}
+                        <p>Email: {{ order.email }}</p>
+                    {% endif %}
+                    <b {% if order.payment_status != 'Оплачен' %} style="color:red" {% else %} style="color:green"{% endif %}
+                    >
+                        Оплата: {{ order.payment_status }}
+                    </b>
+                </div>
                 <ul>
                     {% for item in order.items.all %}
                         <li>
@@ -31,6 +43,18 @@
             <div class="order-item">
                 <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
                 <p class="order-status" data-status="{{ order.status }}"><b>Статус заказа: {{ order.status }}</b></p>
+                <div class="order-details">
+                    <p>Имя: {{ order.first_name }}</p>
+                    <p>Фамилия: {{ order.last_name }}</p>
+                    <p>Телефон: {{ order.phone_number }}</p>
+                    {% if order.email %}
+                        <p>Email: {{ order.email }}</p>
+                    {% endif %}
+                    <b {% if order.payment_status != 'Оплачен' %} style="color:red" {% else %} style="color:green"{% endif %}
+                    >
+                        Оплата: {{ order.payment_status }}
+                    </b>
+                </div>
                 <ul>
                     {% for item in order.items.all %}
                         <li>
