@@ -3,7 +3,7 @@
     <h2>Заказы в работе</h2>
     <hr>
     {% for order in orders %}
-        {% if order.status != 'Отменен' and order.status != 'Завершен' and order.status != 'Отменен системой (на складе недостаточно товара)' %}
+        {% if order.status != 'Отменен' and order.status != 'Завершен' %}
             <div class="order-item active-orders">
                 <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
                 <p class="order-status" data-status="{{ order.status }}">
@@ -16,6 +16,10 @@
                     {% if order.email %}
                         <p>Email: {{ order.email }}</p>
                     {% endif %}
+                    <b {% if order.payment_status != 'Оплачен' %} style="color:red" {% else %} style="color:green"{% endif %}
+                    >
+                        Оплата: {{ order.payment_status }}
+                    </b>
                 </div>
                 <ul>
                     {% for item in order.items.all %}
@@ -24,7 +28,7 @@
                             <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
                             <br>
                             {% if item.product %}
-                                {% if item.product.amount < item.quantity and order.status == 'В обработке' %}
+                                {% if item.product.amount < item.quantity and order.status == 'Отменен системой (на складе недостаточно товара)' %}
                                     <b class="warning">На складе недостаточно товара: {{ item.name }}. В наличии только {{ item.product.amount }}шт.</b>
                                 {% endif %}
                             {% else %}
@@ -35,7 +39,7 @@
                 </ul>
                 <b><p class="order-total">Общая стоимость заказа: {{ order.items.all|sum_prices }} р.</p></b>
                 <div class="button-group">
-                    {% if order.status == 'В обработке' %}
+                    {% if order.status == 'В обработке' and order.payment_status != 'Оплата картой на сайте' %}
                         <button onclick="changeOrderStatus({{ order.id }},'accept')" class="button accept-button">Принять заказ</button>
                     {% elif order.status == 'Принят' %}
                         <button onclick="changeOrderStatus({{ order.id }},'finish')" class="button finish-button">Завершить заказ</button>
@@ -51,7 +55,7 @@
     <h2>Завершенные заказы</h2>
     <hr>
     {% for order in orders|sort_orders %}
-        {% if order.status == 'Отменен' or order.status == 'Завершен' or order.status == 'Отменен системой (на складе недостаточно товара)' %}
+        {% if order.status == 'Отменен' or order.status == 'Завершен'%}
             <div class="order-item">
                 <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
                 <div class="order-details">

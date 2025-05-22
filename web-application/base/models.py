@@ -115,9 +115,17 @@ class Order(models.Model):
         ('Отменен системой (на складе недостаточно товара)', 'Отменен системой (на складе недостаточно товара)'),
         ('Завершен','Завершен')
     ]
-    
+
+    payment_statuses = [
+        ('Оплата картой курьеру', 'Оплата картой курьеру'),
+        ('Оплата наличными курьеру', 'Оплата наличными курьеру'),
+        ('Оплата картой на сайте', 'Оплата картой на сайте'),
+        ('Оплачен', 'Оплачен'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     status = models.CharField(max_length=50, choices=statuses, default='-')
+    payment_status = models.CharField(max_length=50, choices=payment_statuses, default='-')
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)

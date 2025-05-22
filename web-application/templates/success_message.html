@@ -13,6 +13,9 @@
     .messages p{
       margin: 0;
     }
+    .error{
+      background-color:red;
+    }
 </style>
 
 {% if messages %}
@@ -20,7 +23,17 @@
 {% for message in messages %}
   {% if message.tags == "success" %}
     <p class="message">{{ message }}</p>
+  
+  {% elif message.tags == "error" %}
+    <p class="error message">{{ message }}</p>
   {% endif %}
+
 {% endfor %}
 </div>
 {% endif %}
+
+<script>
+  if(document.querySelector('.error')){
+    document.querySelector('.messages').style.backgroundColor='red';
+  }
+</script>

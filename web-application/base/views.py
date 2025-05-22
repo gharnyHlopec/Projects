@@ -12,6 +12,7 @@ from django.db import transaction
 from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
 
 from decimal import Decimal
 import stripe
@@ -223,18 +224,24 @@ def contactInformation(request):
         else:
             form = GuestOrderForm(request.POST)
         if form.is_valid():
+
+            items_in_cart = CartItem.objects.filter(cart=cart)
+            if len(items_in_cart) == 0:
+                messages.error(request, "Произошла ошибка: Заказ отменён. В корзине не было ни одного товара.")       
+                return redirect('main') 
+            
             order = Order.objects.create(
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'],
                     phone_number=form.cleaned_data['phone_number'],
                     email=form.cleaned_data['email'],
-                    status = "В обработке"
+                    status = "В обработке",
+                    payment_status=request.POST.get('payment_status') 
                 )
             if request.user.is_authenticated:
                 order.user = request.user
                 order.save()
     
-            items_in_cart = CartItem.objects.filter(cart=cart)
             for item in items_in_cart:
                 OrderItem.objects.create(
                     order=order,
@@ -244,51 +251,63 @@ def contactInformation(request):
                     price=item.product.price
                 )
                 item.delete()
-            request.session['order_id'] = order.id
-            return redirect('payment_process')
-            # messages.success(request, "Ваш заказ был успешно отправлен")
-            # return redirect('main')
+
+            #Проверяем достаточно ли товара на складе
+            orderItems = OrderItem.objects.filter(order=order)
+            with transaction.atomic():
+                for item in orderItems:
+                    product = Product.objects.get(id=item.product.id)
+                    if item.quantity > product.amount:
+                        order.status = 'Отменен системой (на складе недостаточно товара)'
+                        order.save()
+                        messages.error(request, "Заказ отменён, на складе недостаточно товара. Дождитесь звонка оператора для выяснения подробностей.")       
+                        return redirect('main') 
+                    else:
+                        product.amount -= item.quantity
+                        product.save() 
+                
+            if request.POST.get('payment_status') == "Оплата картой на сайте":
+                request.session['order_id'] = order.id
+                    
+                success_url = request.build_absolute_uri(
+                                reverse('payment_completed'))
+                cancel_url = request.build_absolute_uri(
+                                reverse('payment_canceled'))
+                
+                # данные сеанса оформления платежа Stripe
+                session_data = {
+                    'mode': 'payment',
+                    'client_reference_id': order.id,
+                    'success_url': success_url,
+                    'cancel_url': cancel_url,
+                    'line_items': []
+                }
+
+                for item in order.items.all():
+                    session_data['line_items'].append({
+                        'price_data':{
+                            'unit_amount':int(item.price * Decimal('100')),
+                            'currency':'byn',
+                            'product_data':{
+                                'name':item.product.name,
+                            },
+                        },
+                        'quantity':item.quantity,
+                    })
+                # создать сеанс оформления платежа Stripe
+                session = stripe.checkout.Session.create(**session_data)
+                # перенаправить к платежной форме Stripe
+                return redirect(session.url, code=303)
+            else:
+                messages.success(request, "Ваш заказ был успешно создан")
+                return redirect('main')
 
     context = {"form":form,"cart":cart}
     return render(request, 'contact-information.html', context)
 
-def payment_process(request):
-    order_id = request.session.get('order_id', None)
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST':
-        success_url = request.build_absolute_uri(
-                        reverse('payment_completed'))
-        cancel_url = request.build_absolute_uri(
-                        reverse('payment_canceled'))
-    # данные сеанса оформления платежа Stripe
-        session_data = {
-            'mode': 'payment',
-            'client_reference_id': order.id,
-            'success_url': success_url,
-            'cancel_url': cancel_url,
-            'line_items': []
-        }
-
-        for item in order.items.all():
-            session_data['line_items'].append({
-                'price_data':{
-                    'unit_amount':int(item.price * Decimal('100')),
-                    'currency':'byn',
-                    'product_data':{
-                        'name':item.product.name,
-                    },
-                },
-                'quantity':item.quantity,
-            })
-        # создать сеанс оформления платежа Stripe
-        session = stripe.checkout.Session.create(**session_data)
-        # перенаправить к платежной форме Stripe
-        return redirect(session.url, code=303)
-    else:
-        return render(request, 'payment_process.html', locals())
-
 def payment_completed(request):
     return render(request, 'payment_completed.html')
+
 def payment_canceled(request):
     return render(request, 'payment_canceled.html')
 
@@ -422,28 +441,19 @@ def adminPanel(request):
     if request.method == "POST":
         data = json.loads(request.body)
         order = Order.objects.get(id = data.get('pk'))
-        orderItems = OrderItem.objects.filter(order=order)
-        if data.get('action') == 'accept':
-            with transaction.atomic():
-                for item in orderItems:
-                    details = Product.objects.get(id=item.product.id)
-                    if item.quantity > details.amount:
-                        order.status = 'Отменен системой (на складе недостаточно товара)'
-                        order.save()
-                        return redirect('admin-panel') 
-                    else:
-                        details.amount -= item.quantity
-                        details.save()
-                order.status = 'Принят'
+        if data.get('action') == 'accept' and order.status == 'В обработке':
+            order.status = 'Принят'
         elif data.get('action') == 'decline':
-            if order.status == 'Принят':
+            if order.status in ['В обработке','Принят']:
+                orderItems = OrderItem.objects.filter(order=order)
                 for item in orderItems:
-                    details = Product.objects.get(id=item.product.id)
-                    details.amount += item.quantity
-                    details.save()
+                    product = Product.objects.get(id=item.product.id)
+                    product.amount += item.quantity
+                    product.save()
             order.status = 'Отменен'
         elif data.get('action') == 'finish':
             order.status = 'Завершен'
+            order.payment_status = 'Оплачен'
         order.save()
 
     orders = Order.objects.all().order_by('status')
@@ -548,6 +558,30 @@ def changePassword(request):
                 return redirect('profile')
     return render(request,'password_change.html',{'form':form})
 
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    endpoint_secret = settings.STRIPE_ENDPOINT_SECRET
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+
+        if event['type'] == 'checkout.session.completed':
+            session = event['data']['object']
+            order_id = session['client_reference_id']
+            order = Order.objects.get(id=order_id)
+
+            # Обновите статус оплаты заказа
+            order.payment_status = 'Оплачен'
+            order.status = 'Принят'
+            order.save()
+        return redirect('payment_completed')
+
+    except ValueError as e:
+        return redirect('payment_completed')
+    except stripe.error.SignatureVerificationError as e:
+        return redirect('payment_canceled')
+    
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'password_reset_form.html'
 

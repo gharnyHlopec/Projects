@@ -37,7 +37,7 @@ urlpatterns = [
      path('password-reset/complete/',
          views.CustomPasswordResetCompleteView.as_view(),
          name='password_reset_complete'),
-     path('payment_process/', views.payment_process, name='payment_process'),
      path('payment_completed/', views.payment_completed, name='payment_completed'),
      path('payment_canceled/', views.payment_canceled, name='payment_canceled'),
+     path('webhook/',views.stripe_webhook,name="stripe-webhook")
 ]

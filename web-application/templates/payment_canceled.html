@@ -1,2 +1,22 @@
-<h1>Your payment has not been processed</h1>
-<p>There was a problem processing your payment.</p>
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля</title>
+    
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <h1>Ваш платеж не был обработан</h1>
+    <p>При обработке вашего платежа возникла проблема</p>
+</body>
+</html>
