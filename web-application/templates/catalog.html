@@ -111,7 +111,9 @@
         }
 
         .add-to-cart-div{
-            margin-top: 10px;
+            display: block;
+            margin-top: auto;
+            margin-bottom: auto;
         }
     
         .product-item small{
@@ -147,7 +149,7 @@
             display: flex;
             justify-content: left;
             align-items: center; 
-            margin-bottom: 4px;
+            margin-bottom: 0px;
             margin-top: auto;
         }
         .average-rating{
@@ -189,6 +191,8 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 17px;
+            margin-top: auto;
+            margin-bottom: 0px;
         }
         .add-to-cart-button:disabled{
             background-color:lightgray;
@@ -252,6 +256,16 @@
         .pagination .prev,
         .pagination .next {
             font-weight: bold;
+        }
+        .review-container,
+        .price-container{
+            display: block;
+            box-sizing: border-box;
+            margin-top: 0;
+            margin-bottom: auto;
+        }
+        .review-container{
+            margin-bottom: 0;
         }
     </style>
 </head>

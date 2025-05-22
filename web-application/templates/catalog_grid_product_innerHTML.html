@@ -11,19 +11,23 @@
         </div>
     </a>
     <a href="{% url 'info' product.id %}" class="product-title">{{ product.name }}</a>
-    
-    {% if product.get_review_count != 0 %}
-        <div class="rating">
-            <div class="Stars" style="--rating: {{ product.get_average_rating  }};"></div>
-            <p class="average-rating">&nbsp;{{ product.get_average_rating }}&nbsp;</p>  
-            ({{ product.get_review_count }})
-        </div>
-    {% else %}
-        <small>Пока нет отзывов</small>
-    {% endif %}
-
-    <strong class="price">{{ product.price }} р</strong>    
-
+    <div>
+        
+    </div>
+    <div class="review-container">
+        {% if product.get_review_count != 0 %}
+            <div class="rating">
+                <div class="Stars" style="--rating: {{ product.get_average_rating  }};"></div>
+                <p class="average-rating">&nbsp;{{ product.get_average_rating }}&nbsp;</p>  
+                ({{ product.get_review_count }})
+            </div>
+        {% else %}
+            <small>Пока нет отзывов</small>
+        {% endif %}
+    </div>
+    <div class="price-container">
+        <strong class="price">{{ product.price }} р</strong>    
+    </div>
     <div class="add-to-cart-div">
         {% if product.amount > 0 and request.user.is_staff == False %}
         <div class="product-{{ product.id }}">
