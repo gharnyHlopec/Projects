@@ -143,7 +143,7 @@
         document.querySelectorAll('.active-orders').forEach(function(orderItem) {
         if (orderItem.querySelector('.warning')) {
             const button = orderItem.querySelector('.accept-button');
-            button.disabled = true;
+            button.style.display = 'none';
         }
     });
     }

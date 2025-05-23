@@ -113,7 +113,7 @@
         .add-to-cart-div{
             display: block;
             margin-top: auto;
-            margin-bottom: auto;
+            margin-bottom: 0;
         }
     
         .product-item small{
@@ -377,7 +377,6 @@
     const filterIcon = document.querySelector('.filter-icon');
     const closeIcon = document.querySelector('.close-icon');
     const pagination = document.querySelector('.pagination')
-    const productGrid = document.querySelector('.product-grid')
 
     function openFilters(){
         filterContainer.classList.add('opened');
@@ -398,24 +397,26 @@
     function changeLayout(){
 
         if (window.innerWidth <= 665){
+            console.log('aaa')
             filterIcon.style.display = '';
-            productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            document.querySelector('.product-grid').style.gridTemplateColumns = 'repeat(2, 1fr)';
             filterContainer.classList.add('closed');
             homeContainer.classList.add('modified');
         } else if (665 < window.innerWidth && window.innerWidth<= 750){
+            console.log('bbb')
             filterIcon.style.display = 'none';
             filterContainer.classList.remove('closed');
             homeContainer.classList.remove('modified');
             filterContainer.classList.remove('opened');
-            productGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            document.querySelector('.product-grid').style.gridTemplateColumns = 'repeat(2, 1fr)';
         } else if (750 < window.innerWidth){
+            console.log('ccc')
             filterIcon.style.display = 'none';
             filterContainer.classList.remove('closed');
             homeContainer.classList.remove('modified');
             filterContainer.classList.remove('opened');
-            productGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            document.querySelector('.product-grid').style.gridTemplateColumns = 'repeat(3, 1fr)';
         }
-
     }
 </script>
 

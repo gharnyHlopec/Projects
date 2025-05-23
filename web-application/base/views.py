@@ -111,7 +111,7 @@ def catalog(request, products):
         products = products.order_by(sort_param)
     amount_of_products = len(products)
 
-    paginator = Paginator(products,12)
+    paginator = Paginator(products,6)
 
     products = list(paginator.page(current_page))
         
@@ -252,21 +252,21 @@ def contactInformation(request):
                 )
                 item.delete()
 
-            #Проверяем достаточно ли товара на складе
-            orderItems = OrderItem.objects.filter(order=order)
-            with transaction.atomic():
-                for item in orderItems:
-                    product = Product.objects.get(id=item.product.id)
-                    if item.quantity > product.amount:
-                        order.status = 'Отменен системой (на складе недостаточно товара)'
-                        order.save()
-                        messages.error(request, "Заказ отменён, на складе недостаточно товара. Дождитесь звонка оператора для выяснения подробностей.")       
-                        return redirect('main') 
-                    else:
-                        product.amount -= item.quantity
-                        product.save() 
-                
             if request.POST.get('payment_status') == "Оплата картой на сайте":
+                #Проверяем достаточно ли товара на складе. Если достаточно, то вычитаем товары со склада
+                orderItems = OrderItem.objects.filter(order=order)
+                with transaction.atomic():
+                    for item in orderItems:
+                        product = Product.objects.get(id=item.product.id)
+                        if item.quantity > product.amount:
+                            order.status = 'Отменен системой (на складе недостаточно товара)'
+                            order.save()
+                            messages.error(request, "Заказ отменён, на складе недостаточно товара. Дождитесь звонка оператора для выяснения подробностей.")       
+                            return redirect('main') 
+                        else:
+                            product.amount -= item.quantity
+                            product.save() 
+                    
                 request.session['order_id'] = order.id
                     
                 success_url = request.build_absolute_uri(
@@ -441,10 +441,22 @@ def adminPanel(request):
     if request.method == "POST":
         data = json.loads(request.body)
         order = Order.objects.get(id = data.get('pk'))
-        if data.get('action') == 'accept' and order.status == 'В обработке':
+        if data.get('action') == 'accept' and order.status == 'В обработке' and order.payment_status != 'Оплата картой на сайте':
+            #Проверяем достаточно ли товара на складе. Если достаточно, то вычитаем товары со склада
+            orderItems = OrderItem.objects.filter(order=order)
+            with transaction.atomic():
+                for item in orderItems:
+                    product = Product.objects.get(id=item.product.id)
+                    if item.quantity > product.amount:
+                        order.status = 'Отменен системой (на складе недостаточно товара)'
+                        order.save()
+                        return redirect('admin-panel') 
+                    else:
+                        product.amount -= item.quantity
+                        product.save() 
             order.status = 'Принят'
         elif data.get('action') == 'decline':
-            if order.status in ['В обработке','Принят']:
+            if order.status == 'Принят' or (order.payment_status in ['Оплачен',"Оплата картой на сайте"] and order.status not in  ['Завершен','Отменен системой (на складе недостаточно товара)']):
                 orderItems = OrderItem.objects.filter(order=order)
                 for item in orderItems:
                     product = Product.objects.get(id=item.product.id)
@@ -559,7 +571,7 @@ def changePassword(request):
     return render(request,'password_change.html',{'form':form})
 
 @csrf_exempt
-def stripe_webhook(request):
+def stripeWebhook(request):
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     endpoint_secret = settings.STRIPE_ENDPOINT_SECRET

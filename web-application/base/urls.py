@@ -39,5 +39,5 @@ urlpatterns = [
          name='password_reset_complete'),
      path('payment_completed/', views.payment_completed, name='payment_completed'),
      path('payment_canceled/', views.payment_canceled, name='payment_canceled'),
-     path('webhook/',views.stripe_webhook,name="stripe-webhook")
+     path('webhook/',views.stripeWebhook,name="stripe-webhook")
 ]
