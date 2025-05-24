@@ -28,7 +28,7 @@
                             <b>Общая цена: {{ item.price|multiply:item.quantity }} р.</b>
                             <br>
                             {% if item.product %}
-                                {% if item.product.amount < item.quantity and order.status == 'Отменен системой (на складе недостаточно товара)' or item.product.amount < item.quantity and order.status == 'В обработке' %}
+                                {% if item.product.amount < item.quantity and order.status == 'Отменен системой (на складе недостаточно товара)' or item.product.amount < item.quantity and order.status == 'В обработке' and order.payment_status != 'Оплата картой на сайте' and order.payment_status != 'Оплачен' %}
                                     <b class="warning">На складе недостаточно товара: {{ item.name }}. В наличии только {{ item.product.amount }}шт.</b>
                                 {% endif %}
                             {% else %}

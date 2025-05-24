@@ -350,6 +350,7 @@
             const url = new URL(window.location.href);
             url.searchParams.set('page', newPage);
             fetchData(url)
+            checkButtonsAfterCatalogRefresh()
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -360,18 +361,22 @@
 
 
 <script>
-    document.querySelectorAll('.quantity-change').forEach(elem => {
+    function checkButtonsAfterCatalogRefresh(){
+        document.querySelectorAll('.quantity-change').forEach(elem => {
         classes = elem.classList;
         last_class = elem.classList[classes.length-1];
         numbers = last_class.split('-');
         last_number = numbers[numbers.length-1];
         if (document.querySelector(`.quantity-change-product-${last_number}`)){
             document.querySelector(`.add-to-cart-product-${last_number}`).style.display='none';
-        }
+            }
         else{
             document.querySelector(`.add-to-cart-product-${last_number}`).style.display='';
-        }
-    })
+            }
+
+        })
+    }
+    checkButtonsAfterCatalogRefresh()
     const homeContainer = document.querySelector('.home-container');
     const filterContainer = document.querySelector('.filter-form');
     const filterIcon = document.querySelector('.filter-icon');
@@ -397,20 +402,17 @@
     function changeLayout(){
 
         if (window.innerWidth <= 665){
-            console.log('aaa')
             filterIcon.style.display = '';
             document.querySelector('.product-grid').style.gridTemplateColumns = 'repeat(2, 1fr)';
             filterContainer.classList.add('closed');
             homeContainer.classList.add('modified');
         } else if (665 < window.innerWidth && window.innerWidth<= 750){
-            console.log('bbb')
             filterIcon.style.display = 'none';
             filterContainer.classList.remove('closed');
             homeContainer.classList.remove('modified');
             filterContainer.classList.remove('opened');
             document.querySelector('.product-grid').style.gridTemplateColumns = 'repeat(2, 1fr)';
         } else if (750 < window.innerWidth){
-            console.log('ccc')
             filterIcon.style.display = 'none';
             filterContainer.classList.remove('closed');
             homeContainer.classList.remove('modified');
@@ -439,6 +441,7 @@ function fetchData(url){
     .then(data => {
         document.querySelector('.product-grid-and-pagination').innerHTML = data.html;
         changeLayout()
+        checkButtonsAfterCatalogRefresh()
         window.history.pushState({},'',url);
     })
     .catch(error => {
