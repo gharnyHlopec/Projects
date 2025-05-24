@@ -1,0 +1,32 @@
+body{
+    background-color: #f4f4f4;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-y: scroll;
+}
+.user-orders-wrapper{
+    padding: 0px 20px;
+    background-color: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 80%;
+    margin: 10px auto;
+    grid-gap: 5%;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-status[data-status*="В обработке"] {
+    color: blue; 
+}
+
+.order-status[data-status*="Отменен"] {
+    color: red; 
+}
+
+.order-status[data-status*="Принят"] {
+    color: orange; 
+}
+.order-status[data-status*="Завершен"] {
+    color: green; 
+}
+.order-date{color: gray}

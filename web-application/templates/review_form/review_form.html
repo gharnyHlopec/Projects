@@ -1,0 +1,41 @@
+{% include 'navbar/navbar.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оставить отзыв</title>
+    <link rel="stylesheet" href="{% static 'css/review_form.css' %}">
+
+</head>
+<body>
+    <div class="comment-form">
+        <div class="back-button-wrapper">
+            <a class="back-button-link" href="{% url 'product-reviews' pk %}">←Назад к отзывам</a>
+        </div>
+        <form method="POST" action ="">
+            {% csrf_token %}
+            <label for="rating">Поставьте оценку:</label>
+            <div class="rating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+                <input type="hidden" name="rating" id="rating-value" value="0"> 
+            </div>
+
+            <label for="body">Расскажите подробно о ваших впечатлениях:</label>
+            <textarea name="body" id="body" rows="5" required></textarea>
+
+            <label for="title">Подытожьте ваш отзыв (заголовок):</label>
+            <input type="text" name="title" id="title" required>
+
+            <input type="submit" id="submit-button" value="Оставить отзыв">
+        </form>
+    </div>
+</body>
+</html>
+
+<script src="{% static 'js/review_form.js' %}"></script>

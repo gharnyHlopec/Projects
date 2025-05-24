@@ -1,0 +1,141 @@
+<form method="POST" onsubmit="PostRequest(event)" id="product_form" enctype="multipart/form-data"> 
+    {% csrf_token %}  
+    <div class="field-container">
+      {% for field in form %}
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+          <ul class="errorlist" style="color: red;">
+              {% for error in field.errors %}
+              <p>{{ error }}<p>
+              {% endfor %}
+          </ul>
+          {% endif %}
+      {% endfor %}
+
+      {% if product.type == 'mouse' %}
+          <label for="type">Тип:</label>
+          <select id="type" name="type">
+              <option {% if product.description.type == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.type == 'Офисная мышь' %}selected{% endif %}>Офисная мышь </option>
+              <option {% if product.description.type == 'Игровая мышь' %}selected{% endif %}>Игровая мышь</option>
+              <option {% if product.description.type == 'Трекпад' %}selected{% endif %}>Трекпад</option>
+          </select>
+          
+          <label for="wireless">Беспроводная:</label>
+          <select id="wireless" name="wireless">
+              <option {% if product.description.wireless == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.wireless == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.wireless == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+          
+          <label for="sensor_type">Тип сенсора:</label>
+          <select id="sensor_type" name="sensor_type">
+              <option {% if product.description.sensor_type == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.sensor_type == 'Лазерный' %}selected{% endif %}>Лазерный</option>
+              <option {% if product.description.sensor_type == 'Оптический' %}selected{% endif %}>Оптический</option>
+              <option {% if product.description.sensor_type == 'Bluetrack' %}selected{% endif %}>Bluetrack</option>
+          </select>
+          
+          <label for="sensor_model">Модель сенсора:</label>
+          <input type="text" id="sensor_model" name="sensor_model" value="{{ product.description.sensor_model }}"/>
+          
+          <label for="sensor_resolution">Максимальное разрешение сенсора:</label>
+          <input type="number" min="0" step="1" id="sensor_resolution" name="sensor_resolution" value="{{ product.description.sensor_resolution }}"/>
+          
+          <label for="sensor_polling_rate">Максимальная частота опроса сенсора:</label>
+          <input type="number" min="0" step="1" id="sensor_polling_rate" name="sensor_polling_rate" value="{{ product.description.sensor_polling_rate }}"/>
+          
+          <label for="case_material">Материал корпуса:</label>
+          <input type="text" id="case_material" name="case_material" value="{{ product.description.case_material }}"/>
+          
+          <label for="lighting">Подсветка:</label>
+          <select id="lighting" name="lighting">
+              <option {% if product.description.lighting == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.lighting == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.lighting == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+
+      {% elif product.type == 'keyboard' %}
+          <label for="type">Тип клавиатуры:</label>    
+          <select id="type" name="type">
+              <option {% if product.description.type == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.type == 'Игровая' %}selected{% endif %}>Игровая</option>
+              <option {% if product.description.type == 'Офисная' %}selected{% endif %}>Офисная</option>
+              <option {% if product.description.type == 'Стандартная' %}selected{% endif %}>Стандартная</option>
+          </select>
+
+          <label for="switch_type">Тип переключателей:</label>    
+          <select id="switch_type" name="switch_type">
+              <option {% if product.description.switch_type == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.switch_type == 'Механическая' %}selected{% endif %}>Механическая</option>
+              <option {% if product.description.switch_type == 'Мембранная' %}selected{% endif %}>Мембранная</option>
+              <option {% if product.description.switch_type == 'Оптическая' %}selected{% endif %}>Оптическая</option>
+              <option {% if product.description.switch_type == 'Магнитная' %}selected{% endif %}>Магнитная</option>
+          </select>
+
+          <label for="switch_name">Название переключателей:</label>    
+          <input type="text" id="switch_name" name="switch_name" value="{{ product.description.switch_name }}"/>
+
+          <label for="color">Цвет:</label>    
+          <input type="text" id="color" name="color" value="{{ product.description.color }}"/>
+
+          <label for="cyrillic">Кириллица:</label>    
+          <select id="cyrillic" name="cyrillic">
+              <option {% if product.description.cyrillic == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.cyrillic == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.cyrillic == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+
+          <label for="wireless">Беспроводная:</label>
+          <select id="wireless" name="wireless">
+              <option {% if product.description.wireless == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.wireless == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.wireless == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+
+          <label for="cable_braid">Оплётка кабеля:</label>
+          <select id="cable_braid" name="cable_braid">
+              <option {% if product.description.cable_braid == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.cable_braid == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.cable_braid == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+
+      {% elif product.type == 'headphones' %}
+          <label for="type">Тип наушников:</label>    
+          <select id="type" name="type">
+              <option {% if product.description.type == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.type == 'Без микрофона' %}selected{% endif %}>Без микрофона</option>
+              <option {% if product.description.type == 'С микрофоном' %}selected{% endif %}>С микрофоном</option>
+              <option {% if product.description.type == 'Игровые' %}selected{% endif %}>Игровые</option>
+          </select>
+
+          <label for="wireless">Беспроводные:</label>
+          <select id="wireless" name="wireless">
+              <option {% if product.description.wireless == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.wireless == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.wireless == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+          <label for="protection">Пыле-, влаго-защита:</label>
+          <select id="protection" name="protection">
+              <option {% if product.description.protection == '-' %}selected{% endif %}>-</option>
+              <option {% if product.description.protection == 'Да' %}selected{% endif %}>Да</option>
+              <option {% if product.description.protection == 'Нет' %}selected{% endif %}>Нет</option>
+          </select>
+
+          <label for="case_material">Материал корпуса:</label>
+          <input type="text" id="case_material" name="case_material" value="{{ product.description.case_material }}"/>
+
+          <label for="headphones_color">Цвет наушников:</label>    
+          <input type="text" id="headphones_color" name="headphones_color" value="{{ product.description.headphones_color }}"/>
+
+          <label for="cable_color">Цвет кабеля:</label>    
+          <input type="text" id="cable_color" name="cable_color" value="{{ product.description.cable_color }}"/>
+
+          <label for="ear_cushion_material">Материал амбюшур:</label>
+          <input type="text" id="ear_cushion_material" name="ear_cushion_material" value="{{ product.description.ear_cushion_material }}"/>
+      {% endif %}
+      <input type="file" name="images" id="image-input" onchange="handleFiles(this.files);" multiple>
+    </div>
+    <button id='submit-button' type="submit">Применить изменения</button> 
+</form>

@@ -1,0 +1,38 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="vieёport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Редактирование товара</title>
+  <link rel="stylesheet" href="{% static 'css/edit_product.css' %}">
+  <script src="{% static 'js/edit_product.js' %}" defer></script>
+</head>
+
+<body>
+  {% include 'navbar/navbar.html' %}
+  <div class="back-button-wrapper">
+    <a class="back-button-link" href="{% url 'info' pk=pk %}">←Назад к товару</a>
+  </div>
+  <div class="forms-container"> 
+    <div class="image-drop-area"> 
+      Перетащите новые изображения сюда 
+      <br>
+      <label class="image-upload-button" for="image-input">Выбрать файлы</label>
+      <br>
+      <div id="gallery">
+        {% for pic in images %}
+          <img src="{{ pic.image.url }}" draggable="false" onclick="deleteImageFromServer({{ pk }},{{ pic.id }})">
+        {% endfor %}
+      </div>
+    </div> 
+    <div class="form-container">
+      {% include 'edit_product/edit_product_form_innerHTML.html' %}
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,16 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/success_message.css' %}">
+<script src="{% static 'js/success_message.js' %}" defer></script>
+{% if messages %}
+<div class="messages">
+{% for message in messages %}
+  {% if message.tags == "success" %}
+    <p class="message">{{ message }}</p>
+  
+  {% elif message.tags == "error" %}
+    <p class="error message">{{ message }}</p>
+  {% endif %}
+
+{% endfor %}
+</div>
+{% endif %}

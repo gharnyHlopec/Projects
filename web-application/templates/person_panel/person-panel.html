@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{% static 'css/person_panel.css' %}">
+<script src="{% static 'js/person_panel.js' %}" defer></script>
+<title>Клиенты/Работники</title>
+</head>
+<body>
+    {% load custom_filters %}
+    {% include 'navbar/navbar.html' %}
+    {% include 'success_message/success_message.html' %}
+    <div class="admin-panel-wrapper">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="customers">Клиенты</li>
+            <li class="tab-link" data-tab="staff">Работники</li>
+            <div class="links">
+                <a class="link change-password-link" href="{% url 'change-password' %}">Изменить пароль</a>
+                <a class="link exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
+            </div>
+        </ul>
+        <div id="customers" class="tab-content active">
+            {% for user in users %}
+                {% if not user.is_staff %}
+                    <div class="person">
+                        <div>
+                            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Телефон:</strong> {% if user.phone_number %} {{ user.phone_number }} {% endif %}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id="staff" class="tab-content">
+            {% for user in users %}
+                {% if user.is_staff %}
+                    <div class="person">
+                        <div>
+                            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

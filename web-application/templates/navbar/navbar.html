@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<body>
+  <header>
+    <ul class="navbar-wrapper">
+      <li class="main-nav-item">
+        <a class="nav-link" id="main-nav-link" href="{% url 'main' %}">Shop</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='keyboard' %}">Клавиатуры</a>
+      </li>    
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='mouse' %}">Мышки</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link catalog-page" href="{% url 'catalog' products='headphones' %}">Наушники</a>
+      </li>
+
+      <form class="search-form" method="GET" action="{% url 'catalog' products='all' %}">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Введите запрос..." name="q" aria-label="Search">
+          <button type="submit" class="search-button">
+            <img src="{% static 'images/search.svg' %}" alt="Search Icon">
+          </button>
+        </div>
+      </form>
+
+      <div class="icons">
+        <li class="nav-item icon">
+        {% if request.user.is_staff %}
+          <a class="nav-link" href="{% url 'person-panel' %}">
+        {% elif request.user.is_staff == False and request.user.is_authenticated == True %}
+          <a class="nav-link" href="{% url 'profile' %}">
+        {% else %}
+          <a class="nav-link" href="{% url 'login' %}">
+        {% endif %}
+          <img id='user' src="{% static 'images/person.svg' %}" alt="Person">
+          </a>
+        </li>
+
+        {% if not request.user.is_staff %}
+        <li class="nav-item icon cart-icon">
+          <a class="nav-link" href="{% url 'cart' %}">
+          <img src="{% static 'images/shopping_cart.svg' %}" alt="Cart">
+          {% if cart_item_count != 0 %}
+            <span class="cart-count">{{ cart_item_count }}</span>
+          {% endif %}
+          </a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_staff %}
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'add_product' product_type='keyboard'  %}">
+            <img id='add' src="{% static 'images/plus.svg' %}" alt="Plus">
+          </a>
+        </li>
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'admin-panel' %}">
+            <img id='list' src="{% static 'images/bulleted_list.svg' %}" alt="list">
+          </a>
+        </li>
+        {% elif request.user.is_staff == False and request.user.is_authenticated %}
+        <li class="nav-item icon">
+          <a class="nav-link" href="{% url 'user-orders' %}">
+            <img id='list' src="{% static 'images/bulleted_list.svg' %}" alt="list">
+          </a>
+        </li>
+        {% endif %}
+      </div>
+    </ul>
+  </header>
+</body>
+</html>

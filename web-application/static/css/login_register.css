@@ -1,0 +1,88 @@
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f4f4f4;
+  overflow-y: scroll;
+}
+
+.login-register-container {
+  width: 80%;
+  max-width: 500px;
+  border-radius: 5px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-container{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.register-container{
+  margin: 10px auto 0px auto;
+}
+
+.login-container input{
+  margin-bottom: 10px;
+}
+
+.login-register-container input{
+  width: 100%;
+  padding: 12px 10px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.login-register-container button[type=submit]{
+  width: 100%;
+  background-color: #14b814;  
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top:10px;
+  font-size: 16px;
+}
+
+.login-register-container button[type=submit]:hover {
+  background-color: #4CAF50;
+  
+}
+
+.form-ref{
+  text-decoration: none;
+  color: blue;
+}
+.form-ref:hover{
+  text-decoration: underline;
+  color: blue;
+}
+.messages{
+  color:red;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.google-auth{
+  text-decoration: none;
+  display: block;
+  margin-top: 10px;
+}
+.google-auth:hover{
+  text-decoration: underline;
+}
+
+@media screen and (max-height: 465px),
+       screen and (max-width: 775px)
+{
+  .login-container{
+    position: static;
+    margin: 10px auto 0px auto;
+    top: auto;
+    left: auto;
+    transform: translate(0%,0%);
+  }
+}

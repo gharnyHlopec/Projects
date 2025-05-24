@@ -1,0 +1,40 @@
+.quantity-change{
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    width:100%;
+    padding: 0;
+    font-size: 28.5px;
+    border: 2px solid black;
+    }
+.quantity-change-button{
+    position: absolute;
+    width: auto;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    }
+.quantity-change-button:hover{
+    background-color: #14b814;
+    transition: 0.3s;
+    }
+.minus-button{
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-right: 2px solid black;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    }
+.plus-button{
+    border-left: 2px solid black;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    }

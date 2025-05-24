@@ -27,7 +27,7 @@ def staff_not_allowed(user):
   return not user.is_staff
 
 def main(request):
-    return render(request, 'main.html')
+    return render(request, 'main/main.html')
 
 def loginPage(request):
 
@@ -55,10 +55,10 @@ def loginPage(request):
 
     context = {'page':page}
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'login-container.html',context)
+        html = render(request,'login_register/login-container.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
-        return render(request, 'login_register.html',context)
+        return render(request, 'login_register/login_register.html',context)
 
 def logoutUser(request):
     logout(request)
@@ -75,10 +75,10 @@ def registerPage(request):
             login(request, user)
             return JsonResponse({'redirect':reverse('main') })
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'register-container.html',{'form' : form})
+        html = render(request,'login_register/register-container.html',{'form' : form})
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
-        return render(request, 'login_register.html',{'form' : form})
+        return render(request, 'login_register/login_register.html',{'form' : form})
 
 def catalog(request, products):
     q = request.GET.get('q', '')
@@ -135,10 +135,10 @@ def catalog(request, products):
     }   
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'catalog_grid_innerHTML.html',context)
+        html = render(request,'catalog/catalog_grid_innerHTML.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
-        return render(request, 'catalog.html', context)
+        return render(request, 'catalog/catalog.html', context)
 
 
 def info(request,pk):
@@ -163,7 +163,7 @@ def info(request,pk):
     
     context = {"product": product, "zipped_data": zipped_data, "images":images, "image_amount":image_amount}
 
-    return render(request, 'info.html', context)
+    return render(request, 'info/info.html', context)
 
 @user_passes_test(staff_not_allowed, login_url='/login')
 def cart(request):
@@ -199,12 +199,12 @@ def cart(request):
     
     #Если AJAX-запрос, то просто меняем внутренности корзины
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest': 
-        navbar_html = render(request,'navbar.html')
-        cart_product_wrapper_html = render(request,'cart_product_wrapper.html',context)
+        navbar_html = render(request,'navbar/navbar.html')
+        cart_product_wrapper_html = render(request,'cart/cart_product_wrapper.html',context)
         return JsonResponse({'navbar_html':navbar_html.content.decode('utf-8'),
                              'cart_product_wrapper_html':cart_product_wrapper_html.content.decode('utf-8')})
     else: # Если нет то полностью отрисовываем страницу
-        return render(request, 'cart.html', context)
+        return render(request, 'cart/cart.html', context)
 
 @user_passes_test(staff_not_allowed, login_url='/login')
 def contactInformation(request):
@@ -303,13 +303,13 @@ def contactInformation(request):
                 return redirect('main')
 
     context = {"form":form,"cart":cart}
-    return render(request, 'contact-information.html', context)
+    return render(request, 'contact_information/contact-information.html', context)
 
 def payment_completed(request):
-    return render(request, 'payment_completed.html')
+    return render(request, 'payment/payment_completed.html')
 
 def payment_canceled(request):
-    return render(request, 'payment_canceled.html')
+    return render(request, 'payment/payment_canceled.html')
 
 def reviews(request, pk):
     product = Product.objects.get(id = pk)
@@ -324,10 +324,10 @@ def reviews(request, pk):
     star_reviews = [product.review_set.filter(rating=i).count() for i in range(5, 0,-1)]
     context = {'reviews':reviews, "product":product, 'star_reviews':star_reviews, 'sort':sort}
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'reviews_innerHTML.html',context)
+        html = render(request,'reviews/reviews_innerHTML.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
-        return render(request, 'reviews.html', context)
+        return render(request, 'reviews/reviews.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(staff_not_allowed, login_url='/login')
@@ -345,7 +345,7 @@ def postReview(request, pk):
         context = {'pk':pk}
     if not request.user.is_authenticated:
         return redirect('login') 
-    return render(request, 'review_form.html', context)
+    return render(request, 'review_form/review_form.html', context)
 
 
 def deleteReview(request, prod_id, pk):
@@ -355,7 +355,7 @@ def deleteReview(request, prod_id, pk):
     if request.method == 'POST':
         review.delete()
         return redirect('product-reviews', prod_id)
-    return render(request, 'delete.html')
+    return render(request, 'delete/delete.html')
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -381,10 +381,10 @@ def updateProduct(request,pk):
             return JsonResponse({'redirect':reverse('info',kwargs={'pk':pk}) })
         else:
             context = {'form': form, 'product':product}
-            html = render(request, 'edit_product_form_innerHTML.html',context)
+            html = render(request, 'edit_product/edit_product_form_innerHTML.html',context)
             return JsonResponse({'html':html.content.decode('utf-8')})
     context = {'form':form, 'images':images, 'pk':pk, 'product':product}
-    return render(request, 'edit_product.html', context)
+    return render(request, 'edit_product/edit_product.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -393,7 +393,7 @@ def deleteProduct(request,pk):
     if request.method == 'POST':
         product.delete()
         return redirect('catalog',product.type)
-    return render(request, 'delete.html', {'pruduct':product})
+    return render(request, 'delete/delete.html', {'pruduct':product})
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -402,7 +402,7 @@ def deleteImage(request, pk, pk2):
     if request.method == 'POST':
         elem.delete()
         return redirect('update-product', pk)
-    return render(request, 'delete.html', {'obj':elem.image})
+    return render(request, 'delete/delete.html', {'obj':elem.image})
 
 @user_passes_test(staff_not_allowed, login_url='/login')
 def addToCart(request):
@@ -427,8 +427,8 @@ def addToCart(request):
         cart_item.save()
         if cart_item.quantity == 0:
             cart_item.delete()
-        navbar_html = render(request,'navbar.html')
-        quantity_html = render(request,'quantity-change.html',{'product':product, 'cart':cart})
+        navbar_html = render(request,'navbar/navbar.html')
+        quantity_html = render(request,'quantity_change/quantity-change.html',{'product':product, 'cart':cart})
  
         return JsonResponse({'navbar_html':navbar_html.content.decode('utf-8'),
                              'quantity_html':quantity_html.content.decode('utf-8')})
@@ -473,23 +473,23 @@ def adminPanel(request):
     context = {'orders': orders}
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request, 'admin_panel_innerHTML.html',context)
+        html = render(request, 'admin_panel/admin_panel_innerHTML.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')})
     else:
-        return render(request, 'admin_panel.html', context)
+        return render(request, 'admin_panel/admin_panel.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
 def personPanel(request):
     users = User.objects.all
     context = {'users':users}
-    return render(request, 'person-panel.html', context)
+    return render(request, 'person_panel/person-panel.html', context)
 
 @login_required(login_url='/login')
 def profile(request):
     user=request.user
     context = {'user':user}
-    return render(request,'profile.html',context)
+    return render(request,'profile/profile.html',context)
 
 @login_required(login_url='/login')
 def updateProfile(request):
@@ -502,7 +502,7 @@ def updateProfile(request):
         form = MyUserEditForm(instance=request.user)
 
     context = {'form': form} 
-    return render(request, 'edit-profile.html', context)
+    return render(request, 'edit_profile/edit-profile.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(staff_not_allowed, login_url='/login')
@@ -512,10 +512,10 @@ def userOrders(request):
     context = {'orders': orders}
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'user-orders-innerHTML.html',context)
+        html = render(request,'user_orders/user-orders-innerHTML.html',context)
         return JsonResponse({'html':html.content.decode('utf-8')}) 
 
-    return render(request, 'user-orders.html', context)
+    return render(request, 'user_orders/user-orders.html', context)
 
 @login_required(login_url='/login')
 @user_passes_test(only_for_staff, login_url='/login')
@@ -545,15 +545,15 @@ def addProduct(request,product_type,allowed_types):
                 return JsonResponse({'redirect':reverse('catalog',kwargs={'products':product_type}) })
             else:
                 context = {'form': form, 'product_type':product_type}
-                html = render(request, 'add_product_form_innerHTML.html',context)
+                html = render(request, 'add_product/add_product_form_innerHTML.html',context)
                 return JsonResponse({'html':html.content.decode('utf-8')})
 
         context = {'form': form, 'product_type':product_type}
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            html = render(request, 'add_product_form_innerHTML.html',context)
+            html = render(request, 'add_product/add_product_form_innerHTML.html',context)
             return JsonResponse({'html':html.content.decode('utf-8')})
         else:
-            return render(request, 'add_product.html', context)
+            return render(request, 'add_product/add_product.html', context)
         
 @login_required(login_url='/login')
 def changePassword(request):
@@ -568,7 +568,7 @@ def changePassword(request):
                 return redirect('person-panel')
             else:  
                 return redirect('profile')
-    return render(request,'password_change.html',{'form':form})
+    return render(request,'password_change/password_change.html',{'form':form})
 
 @csrf_exempt
 def stripeWebhook(request):
@@ -595,13 +595,13 @@ def stripeWebhook(request):
         return redirect('payment_canceled')
     
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'password_reset_form.html'
+    template_name = 'password_reset/password_reset_form.html'
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'password_reset_confirm.html'
+    template_name = 'password_reset/password_reset_confirm.html'
 
 class CustomPasswordResetDoneView(PasswordResetDoneView):
-    template_name = 'password_reset_done.html'
+    template_name = 'password_reset/password_reset_done.html'
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
-    template_name = 'password_reset_complete.html'
+    template_name = 'password_reset/password_reset_complete.html'

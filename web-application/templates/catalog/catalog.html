@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% load custom_filters %}
+{% load static %}
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Каталог</title>
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+    <script src="{% static 'js/catalog.js' %}" defer></script>
+</head>
+<body>
+    <div class="navbar-div">
+        {% include 'navbar/navbar.html' %}
+    </div>
+    <div class="home-container">
+        <div class="filter-form"> 
+            <form method="get">
+                <img class="close-icon" src="{% static 'images/cross.svg' %}" onclick="closeFilters()" alt="cross">
+                
+                <h2>Цена</h2>
+                <hr>
+                <div>
+                    <label for="min_price">Минимальная цена:</label>
+                    <input type="number" name="min_price" id="min_price" value="{% if min_price|number > 0 %}{{min_price}}{% endif %}"> 
+                </div> 
+                <div>
+                    <label for="max_price">Максимальная цена:</label>
+                    <input type="number" name="max_price" id="max_price" value="{% if max_price|number < 9999999 %}{{ max_price }}{% endif %}"> 
+                </div>
+                <br>
+                <h2>Год выпуска</h2>
+                <hr>
+                <div>
+                    <label for="min_year">Минимальный год:</label>
+                    <input type="number" name="min_year" id="min_year" value="{% if min_year|number > 0 %}{{ min_year }}{% endif %}"> 
+                </div>
+
+                <div>
+                    <label for="max_year">Максимальный год:</label>
+                    <input type="number" name="max_year" id="max_year" value="{% if max_year|number < 9999999 %}{{ max_year }}{% endif %}"> 
+                </div>
+
+                <br>
+                <h2>Наличие</h2>
+                <hr>
+                <select name="availability" id="availability">
+                    <option value="-1" {% if availability == -1 %} selected {% endif %}>Все товары</option>
+                    <option value="0" {% if availability == 0 %} selected {% endif %}>Только товары в наличии</option>
+                </select>
+                <button 
+                    type="button" 
+                    class="reset-filter-button"
+                    onclick="resetFilters()">
+                    Сбросить фильтры
+                </button>
+            </form>
+        </div>
+        <div>
+            <div class="sorting-container">
+                <div class="div-mod">
+                <a onclick="openFilters()">
+                    <img class='filter-icon' src="{% static 'images/tune.svg' %}" alt="Tune">
+                </a>
+                </div>
+                <form method="get">
+                    <label for="sort">Сортировать по:</label>
+                    <select name="sort" id="sort">
+                        <option value="">Релевантности</option>
+                        <option value="name" {% if sort == 'name' %} selected{% endif %}>Алфавиту (A-Z)</option>
+                        <option value="-name" {% if sort == '-name' %}selected{% endif %}>Алфавиту (Z-A)</option>
+                        <option value="-price" {% if sort == '-price' %}selected{% endif %}>Цене (от высокой к низкой)</option>
+                        <option value="price" {% if sort == 'price' %}selected{% endif %}>Цене (от низкой к высокой)</option>
+                        <option value="-year" {% if sort == '-year' %}selected{% endif %}>Год выпуска (сначала новые)</option>
+                        <option value="year" {% if sort == 'year' %}selected{% endif %}>Год выпуска (сначала старые)</option>
+                    </select>
+                </form>
+            </div>
+            <div class="product-grid-and-pagination">
+                {% include "catalog/catalog_grid_innerHTML.html" %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

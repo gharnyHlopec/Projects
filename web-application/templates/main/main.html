@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Магазин</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+  {% include 'navbar/navbar.html' %}
+  {% include 'success_message/success_message.html' %}
+  <div class="container">
+    <div class="ref-images">
+      <div class="image-container">
+        <a href="{% url 'catalog' products='keyboard' %}">
+          <p><b>Каталог клавиатур</b></p>
+        </a>
+        <img src="{% static 'images/keyboard.jpg' %}" alt="Клавиатура">
+      </div>
+      <div class="image-container">
+        <a href="{% url 'catalog' products='mouse' %}" >
+        <p><b>Каталог мышек</b></p>
+        </a>
+        <img src="{% static 'images/mouse.jpeg' %}" alt="Мышь">
+      </div>
+      <div class="image-container">
+        <a href="{% url 'catalog' products='headphone' %}" >
+        <p><b>Каталог наушников</b></p>
+        </a>
+        <img src="{% static 'images/headset.jpg' %}" alt="Наушники">
+      </div>
+    </div>
+    
+    <div class="brands">
+    <h2>Бренды</h2>
+      <img src="{% static 'images/hyperx.png' %}" alt="HyperX" class="brand-img top-img">
+      <img src="{% static 'images/logitech.png' %}" alt="Logitech" class="brand-img top-img">
+      <img src="{% static 'images/razer.jpg' %}" alt="Razer" class="brand-img top-img">
+      <img src="{% static 'images/redragon.svg' %}" alt="Redragon" class="brand-img bottom-img">
+      <img src="{% static 'images/red_sq.png' %}" alt="Red Square" class="brand-img bottom-img">
+      <img src="{% static 'images/glorious.jpg' %}" alt="Glorious" class="brand-img bottom-img">
+    </div>
+  </div>
+</body>
+</html>

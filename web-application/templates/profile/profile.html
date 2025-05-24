@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <title>Личная информация</title>
+</head>
+<body>
+    {% include 'navbar/navbar.html' %}
+    {% include 'success_message/success_message.html' %}
+    <div class="profile-container">
+        <h2>Личная информация</h2>
+        <p><strong>Имя</strong>: {{ user.first_name }}</p>
+        <p><strong>Фамилия</strong>: {{ user.last_name }}</p>
+        <p><strong>Email</strong>: {{ user.email }}</p>
+        <p><strong>Телефон</strong>: 
+            {% if user.phone_number == None %}
+                -
+            {% else %}
+                {{ user.phone_number }}
+            {% endif %}
+        </p>
+        <div class="button-wrapper">
+            <a class="button edit" href="{% url 'update-profile' %}">Редактировать</a>
+            <a class="button change-password" href="{% url 'change-password' %}">Изменить пароль</a>
+            <a class="button logout" href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/user_orders.css' %}">
+    <script src="{% static 'js/user_orders.js' %}" defer></script>
+    <title>Мои заказы</title>
+</head>
+<body>
+    {% include 'navbar/navbar.html' %}
+    <div class="user-orders-wrapper">
+        {% include 'user_orders/user-orders-innerHTML.html' %}
+    </div>
+</body>
+</html>

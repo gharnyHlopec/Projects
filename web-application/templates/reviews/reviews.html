@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% load static %}
+{% load custom_filters %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+  <script src="{% static 'js/reviews.js' %}" defer></script>
+  <title>Отзывы</title>
+  {% load static %}
+</head>
+<body>
+
+{% include 'navbar/navbar.html'%}
+
+<div class="review-page-wrapper">
+    <div class="review-button-wrapper">
+        <div class="back-button-wrapper">
+            <a class="back-button-link" href="{% url 'info' pk=product.id %}">←Назад к товару</a>
+        </div>
+        {% if request.user.is_staff == False %}
+            <a href="{% url 'post-review' product.id %}" class="leave-review-button">Оставить отзыв</a> 
+        {% endif %}
+        <div class="star-filter">
+            <div class="cross-sign">
+                <img src="{% static 'images/cross.svg' %}" alt="Cross" onclick="closeFilters()">
+            </div>
+            {% if star_reviews.0 > 0 %}
+            <label>
+                <input type="checkbox" onchange="filterReviews()" class="star-filter-input" value=5> {{ star_reviews.0 }} {% if star_reviews.0|module == 1 %} отзыв {% elif star_reviews.0|module > 1  and star_reviews.0|module < 5 %} отзыва {% else %} отзывов {% endif %} <p class="stars">★★★★★</p>
+            </label>
+            {% endif %}
+            {% if star_reviews.1 > 0 %}
+            <label>
+                <input type="checkbox" onchange="filterReviews()" class="star-filter-input" value=4> {{ star_reviews.1 }} {% if star_reviews.1|module == 1 %} отзыв {% elif star_reviews.1|module > 1  and star_reviews.1|module < 5 %} отзыва {% else %} отзывов {% endif %} <p class="stars">★★★★☆</p>
+            </label>
+            {% endif %}
+            {% if star_reviews.2 > 0 %}
+            <label>
+                <input type="checkbox" onchange="filterReviews()" class="star-filter-input" value=3> {{ star_reviews.2 }} {% if star_reviews.2|module == 1 %} отзыв {% elif star_reviews.2|module > 1  and star_reviews.2|module < 5 %} отзыва {% else %} отзывов {% endif %} <p class="stars">★★★☆☆</p>
+            </label>
+            {% endif %}
+            {% if star_reviews.3 > 0 %}
+            <label>
+                <input type="checkbox" onchange="filterReviews()" class="star-filter-input" value=2> {{ star_reviews.3 }} {% if star_reviews.3|module == 1 %} отзыв {% elif star_reviews.3|module > 1  and star_reviews.3|module < 5 %} отзыва {% else %} отзывов {% endif %} <p class="stars">★★☆☆☆</p>
+            </label>
+            {% endif %}
+            {% if star_reviews.4 > 0 %}
+            <label>
+                <input type="checkbox" onchange="filterReviews()" class="star-filter-input" value=1> {{ star_reviews.4 }} {% if star_reviews.4|module == 1 %} отзыв {% elif star_reviews.4|module > 1  and star_reviews.4|module < 5 %} отзыва {% else %} отзывов {% endif %} <p class="stars">★☆☆☆☆</p>
+            </label>
+            {% endif %}
+        </div>
+    </div>
+    <div class="review-wrapper">
+        <a class="back-button-link inline" href="{% url 'info' pk=product.id %}">←Назад к товару</a>
+        <h2 class="review-title">Отзывы о товаре {{ product.name }}</h2>
+        <div class="buttons">
+            {% if request.user.is_staff == False %}
+                <a href="{% url 'post-review' product.id %}" class="leave-review-button inline">Оставить отзыв</a>
+            {% endif %}
+            <a class="filter-button inline" onclick="showFilters()">Фильтры</a>
+            <select class="sort" onchange="filterReviews()">
+                <option {% if sort == '-created' %} selected{% endif %} value="-created">
+                    Сначала новые
+                </option>
+                <option {% if sort == 'created' %} selected{% endif %} value="created">
+                    Сначала старые
+                </option>
+                <option {% if sort == '-rating' %} selected{% endif %} value="-rating">
+                    Сначала хорошие 
+                </option>
+                <option {% if sort == 'rating' %} selected{% endif %} value="rating">
+                    Сначала плохие
+                </option>
+            </select>
+        </div>
+        <hr>
+        <div class="review-list">
+            {% include 'reviews/reviews_innerHTML.html' %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

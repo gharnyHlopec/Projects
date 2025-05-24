@@ -1,0 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/quantity_change.css' %}">
+<script src="{% static 'js/quantity_change.js' %}" defer></script>
+
+{% for elem in cart.cart_items.all %}
+    {% if elem.product.id == product.id %}
+    <div class="quantity-change quantity-change-product-{{ product.id }}">
+        <img onclick="addToCart({{ product.id }},-1)" id='minus' class="quantity-change-button minus-button" src="{% static 'images/minus.svg' %}" alt="Minus">
+        {{ elem.quantity }}
+        <img onclick="addToCart({{ product.id }},1)" id='plus' class="quantity-change-button plus-button" src="{% static 'images/plus.svg' %}" alt="Plus">  
+    </div>
+    {% endif %}
+{% endfor %}
+<button onclick="addToCart({{ product.id }},1)" class="button add-to-cart-button add-to-cart-product-{{product.id}}">Добавить в корзину</button>

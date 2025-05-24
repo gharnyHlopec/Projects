@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% if page == 'login' %}
+      <title>Вход</title>
+    {% else %}
+      <title>Регистрация</title>
+    {% endif %}
+    <link rel="stylesheet" href="{% static 'css/login_register.css' %}">
+    <script src="{% static 'js/login_register.js' %}" defer></script>
+</head>
+<body>
+{% include 'navbar/navbar.html' %}
+  {% if page == 'login' %}
+    <div class="login-register-container login-container">
+      {% include 'login_register/login-container.html' %}
+    </div>
+  {% else %}
+    <div class="login-register-container register-container">
+      {% include 'login_register/register-container.html' %}
+    </div>
+  {% endif %}
+</body>
+</html>

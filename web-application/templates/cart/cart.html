@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Корзина</title>
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <script src="{% static 'js/cart.js' %}" defer></script>
+</head>
+<body>
+    <div class="navbar-div">
+        {% include 'navbar/navbar.html' %}
+    </div>
+    <div class="cart">
+        {% include 'cart/cart_product_wrapper.html' %}
+    </div>
+</body>
+</html>

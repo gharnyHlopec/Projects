@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контактная информация</title>
+    <link rel="stylesheet" href="{% static 'css/contact_information.css' %}">
+    <script src="{% static 'js/contact_information.js' %}" defer></script>
+</head>
+<body>
+    {% include 'navbar/navbar.html' %}
+   
+   <div class="contact-information">
+        <h2>Контактная информация</h2>
+        <form id='order_form' method="POST" action="">
+            {% csrf_token %}
+            <div>
+                <label for="id_first_name">Имя:</label>
+                {{ form.first_name }}
+            </div>
+            <div>
+                <label for="id_last_name">Фамилия:</label>
+                {{ form.last_name }}
+            </div>
+            <div>
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="id_phone_number">Номер телефона:</label>
+                {{ form.phone_number }}
+            </div>
+            <div>
+                <label for="payment_status">Выберите способ оплаты:</label>
+                <select id="payment_status" name="payment_status">
+                    <option> </option>
+                    <option value="Оплата картой курьеру">Оплата картой курьеру</option>
+                    <option value="Оплата наличными курьеру">Оплата наличными курьеру</option>
+                    <option value="Оплата картой на сайте">Оплата картой на сайте</option>
+                </select>
+            </div>
+            <div class="button-wrapper">
+                <button onclick="openCart()" type="button">Назад в корзину</button>
+                {% if cart_item_count != 0 %}
+                    <button type="submit">Отправить заказ</button>
+                {% else %}
+                    <button type="submit" id="submit-button" disabled>Создать заказ</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</body>
+</html>

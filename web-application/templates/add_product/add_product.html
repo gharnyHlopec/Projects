@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление товара</title>
+    <link rel="stylesheet" href="{% static 'css/add_product.css' %}">
+    <script src="{% static 'js/add_product.js' %}" defer></script>
+</head>
+<body>
+    {% include 'navbar/navbar.html' %}
+    <h2 id="title">Добавление товара</h2>
+    <div class="forms-container">
+        <div class="image-drop-area">
+            Перетащите изображения сюда
+            <br>
+            <label class="image-upload-button" for="image-input">Выбрать файлы</label>
+            <br>
+            <div id="gallery"></div>
+        </div>
+        <div class="form-container">
+            {% include 'add_product/add_product_form_innerHTML.html' %}
+        </div>
+    </div>
+</body>
+</html>
