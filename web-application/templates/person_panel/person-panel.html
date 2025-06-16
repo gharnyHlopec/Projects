@@ -13,13 +13,13 @@
     {% include 'navbar/navbar.html' %}
     {% include 'success_message/success_message.html' %}
     <div class="admin-panel-wrapper">
+        <div class="links">
+            <a class="link change-password-link" href="{% url 'change-password' %}">Изменить пароль</a>
+            <a class="link exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
+        </div>
         <ul class="tabs">
             <li class="tab-link active" data-tab="customers">Клиенты</li>
             <li class="tab-link" data-tab="staff">Работники</li>
-            <div class="links">
-                <a class="link change-password-link" href="{% url 'change-password' %}">Изменить пароль</a>
-                <a class="link exit-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
-            </div>
         </ul>
         <div id="customers" class="tab-content active">
             {% for user in users %}

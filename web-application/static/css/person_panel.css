@@ -58,36 +58,31 @@ border: none;
     display: block;
 }
 .links{
-    display: flex;
-    margin-left:auto;
-    margin-right:0;
-    
+    text-decoration: none;
+    margin-top:10px;
 }
 .link{
-    margin-right: 10px;
-    float: right;
-    padding: 10px;
-    cursor: pointer;
-    color: black;
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+    width: 100%;
     text-decoration: none;
-}
-.exit-link{
-    border-bottom: 3px solid red;
-}
-.exit-link:hover{
-    color: red;
-}
-.exit-link:active{
-    color: initial;
+    padding: 5px;
+    color:white;
+    border-radius: 8px;
+    margin-top: 5px;
 }
 .change-password-link{
-    border-bottom: 3px solid blue;
+    background-color: rgb(0, 0, 255);
 }
 .change-password-link:hover{
-    color: blue;
+    background-color: rgb(0, 0, 91);
 }
-.change-password-link:active{
-    color: initial;
+.exit-link{
+    background-color: red;
+}
+.exit-link:hover{
+    background-color: rgb(101, 0, 0);
 }
 @media screen and (max-width: 700px) {
     .tabs > *{
