@@ -62,6 +62,9 @@ body{
     background-color: #f4f4f4;
     cursor:default;
 }
+.quantity-button:active{
+    background-color: initial;
+}
 #minus-button {padding-bottom:5px;}
 .delete-button{
     color: white;
@@ -73,15 +76,17 @@ body{
     padding: 0px 20px;
     cursor: pointer;
 }
-
 .delete-button:hover{
     background-color: darkred;
 }
-
-
-
+.delete-button:active{
+    background-color: initial;
+}
 #submit-button:hover{
     background-color: darkgreen;
+}
+#submit-button:active{
+    background-color: initial;
 }
 .cart-products-wrapper{
     padding: 15px;
@@ -108,7 +113,9 @@ body{
 .contact-information-button:hover{
     background-color: green;
 }
-
+.contact-information-button:active{
+    background-color: initial;
+}
 .empty-cart{
     position: relative;
     top: 50%;

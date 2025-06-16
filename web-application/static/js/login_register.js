@@ -2,6 +2,7 @@ function login(event,operation){
     event.preventDefault();
     const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const formData = new FormData(document.getElementById(`${operation}-form`));
+    console.log(formData)
     loginURL = `/${operation}/`
     fetch(loginURL,{
         method:'POST',

@@ -195,6 +195,9 @@ body{
 .add-to-cart-button:hover{
     background-color: green;
 }
+.add-to-cart-button:active{
+    background-color: initial;
+}
 .not-found{
     grid-column: span 3; 
     width: 100%; 
@@ -214,6 +217,10 @@ body{
     background-color: darkred;
     cursor: pointer;
 }
+.reset-filter-button:active{
+    background-color: initial;
+}
+
 .pagination{
     display: flex;
     align-items: center;

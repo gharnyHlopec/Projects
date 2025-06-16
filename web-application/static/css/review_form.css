@@ -59,6 +59,9 @@ color: #ffc107;
 #submit-button:hover{
     background-color: green;
 }
+#submit-button:active{
+    background-color:initial;
+}
 .back-button-wrapper{
     margin-bottom: 12px;
 }

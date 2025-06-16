@@ -49,8 +49,10 @@ body{
 }
 
 .login-register-container button[type=submit]:hover {
-  background-color: #4CAF50;
-  
+  background-color: #4CAF50; 
+}
+.login-register-container button[type=submit]:active {
+  background-color: initial; 
 }
 
 .form-ref{

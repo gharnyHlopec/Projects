@@ -66,11 +66,17 @@ body{
 .button:hover{
   transition: 0.3s;
 }
+.button:active{
+  background-color: initial;
+}
 .change-button{
   background-color: #036ffc;
 }
 .change-button:hover{
   background-color: blue;
+}
+.change-button:active{
+  background-color: initial;
 }
 .delete-button{
   background-color: #ff5e5e;
@@ -78,11 +84,17 @@ body{
 .delete-button:hover{
   background-color: darkred;
 }
+.delete-button:active{
+  background-color: initial;
+}
 .review-button{
   background-color: #036ffc;
 }
 .review-button:hover{
   background-color: blue;
+}
+.review-button:active{
+  background-color: initial;
 }
 .add-to-cart-button{
   background-color: #14b814;  
@@ -90,6 +102,9 @@ body{
 }
 .add-to-cart-button:hover{
   background-color: #4CAF50;
+}
+.add-to-cart-button:active{
+  background-color: initial;
 }
 .add-to-cart-button:disabled{
   background-color: #ccc;
@@ -154,6 +169,9 @@ body{
 }
 .back-button-link:hover{
   color: black;
+}
+.back-button-link:active{
+  background-color: initial;
 }
 .buttons{
   margin-left:10px;

@@ -31,6 +31,9 @@ a{
 .edit:hover{
     background-color: green;
 }
+.edit:active{
+    background-color:initial;
+}
 .change-password{
     background-color: rgb(58, 86, 211);
     margin-right: auto;
@@ -39,6 +42,9 @@ a{
 .change-password:hover{
     background-color: rgb(10, 49, 225);
 }
+.change-password:active{
+    background-color: initial;
+}
 .logout{
     background-color: rgb(255, 25, 25);
     margin-left: 5px;
@@ -46,6 +52,9 @@ a{
 }
 .logout:hover{
     background-color: rgb(121, 0, 0);
+}
+.logout:active{
+    background-color: initial;
 }
 body{
     background-color: #f4f4f4;

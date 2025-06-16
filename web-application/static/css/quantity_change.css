@@ -9,7 +9,7 @@
     padding: 0;
     font-size: 28.5px;
     border: 2px solid black;
-    }
+}
 .quantity-change-button{
     position: absolute;
     width: auto;
@@ -17,11 +17,14 @@
     margin: 0;
     padding: 0;
     cursor: pointer;
-    }
+}
 .quantity-change-button:hover{
-    background-color: #14b814;
+    background-color: green;
     transition: 0.3s;
-    }
+}
+.quantity-change-button:active{
+    background-color: white;
+}
 .minus-button{
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
@@ -29,7 +32,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    }
+}
 .plus-button{
     border-left: 2px solid black;
     border-top-right-radius: 8px;
@@ -37,4 +40,11 @@
     right: 0;
     top: 0;
     bottom: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .quantity-change-button:hover {
+        background-color: green;
+        transition: 0.3s;
     }
+}

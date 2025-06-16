@@ -44,6 +44,10 @@ body{
     font-size: 16px;
     border-radius: 6px;
     margin-bottom: 5px;
+    cursor: pointer;
+}
+.button:active{
+    background-color: initial;
 }
 .button-group form{
     display: inline-block;
@@ -54,11 +58,17 @@ body{
 .accept-button:hover{
     background-color: #4CAF50;
 }
+.accept-button:active{
+    background-color: initial;
+}
 .decline-button{
     background-color: red;
 }
 .decline-button:hover{
     background-color: darkred;
+}
+.decline-button:active{
+    background-color: initial;
 }
 .finish-button{
     background-color: #4CAF50;
@@ -66,8 +76,8 @@ body{
 .finish-button:hover{
     background-color: #14b814; 
 }
-.button{
-    cursor: pointer;
+.finish-button:active{
+    background-color: initial; 
 }
 .button:disabled{
     cursor: default;

@@ -72,6 +72,9 @@ def registerPage(request):
         if form.is_valid():
             user = form.save(commit = False)
             user.save()
+            username=request.POST.get('email')
+            password=request.POST.get('password1')
+            user = authenticate(request, username=username, password=password)
             login(request, user)
             return JsonResponse({'redirect':reverse('main') })
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -429,7 +432,7 @@ def addToCart(request):
             cart_item.delete()
         navbar_html = render(request,'navbar/navbar.html')
         quantity_html = render(request,'quantity_change/quantity-change.html',{'product':product, 'cart':cart})
- 
+  
         return JsonResponse({'navbar_html':navbar_html.content.decode('utf-8'),
                              'quantity_html':quantity_html.content.decode('utf-8')})
     else:

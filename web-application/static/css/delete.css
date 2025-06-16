@@ -28,7 +28,9 @@ body{
 .back-button:hover{
     background-color: dimgray;
 }
-
+.back-button:active{
+    background-color: initial;
+}
 .delete-button{
     box-sizing: border-box;
     font-size: 16px;
@@ -39,9 +41,11 @@ body{
     border-radius: 6px;
     cursor: pointer;
 }
-
 .delete-button:hover{
     background-color: rgb(113, 1, 1);
+}
+.delete-button:active{
+    background-color: initial;
 }
 @media screen and (max-width:360px) {
     .wrapper{

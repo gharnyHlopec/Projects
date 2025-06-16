@@ -45,6 +45,9 @@ body{
 .leave-review-button:hover{
     background-color: green;
 }
+.leave-review-button:active{
+    background-color: initial;
+}
 .review-body{
     overflow-wrap: break-word;
     word-break: break-all;
@@ -55,6 +58,9 @@ body{
 }
 .delete-review:hover{
     text-decoration-line: underline;
+}
+.delete-review:active{
+    background-color: initial;
 }
 .review-content{
     overflow-wrap: break-word;
@@ -141,9 +147,8 @@ body{
     }
     .star-filter{
         display: none;
-        /* display: block; */
         height: 100%;
-        width: 30%;
+        width: 50%;
         min-width: 200px;
         background-color: white;
     }
@@ -151,7 +156,6 @@ body{
         margin-left:6px;
     }
     .cross-sign{
-        /* display: flex; */
         border-bottom: 2px solid black;
         align-items: center;
         justify-content: right;

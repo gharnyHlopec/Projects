@@ -40,12 +40,18 @@ body{
 .contact-information button[type="button"]:hover{
     background-color: #727272;
 }
+.contact-information button[type="button"]:active{
+    background-color: initial;
+}
 .contact-information button[type="submit"]{
     background-color: #14b814;
     margin-left:1%;
 }
 .contact-information button[type="submit"]:hover{
     background-color: green;
+}
+.contact-information button[type="submit"]:active{
+    background-color: initial;
 }
 .button-wrapper{
     display: flex;
