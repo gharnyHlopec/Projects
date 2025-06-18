@@ -1,0 +1,34 @@
+{% load static %}
+{% load custom_filters %}
+<div class="order-list in-progress">
+    {% for order in orders %}
+        {% if order.status != 'Отменен' and order.status != 'Завершен' and order.status != 'Отменен системой (на складе недостаточно товара)' %}
+            <div class="order-item">
+                <p class="order-date">Последнее обновление: {{ order.updated_at|date:"d.m.Y H:i" }}</p>
+                <p class="order-status" data-status="{{ order.status }}"><b>Статус заказа: {{ order.status }}</b></p>
+                <div class="order-details">
+                    <p>Имя: {{ order.first_name }}</p>
+                    <p>Фамилия: {{ order.last_name }}</p>
+                    <p>Телефон: {{ order.phone_number }}</p>
+                    {% if order.email %}
+                        <p>Email: {{ order.email }}</p>
+                    {% endif %}
+                    <b {% if order.payment_status != 'Оплачен' %} style="color:red" {% else %} style="color:green"{% endif %}
+                    >
+                        Оплата: {{ order.payment_status }}
+                    </b>
+                </div>
+                <ul>
+                    {% for item in order.items.all %}
+                        <li>
+                            {{ item.name }} - {{ item.quantity }} шт. -
+                            <b>Общая цена: {{ item.price|multiply:item.quantity }}р</b>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p class="order-total"><b>Общая стоимость заказа: {{ order.items.all|sum_prices }}р</b></p>
+            <hr>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

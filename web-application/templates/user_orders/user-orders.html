@@ -10,8 +10,19 @@
 </head>
 <body>
     {% include 'navbar/navbar.html' %}
-    <div class="user-orders-wrapper">
-        {% include 'user_orders/user-orders-innerHTML.html' %}
+    <div class="user-orders">
+        <div class="tabs">
+            <p class="tab active" data-tab="in_progress">Заказы в работе</p>
+            <p class="tab" data-tab="ended">Выполненные заказы</p>
+        </div>
+        <div class="user-orders-wrapper">
+            <div class="tab-content active" id="in_progress">
+                {% include 'user_orders/user_orders_in_progress_innerHTML.html' %}
+            </div>
+            <div class="tab-content" id="ended">
+                {% include 'user_orders/user_orders_ended_innerHTML.html' %}
+            </div>
+        </div>
     </div>
 </body>
 </html>

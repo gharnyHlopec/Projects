@@ -12,9 +12,19 @@
 
 <body>
     {% include 'navbar/navbar.html' %}
-    
-    <div class="admin-panel-wrapper">
-        {% include 'admin_panel/admin_panel_innerHTML.html' %}
+    <div class="admin-panel">
+        <div class="tabs">
+            <p class="tab active" data-tab="in_progress">Заказы в работе</p>
+            <p class="tab" data-tab="ended">Выполненные заказы</p>
+        </div>
+        <div class="admin-panel-wrapper">
+            <div class="tab-content active" id="in_progress">
+                {% include 'admin_panel/admin_panel_in_progress_innerHTML.html' %}
+            </div>
+            <div class="tab-content" id="ended">
+                {% include 'admin_panel/admin_panel_ended_innerHTML.html' %}
+            </div>
+        </div>
     </div> 
 </body>
 </html>

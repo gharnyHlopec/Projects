@@ -84,8 +84,8 @@ function transferFiles(){
 function PostRequest(e){
     e.preventDefault();
     const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const product_id="{{ product.id }}"
-    const product_type="{{ product.type }}"
+    const product_id = document.querySelector('meta[name="product_id"]').getAttribute('content');
+    const product_type = document.querySelector('meta[name="product_type"]').getAttribute('content');
     const updateProductURL = `/update-product/${product_id}`;
     const formData = new FormData(document.getElementById('product_form'));
     let properties = {};

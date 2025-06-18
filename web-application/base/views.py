@@ -476,8 +476,10 @@ def adminPanel(request):
     context = {'orders': orders}
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request, 'admin_panel/admin_panel_innerHTML.html',context)
-        return JsonResponse({'html':html.content.decode('utf-8')})
+        html1 = render(request, 'admin_panel/admin_panel_in_progress_innerHTML.html',context)
+        html2 = render(request, 'admin_panel/admin_panel_ended_innerHTML.html',context)
+        return JsonResponse({'html1':html1.content.decode('utf-8'),
+                             'html2':html2.content.decode('utf-8')})
     else:
         return render(request, 'admin_panel/admin_panel.html', context)
 
@@ -515,8 +517,10 @@ def userOrders(request):
     context = {'orders': orders}
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render(request,'user_orders/user-orders-innerHTML.html',context)
-        return JsonResponse({'html':html.content.decode('utf-8')}) 
+        html1 = render(request, 'user_orders/user_orders_in_progress_innerHTML.html',context)
+        html2 = render(request, 'user_orders/user_orders_ended_innerHTML.html',context)
+        return JsonResponse({'html1':html1.content.decode('utf-8'),
+                             'html2':html2.content.decode('utf-8')}) 
 
     return render(request, 'user_orders/user-orders.html', context)
 

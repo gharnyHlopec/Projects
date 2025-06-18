@@ -3,14 +3,11 @@ body{
     font-family: Arial, Helvetica, sans-serif;
     overflow-y: scroll;
 }
-.user-orders-wrapper{
+.user-orders{
     padding: 0px 20px;
     background-color: white;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     width: 80%;
     margin: 10px auto;
-    grid-gap: 5%;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -30,3 +27,30 @@ body{
     color: green; 
 }
 .order-date{color: gray}
+.tabs{
+    display: flex;
+    border-bottom: 2px solid black;
+    padding-bottom: 0px;
+}
+.tab{
+    padding-top: 15px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 20px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 15px;
+    cursor:pointer;
+}
+.tab.active{
+    border-bottom: 4px solid blue;
+    color:blue;
+}
+.tab-content{
+    display: none;
+}
+.tab-content.active{
+    display: block;
+}
